@@ -19,8 +19,14 @@ WORKDIR /app
 
 COPY ./scripts/* .
 RUN chmod +x start_node.sh
+RUN chmod +x setup_system.sh
+RUN chmod +x write_context.sh
+
+RUN ./setup_system.sh
 
 # port for nodeos p2p
 EXPOSE 9876
 # port for nodeos http
 EXPOSE 8888
+# port for state history
+EXPOSE 8080

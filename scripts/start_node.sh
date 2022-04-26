@@ -1,4 +1,4 @@
-#! /usr/bin/bash
+#! /bin/sh
 
 # 1 - data directory
 # 2 - config.ini directory
@@ -6,4 +6,4 @@
 # 4 - producer
 # 5 - node name
 
-nodeos --data-dir=$1 --config-dir=$2 $3 --producer-name=$4 &> /app/nodes/$5.out
+nodeos --data-dir=$1 --config-dir=$2 $3 --producer-name=$4 &> /app/.$5.out

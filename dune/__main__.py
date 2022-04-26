@@ -1,38 +1,57 @@
-from utilities import docker
-from utilities import node
-from utilities import dune_error
-from utilities import dune_node_not_found
+from dune import dune
+from dune import node
+from dune import dune_error
+from dune import dune_node_not_found
 from args import arg_parser
-from manifest import manifest
 
 if __name__ == '__main__':
    parser = arg_parser()
 
-   dockr = docker()
+   dune_sys = dune()
 
    args = parser.parse()
 
-   man = manifest()
-   man.read_manifest()
-
    try:
       if args.start != None:
-         dockr.start_node( node(args.start, 'hello'), args.producer, not args.api )
+         n = None
+         if len(args.start) == 1:
+            n = node(args.start[0])
+         else:
+            n = node(args.start[0], args.start[1])
+         dune_sys.start_node( n, args.producer, not args.api )
 
       if args.destroy_container:
-         dockr.destroy()
+         dune_sys.destroy()
 
       if args.stop != None:
-         dockr.stop_node( node(args.stop, 'hello') )
+         dune_sys.stop_node( node(args.stop) )
+      
+      if args.list:
+         dune_sys.list_nodes()
+
+      if args.set_active != None:
+         dune_sys.set_active( node(args.set_active) )
 
       if args.monitor != None:
-         dockr.monitor( node(args.monitor, 'hello') )
+         dune_sys.monitor( node(args.monitor) )
 
       if args.export_node != None:
-         dockr.export_node( node(args.export_node[0], 'hello'), args.export_node[1])
+         dune_sys.export_node( node(args.export_node[0]), args.export_node[1])
       
       if args.import_node != None:
-         dockr.import_node( args.import_node[0], node(args.import_node[1], "hello") )
+         dune_sys.import_node( args.import_node[0], node(args.import_node[1]) )
+
+      if args.import_dev_key != None: 
+         dune_sys.import_key(args.import_dev_key)
+      
+      if args.create_key:
+         print(dune_sys.create_key())
+
+      if args.create_account != None:
+         if len(args.create_account) > 1:
+            dune_sys.create_account(args.create_account[0], args.create_account[1])
+         else:
+            dune_sys.create_account(args.create_account[0], None)
 
    except KeyboardInterrupt:
       pass
