@@ -58,11 +58,11 @@ class context:
       for line in conf.splitlines():
          if not self.is_commented(line):
             if "http-server-address" in line:
-               http_port = line.split('=')[1]
+               http_port = line.split('=')[1][1:]
             elif "p2p-listen-endpoint" in line:
-               p2p_port = line.split('=')[1]
+               p2p_port = line.split('=')[1][1:]
             elif "state-history-endpoint" in line:
-               ship_port = line.split('=')[1]
+               ship_port = line.split('=')[1][1:]
       
       # if they don't exist just set to normal default values
       if http_port == None:

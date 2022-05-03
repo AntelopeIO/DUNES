@@ -1,4 +1,4 @@
-import subprocess
+import subprocess, platform
 
 class docker:
    _container = ""
@@ -8,13 +8,22 @@ class docker:
       self._image     = image
 
       # check if container is running
-      stdout, stderr, ec = self.execute_docker_cmd(['ps'])
+      stdout, stderr, ec = self.execute_docker_cmd(['container', 'ls'])
 
       # if container is not in the list then create one
       if not self._container in stdout:
-         # start a new container
-         print("Creating docker container ["+self._container+"]")
-         self.execute_docker_cmd(['run', '-d', '--name='+self._container, self._image, 'tail', '-f', '&>', '/dev/null', '&'])
+      # check if container is stopped
+         stdout, stderr, ec = self.execute_docker_cmd(['container', 'ls', '-a'])
+         if self._container in stdout:
+            self.execute_docker_cmd(['container', 'start', self._container])
+         else:
+            # start a new container
+            print("Creating docker container ["+self._container+"]")
+            host_dir = '/'
+            if platform.system() == 'Windows':
+               host_dir = 'C:/'
+
+            stdout, stderr, ec = self.execute_docker_cmd(['run', '-v', host_dir+':/host', '-d', '--name='+self._container, self._image, 'tail', '-f', '&>', '/dev/null', '&'])
 
    def get_container(self):
       return self._container
@@ -27,7 +36,7 @@ class docker:
                               stdout=subprocess.PIPE, stderr=subprocess.PIPE)
       stdout, stderr = proc.communicate()
       return [stdout.decode('UTF-8'), stderr.decode('UTF-8'), proc.poll()]
-
+   
    def file_exists(self, fn):
       return self.execute_cmd(['test', '-f', fn])[2] == 0
    
@@ -62,7 +71,7 @@ class docker:
    
    def get_container_name(self):
       return self._container
-
+   
    def destroy(self):
       print("Destroying docker container ["+self._container+"]")
       self.execute_docker_cmd(['container', 'stop', self._container])
@@ -70,6 +79,10 @@ class docker:
 
    def execute_cmd(self, cmd):
       return self.execute_docker_cmd(['container', 'exec', self._container] + cmd)
+
+   def execute_cmd2(self, cmd):
+      proc = subprocess.Popen(['docker', 'container', 'exec', self._container] + cmd)
+      proc.communicate()
 
    def execute_bg_cmd(self, cmd):
       return self.execute_cmd(cmd+['&'])
