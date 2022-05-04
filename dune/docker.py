@@ -71,7 +71,15 @@ class docker:
    
    def get_container_name(self):
       return self._container
+
+   def start(self):
+      print("Starting docker container ["+self._container+"]") 
+      self.execute_docker_cmd(['container', 'start', self._container])
    
+   def stop(self):
+      print("Stopping docker container ["+self._container+"]")
+      self.execute_docker_cmd(['container', 'stop', self._container])
+
    def destroy(self):
       print("Destroying docker container ["+self._container+"]")
       self.execute_docker_cmd(['container', 'stop', self._container])

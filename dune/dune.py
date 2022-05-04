@@ -117,25 +117,47 @@ class dune:
    def destroy(self):
       self._docker.destroy()
    
-   def list_nodes(self):
-      print("Node Name        | Active? | Running? | HTTP           | P2P          | SHiP")
-      print("--------------------------------------------------------------------------------------")
+   def stop_container(self):
+      self._docker.stop()
+   
+   def start_container(self):
+      self._docker.start()
+   
+   def list_nodes(self, simple=False):
+      if simple:
+         print("Node|Active|Running|HTTP|P2P|SHiP")
+      else:
+         print("Node Name        | Active? | Running? | HTTP           | P2P          | SHiP")
+         print("--------------------------------------------------------------------------------------")
       stdout, stderr, ec = self._docker.execute_cmd(['ls', '/app/nodes'])
       ctx = self._context.get_ctx()
       for s in stdout.split():
          print(s, end='')
          if s == ctx.active:
-            print('\t\t |    ✓', end='')
+            if simple:
+               print('|Y', end='')
+            else:
+               print('\t\t |    ✓', end='')
          else:
-            print('\t\t |    ✗', end='')
+            if simple:
+               print('|N', end='')
+            else:
+               print('\t\t |    ✗', end='')
          if not self.is_node_running( node(s) ):
-            print('\t   |    ✗', end='')
+            if simple:
+               print('|N', end='')
+            else:
+               print('\t   |    ✗', end='')
          else:
-            print('\t   |    ✓', end='')
+            if simple:
+               print('|Y', end='')
+            else:
+               print('\t   |    ✓', end='')
 
-         print('     | '+ctx.http_port, end='')
-         print(' | '+ctx.p2p_port, end='')
-         print(' | '+ctx.ship_port)
+         if simple:
+            print('|'+ctx.http_port+'|'+ctx.p2p_port+'|'+ctx.ship_port)
+         else:
+            print('     | '+ctx.http_port+' | '+ctx.p2p_port+' | '+ctx.ship_port)
    
    def export_node(self, n, dir):
       if self.node_exists(n):

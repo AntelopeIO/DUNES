@@ -7,6 +7,7 @@ class arg_parser:
       self._parser.add_argument('--stop', metavar="NODE", help='stop a node with a given name')
       self._parser.add_argument('--remove', metavar="NODE", help='a node with a given name, will stop the node if running')
       self._parser.add_argument('--list', action='store_true', help='list all nodes available and their statuses')
+      self._parser.add_argument('--simple-list', action='store_true', help='list all nodes available and their statuses without formatting and unicode')
       self._parser.add_argument('--set-active', metavar=("NODE"), help='set a node to active status')
       self._parser.add_argument('--get-active', action='store_true', help='get the name of the node that is currently active')
       self._parser.add_argument('--export-node', metavar=("NODE", "DIR"), nargs=2, help='export state and blocks log for the given node.')
@@ -21,6 +22,7 @@ class arg_parser:
       self._parser.add_argument('--other-build', nargs='+', metavar=["DIR", "CMD", "FLAGS (Optional)"], help='build a smart contract project at the directory given')
       self._parser.add_argument('--destroy-container', action='store_true', help='destroy context container <Warning, this will destroy your state and block log>')
       self._parser.add_argument('--stop-container', action='store_true', help='stop the context container')
+      self._parser.add_argument('--start-container', action='store_true', help='start the context container')
 
    def parse(self):
       return self._parser.parse_args()
