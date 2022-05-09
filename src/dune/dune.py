@@ -230,8 +230,8 @@ class dune:
       print(ec)
       print(stderr)
    
-   def execute_cmd(self, cmd):
-      self._docker.execute_cmd2(cmd.split())
+   def execute_cmd(self, args):
+      self._docker.execute_cmd2(args)
    
    def build_cmake_proj(self, dir, flags):
       abs_path = os.path.abspath(dir)

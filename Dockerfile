@@ -6,23 +6,18 @@ RUN DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install tzdata
 RUN apt-get -y install zip unzip libncurses5 wget git build-essential cmake curl libboost-all-dev libcurl4-openssl-dev libgmp-dev libssl-dev libusb-1.0.0-dev libzstd-dev llvm-11-dev time pkg-config
 
 WORKDIR /app
-RUN git clone https://github.com/eosnetworkfoundation/mandel
+
+# get Mandel
+RUN wget https://github.com/larryk85/ENF-Binaries/releases/download/v1.0/mandel_3.0.5_amd64.deb
+RUN apt install ./mandel_3.0.5_amd64.deb
 
 # get CDT
-RUN wget https://github.com/eosio/eosio.cdt/releases/download/v1.8.1/eosio.cdt_1.8.1-1-ubuntu-18.04_amd64.deb
-RUN apt install ./eosio.cdt_1.8.1-1-ubuntu-18.04_amd64.deb
-
-WORKDIR /app/mandel
-RUN git submodule update --init --recursive
-
-WORKDIR /app/build
-
-RUN cmake ../mandel -DCMAKE_BUILD_TYPE=Release -DENABLE_OC=Off
-RUN make -j4 && make install
+RUN wget https://github.com/larryk85/ENF-Binaries/releases/download/v1.0/cdt_1.8.1-1_amd64.deb
+RUN apt install ./cdt_1.8.1-1_amd64.deb
 
 WORKDIR /app
 
-COPY ./scripts/* .
+COPY ./scripts/ .
 RUN chmod +x start_node.sh
 RUN chmod +x setup_system.sh
 RUN chmod +x write_context.sh
