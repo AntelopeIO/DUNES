@@ -1,4 +1,4 @@
-import subprocess, platform
+import subprocess, platform, os
 
 class docker:
    _container = ""
@@ -25,6 +25,13 @@ class docker:
 
             stdout, stderr, ec = self.execute_docker_cmd(['run', '-v', host_dir+':/host', '-d', '--name='+self._container, self._image, 'tail', '-f', '&>', '/dev/null', '&'])
 
+   def abs_host_path(self, dir):
+      abs_path = os.path.abspath(dir)
+      if platform.system() == 'Windows':
+         abs_path = abs_path[3:].replace('\\', '/') # remove the drive letter prefix and replace the separators
+
+      return '/host/'+abs_path
+ 
    def get_container(self):
       return self._container
 

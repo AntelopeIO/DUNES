@@ -21,9 +21,13 @@ class arg_parser:
       self._parser.add_argument('--create-app-project', nargs='+', metavar=["PROJ_NAME", "DIR"], help='create a smart contract project at from a specific host location')
       self._parser.add_argument('--cmake-build', nargs='+', metavar=["DIR", "FLAGS (Optional)"], help='build a smart contract project at the directory given')
       self._parser.add_argument('--other-build', nargs='+', metavar=["DIR", "CMD", "FLAGS (Optional)"], help='build a smart contract project at the directory given')
+      self._parser.add_argument('--deploy', nargs=2, metavar=["DIR", "ACCOUNT"], help='deploy a smart contract and ABI to account given')
       self._parser.add_argument('--destroy-container', action='store_true', help='destroy context container <Warning, this will destroy your state and block log>')
       self._parser.add_argument('--stop-container', action='store_true', help='stop the context container')
       self._parser.add_argument('--start-container', action='store_true', help='start the context container')
+      self._parser.add_argument('--set-system-contract', metavar=["ACCOUNT"], help='set the system contract to an account given (default normally is `eosio`)')
+      self._parser.add_argument('--set-token-contract', metavar=["ACCOUNT"], help='set the system contract to an account given (default normally is`eosio.token`)')
+      self._parser.add_argument('--bootstrap-contracts', action='store_true', help='set the system contract and token contracts')
    
    def is_forwarding(self):
       return len(sys.argv) > 1 and sys.argv[1] == '--'

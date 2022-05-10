@@ -69,16 +69,25 @@ if __name__ == '__main__':
                dune_sys.create_account(args.create_account[0], None)
 
          elif args.cmake_build != None:
-            if len(args.build) > 1:
-               dune_sys.build_cmake_proj(args.build[0], args.build[1].split())
+            if len(args.cmake_build) > 1:
+               dune_sys.build_cmake_proj(args.cmake_build[0], args.cmake_build[1].split())
             else:
-               dune_sys.build_cmake_proj(args.build[0], [])
+               dune_sys.build_cmake_proj(args.cmake_build[0], [])
 
          elif args.other_build != None:
-            if len(args.build) > 1:
-               dune_sys.build_other_proj(args.build[0], args.build[1].split())
+            if len(args.other_build) > 1:
+               dune_sys.build_other_proj(args.other_build[0], args.other_build[1].split())
             else:
-               dune_sys.build_other_proj(args.build[0], [])
+               dune_sys.build_other_proj(args.other_build[0], [])
+         
+         elif args.deploy != None:
+            dune_sys.deploy_contract(dune_sys._docker.abs_host_path(args.deploy[0]), args.deploy[1])
+         
+         elif args.set_system_contract != None:
+            dune_sys.deploy_contract( '/app/mandel-contracts/build/contracts/eosio.system', args.set_system_contract)
+
+         elif args.set_token_contract != None:
+            dune_sys.deploy_contract( '/app/mandel-contracts/build/contracts/eosio.token', args.set_token_contract)
 
       except KeyboardInterrupt:
          pass

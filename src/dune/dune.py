@@ -36,6 +36,8 @@ class dune:
    _docker    = None
    _wallet_pw = None
    _context   = None
+   _token_priv_key = "5JPJoZXizFVi19wHkboX5fwwEU2jZVvtSJpQkQu3uqgNu8LNdQN"
+   _token_pub_key  = "EOS6v86d8DAxjfGu92CLrnEzq7pySpVWYV2LjaxPaDJJvyf9Vpx5R"
 
    def __init__(self):
       self._docker = docker('dune_container', 'dune:latest')
@@ -91,8 +93,12 @@ class dune:
       print(stdout)
       print(stderr)
    
+   def cleos_cmd(self, cmd):
+      self.unlock_wallet()
+      return self._docker.execute_cmd(['cleos']+cmd)
+
    def monitor(self):
-      stdout, stderr, ec = self._docker.execute_cmd(['cleos', 'get', 'info'])
+      stdout, stderr, ec = self.cleos_cmd(['get', 'info'])
       print(stdout)
       if ec != 0:
          print(stderr)
@@ -210,11 +216,10 @@ class dune:
       self._docker.execute_cmd(['cleos', 'wallet', 'unlock', '--password', self.get_wallet_pw()])
    
    def import_key(self, k):
-      self.unlock_wallet()
-      self._docker.execute_cmd(['cleos', 'wallet', 'import', '--private-key', k])
+      self.cleos_cmd(['wallet', 'import', '--private-key', k])
    
    def create_key(self):
-      stdout, stderr, ec = self._docker.execute_cmd(['cleos', 'create', 'key', '--to-console'])
+      stdout, stderr, ec = self.cleos_cmd(['create', 'key', '--to-console'])
       return stdout
 
    def create_account(self, n, c):
@@ -223,9 +228,9 @@ class dune:
       pub  = keys.splitlines()[1].split(':')[1][1:]
       print("Creating account ["+n+"] with key pair [Private: "+priv+", Public: "+pub+"]")
       if c == None:
-         stdout, stderr, ec = self._docker.execute_cmd(['cleos', 'create', 'account', 'eosio', n, pub])
+         stdout, stderr, ec = self.cleos_cmd(['create', 'account', 'eosio', n, pub])
       else:
-         stdout, stderr, ec = self._docker.execute_cmd(['cleos', 'create', 'account', c, n, pub])
+         stdout, stderr, ec = self.cleos_cmd(['create', 'account', c, n, pub])
       self.import_key(priv)
       print(ec)
       print(stderr)
@@ -234,11 +239,7 @@ class dune:
       self._docker.execute_cmd2(args)
    
    def build_cmake_proj(self, dir, flags):
-      abs_path = os.path.abspath(dir)
-      if platform.system() == 'Windows':
-         abs_path = abs_path[3:].replace('\\', '/') # remove the drive letter prefix and replace the separators
-
-      container_dir = '/host/'+abs_path
+      container_dir = self._docker.abs_host_path(dir)
       build_dir = container_dir+'/build'
       if not self._docker.dir_exists(build_dir):
          self._docker.execute_cmd(['mkdir', '-p', build_dir])
@@ -252,3 +253,17 @@ class dune:
       print(stdout)
       print(stderr)
       print(url)
+   
+   def deploy_contract(self, dir, acnt):
+      stdout, stderr, ec = self.cleos_cmd(['set', 'contract', acnt, dir])
+
+      if ec != 0:
+         print(stderr)
+         raise dune_error()
+      else:
+         print(stdout)
+   
+   def bootstrap_system(self):
+      self.deploy_contract('/app/mandel-contracts/build/contracts/eosio.system', 'eosio')
+      self.create_account('eosio.token', 'eosio')
+      self.deploy_contract('', acnt)

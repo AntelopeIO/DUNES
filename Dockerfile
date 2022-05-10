@@ -12,8 +12,28 @@ RUN wget https://github.com/larryk85/ENF-Binaries/releases/download/v1.0/mandel_
 RUN apt install ./mandel_3.0.5_amd64.deb
 
 # get CDT
-RUN wget https://github.com/larryk85/ENF-Binaries/releases/download/v1.0/cdt_1.8.1-1_amd64.deb
-RUN apt install ./cdt_1.8.1-1_amd64.deb
+RUN wget https://github.com/larryk85/ENF-Binaries/releases/download/v1.0/cdt_1.8.1_amd64.deb
+RUN apt install ./cdt_1.8.1_amd64.deb
+#RUN git clone https://github.com/eosnetworkfoundation/mandel.cdt
+#WORKDIR /app/mandel.cdt
+#RUN git checkout larryk85/mandel-update
+#RUN git submodule update --init --recursive
+#RUN mkdir build
+#WORKDIR /app/mandel.cdt/build
+#RUN cmake ..
+#RUN make -j20 && make install
+#WORKDIR /app/mandel.cdt/build/packages
+#RUN bash ./generate_package.sh deb ubuntu amd64
+
+# get Contracts
+RUN git clone https://github.com/eosnetworkfoundation/mandel-contracts 
+WORKDIR /app/mandel-contracts
+RUN git pull
+RUN git checkout larryk85/mandel-update
+RUN mkdir build
+WORKDIR /app/mandel-contracts/build
+RUN cmake ..
+RUN make -j4
 
 WORKDIR /app
 
