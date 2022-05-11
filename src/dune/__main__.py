@@ -71,6 +71,12 @@ if __name__ == '__main__':
             else:
                dune_sys.create_account(args.create_account[0], None)
 
+         elif args.create_cmake_app != None:
+            dune_sys.init_project(args.create_cmake_app[0], dune_sys._docker.abs_host_path(args.create_cmake_app[1]), True)
+
+         elif args.create_bare_app != None:
+            dune_sys.init_project(args.create_bare_app[0], dune_sys._docker.abs_host_path(args.create_bare_app[1]), False)
+
          elif args.cmake_build != None:
             if len(args.cmake_build) > 1:
                dune_sys.build_cmake_proj(args.cmake_build[0], args.cmake_build[1].split())
@@ -107,7 +113,12 @@ if __name__ == '__main__':
          elif args.list_features:
             for f in dune_sys.features():
                print(f)
-
+            
+         elif args.send_action != None:
+            dune_sys.send_action(args.send_action[1], args.send_action[0], args.send_action[2], args.send_action[3])
+         
+         elif args.get_table != None:
+            dune_sys.get_table(args.get_table[0], args.get_table[1], args.get_table[2])
       except KeyboardInterrupt:
          pass
       except dune_node_not_found as err:

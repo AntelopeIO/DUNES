@@ -13,12 +13,12 @@ class arg_parser:
       self._parser.add_argument('--get-active', action='store_true', help='get the name of the node that is currently active')
       self._parser.add_argument('--export-node', metavar=("NODE", "DIR"), nargs=2, help='export state and blocks log for the given node.')
       self._parser.add_argument('--import-node', metavar=("DIR", "NODE"), nargs=2, help='import state and blocks log to a given node')
-      self._parser.add_argument('--raw-cmd', nargs='*', metavar=["CMDS"], help='send commands directly to the container (cleos, nodeos, eosio-cpp, etc.)')
       self._parser.add_argument('--monitor', action='store_true', help='monitor the currently active node')
       self._parser.add_argument('--import-dev-key', metavar="KEY", help='import a private key into developement wallet')
       self._parser.add_argument('--create-key', action='store_true', help='create an public key private key pair')
       self._parser.add_argument('--create-account', nargs='+', metavar=["NAME","CREATOR (Optional)"], help='create an EOSIO account and an optional creator (the default is eosio)')
-      self._parser.add_argument('--create-app-project', nargs='+', metavar=["PROJ_NAME", "DIR"], help='create a smart contract project at from a specific host location')
+      self._parser.add_argument('--create-cmake-app', nargs=2, metavar=["PROJ_NAME", "DIR"], help='create a smart contract project at from a specific host location')
+      self._parser.add_argument('--create-bare-app', nargs=2, metavar=["PROJ_NAME", "DIR"], help='create a smart contract project at from a specific host location')
       self._parser.add_argument('--cmake-build', nargs='+', metavar=["DIR", "FLAGS (Optional)"], help='build a smart contract project at the directory given')
       self._parser.add_argument('--other-build', nargs='+', metavar=["DIR", "CMD", "FLAGS (Optional)"], help='build a smart contract project at the directory given')
       self._parser.add_argument('--deploy', nargs=2, metavar=["DIR", "ACCOUNT"], help='deploy a smart contract and ABI to account given')
@@ -30,9 +30,11 @@ class arg_parser:
       self._parser.add_argument('--set-token-contract', metavar=["ACCOUNT"], help='set the system contract to an account given (default normally is`eosio.token`)')
       self._parser.add_argument('--bootstrap-system', action='store_true', help='install boot contract to eosio and activate all protocol features')
       self._parser.add_argument('--bootstrap-system-full', action='store_true', help='same as `--bootstrap-system` but also creating accounts needed for system contract and set codes for token, msig and system')
-      self._parser.add_argument('--send-action', nargs='+', metavar=["CMD", "ARGS..."], help='set the system contract and token contracts')
+      self._parser.add_argument('--send-action', nargs=4, metavar=["ACCOUNT", "ACTION", "DATA", "PERMISSION"], help='send action to account with data given and permission')
+      self._parser.add_argument('--get-table', nargs=3, metavar=["ACCOUNT", "SCOPE", "TABLE"], help='get the data from the given table')
       self._parser.add_argument('--activate-feature', metavar=["CODENAME"], help='active protocol feature')
       self._parser.add_argument('--list-features', action='store_true', help='list available protocol feature code names')
+      self._parser.add_argument('--start-webapp', metavar=["DIR"], help='start a webapp with ')
    
    def is_forwarding(self):
       return len(sys.argv) > 1 and sys.argv[1] == '--'

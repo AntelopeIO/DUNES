@@ -98,10 +98,13 @@ class dune:
       print(stdout)
       print(stderr)
    
-   def cleos_cmd(self, cmd):
+   def cleos_cmd(self, cmd, quiet=True):
       self.unlock_wallet()
       ctx = self._context.get_ctx()
-      return self._docker.execute_cmd(['cleos', '-u', 'http://'+ctx.http_port]+cmd)
+      if quiet:
+         return self._docker.execute_cmd(['cleos', '--verbose', '-u', 'http://'+ctx.http_port]+cmd)
+      else:
+         return self._docker.execute_cmd2(['cleos', '--verbose', '-u', 'http://'+ctx.http_port]+cmd)
 
    def monitor(self):
       stdout, stderr, ec = self.cleos_cmd(['get', 'info'])
@@ -252,6 +255,17 @@ class dune:
       self._docker.execute_cmd2(['cmake', '-S', container_dir, '-B', build_dir]+flags)
       self._docker.execute_cmd2(['cmake', '--build', build_dir])
    
+   def init_project(self, name, dir, cmake=True):
+      if cmake:
+         bare = []
+      else:
+         bare = ["--bare"]
+
+      stdout, stderr, ec = self._docker.execute_cmd(['cdt-init', '-project', name, '-path', dir]+bare)
+      if ec != 0:
+         print(stderr)
+         raise dune_error()
+   
    def create_snapshot(self):
       ctx = self._context.get_ctx()
       url = "http://"+ctx.http_port+"/v1/producer/create_snapshot"
@@ -261,6 +275,7 @@ class dune:
       print(url)
    
    def deploy_contract(self, dir, acnt):
+      self.cleos_cmd(['set', 'account', 'permission', acnt, 'active', '--add-code'])
       stdout, stderr, ec = self.cleos_cmd(['set', 'contract', acnt, dir])
 
       if ec == 0:
@@ -280,11 +295,10 @@ class dune:
          print("Preactivate Features: "+stdout)
    
    def send_action(self, action, acnt, data, permission='eosio@active'):
-      stdout, stderr, ec = self.cleos_cmd(['push', 'action', acnt, action, data, '-p', permission])
-      if ec == 0:
-         print(stdout)
-      else:
-         print(stderr)
+      self.cleos_cmd(['push', 'action', acnt, action, data, '-p', permission], False)
+   
+   def get_table(self, acnt, scope, tab):
+      self.cleos_cmd(['get', 'table', acnt, scope, tab], False)
    
    def features(self):
       return ["KV_DATABASE",
