@@ -81,6 +81,9 @@ C:\<PathToDUNE>\DUNE$ .\bootstrap.bat
 ```
 
 ## `Mac OS`
+*** M1 Users ***
+You will need to do a `git checkout arm64` from this repo.
+
 When finished installing. Check the installation with the command. 
 ```console
 $ docker --help
@@ -335,4 +338,29 @@ Then, let's compile the contract.
 
 ```console
 $ dune -- cdt-cpp /host/<path>/hello/hello.cpp -o /host/<path>/hello/hello.wasm
+```
+
+### `Creating accounts Deploying Smart Contracts`
+Let's start off by creating some accounts.
+
+```console
+$ dune --create-account bucky
+$ dune --create-account test
+$ dune --create-account areg
+```
+
+From here we can deploy built smart contracts.
+
+```console
+$ dune --deploy ./hello bucky
+$ dune --deploy ./example/talk/build/talk test
+$ dune --deploy ./sudo/build/sudo areg
+```
+
+### `Sending Actions`
+Let's send some actions to the accounts.
+```console
+$ dune --send-action bucky hi '[bucky]' bucky@active
+$ dune --send-action test post '[1, 0, bucky, "message"]' test
+$ dune --send-action areg wrap ...
 ```
