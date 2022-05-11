@@ -80,6 +80,26 @@ Pick your preferred command line application and input the following command:
 C:\<PathToDUNE>\DUNE$ .\bootstrap.bat
 ```
 
+## `Mac OS`
+When finished installing. Check the installation with the command. 
+```console
+$ docker --help
+```
+### `Python3`
+Python3 should already be installed.
+
+### `Add DUNE To Path`
+To keep from having to install files to the users system, the perferred method of usage is to add this directory to your 'PATH'.
+```console
+$ echo "PATH=<LocationOfDUNE>:$PATH" >> .bashrc
+```
+
+Pick your preferred terminal application and input the following command:
+
+```console
+<PathToDUNE>/DUNE$ ./bootstrap.sh
+```
+
 ## `DUNE Commands`
 ---
 ### -h, --help
@@ -153,7 +173,16 @@ This command takes a private key.
 ### --create-key
 ---
 This will produce a public key and private key pair for development uses.
-
+---
+### --export-wallet
+---
+This will export the system wallet to a directory.
+This command takes a path to place the wallet.
+---
+### --import-wallet
+---
+This will import an exported wallet from a given location.
+This command takes a path that points to the exported wallet.
 ---
 ### --create-account
 ---
@@ -177,12 +206,6 @@ This command takes a project name and a directory.
 ---
 This will build a given cmake app project.
 This command takes a directory to the project and optional CMake flags.
-
----
-### --other-build
----
-This will build a given app project.
-This command takes a directory to the project, a command and an optional set of flags to that command.
 
 ---
 ### --destroy-container
@@ -234,6 +257,11 @@ This will install the boot contract to `eosio` and activate all protocol feature
 ---
 This will send an action to an account.
 This command takes an valid `EOSIO` account name, a valid `EOSIO` action name, the data payload needed and the permission.
+---
+### --get-table
+---
+This will get table data from the specified table.
+This command takes an valid `EOSIO` account name, a table scope, and table name.
 
 ---
 ### --activate-feature
@@ -245,6 +273,11 @@ This command takes a code name for the protocol feature.
 ### --list-features
 ---
 This will list the available protocol feature code names.
+---
+### --start-webapp
+---
+This will start a simple webapp, like the one in `example/webapp`
+This command takes a directory of the webapp.
 
 ---
 ### -- (Not listed with -h)
@@ -254,6 +287,52 @@ This will allow you to call the tool and pass through to the underlying system.
 ## `Concepts and Operations`
 The core concept of this utility is to abstract over `nodeos`, `cleos`, `CDT`, etc.
 As such some of the commands might seem restrictive.  Please take note that if you find any of the commands to be too
-restrictive then you can use the command `--` followed by whatever normal `cleos`, `nodeos`, `CDT` and `OS` commands
-## Scenarios
-### Contract Development
+restrictive then you can use the command `--` followed by whatever normal `cleos`, `nodeos`, `CDT` and `OS` commands that you need.
+
+When you run any command with DUNE if a container has not been created yet it will automatically create one for you.  The command of 
+`start-container` shouldn't necessarily be needed during normal operation.
+
+A developer wallet is automatically created for you and is always unlocked and none of the commands will ever ask you to unlock the wallet.  If you need to run any `cleos` wallet commands or `keosd` commands via `--` and the wallet is locked, then simply run one of the wallet commands from DUNE first and it will unlock the wallet.
+
+If you deploy a smart contract to an account it will automatically add the `code` permission to that account for you.
+
+The drive/directory that your workspace is in is mapped into the container and prefixed with `/host`.
+So on Windows this would be `/host/Users/<name>/<some path>`.
+On Linux and Mac this would be something like `/host/home/<name>/<some path>`.
+## `Scenarios`
+### `CMake Contract Development`
+Let's start by creating a new project in our workspace.
+```console
+$ dune --create-cmake-app hello ./
+```
+
+This should produce a file structure like the picture below:
+
+<img src="docs/images/cmake-init.png" alt="cmake-init" width="800">
+
+Modify the source code how you like.
+
+Then, let's compile the contract.
+
+```console
+$ dune --cmake-build ./
+```
+
+<img src="docs/images/cmake-build.png" alt="cmake-build" width="400">
+
+### `Bare Contract Development`
+Let's start by create a new bare project in our workspace.
+```console
+$ dune --create-bare-app hello ./
+```
+This should produce a file structure like the picture below:
+
+<img src="docs/images/bare-init.png" alt="bare-init" width="400">
+
+Modify the source code how you like.
+
+Then, let's compile the contract.
+
+```console
+$ dune -- cdt-cpp /host/<path>/hello/hello.cpp -o /host/<path>/hello/hello.wasm
+```

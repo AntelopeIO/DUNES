@@ -1,6 +1,14 @@
 module.exports = {
     mode: "development",
     devtool: "source-map",
+    entry: {
+        app: ["./src/index.tsx"]
+    },
+    output: {
+        path: path.resolve(__dirname, "build")
+        publicPath: "/assets/",
+        filename: "bundle.js"
+    }
 
     resolve: {
         extensions: [".js", ".ts", ".tsx"]

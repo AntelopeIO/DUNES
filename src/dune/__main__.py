@@ -84,10 +84,7 @@ if __name__ == '__main__':
                dune_sys.build_cmake_proj(args.cmake_build[0], [])
 
          elif args.other_build != None:
-            if len(args.other_build) > 1:
-               dune_sys.build_other_proj(args.other_build[0], args.other_build[1].split())
-            else:
-               dune_sys.build_other_proj(args.other_build[0], [])
+            dune_sys.build_other_proj(args.other_build[0])
          
          elif args.deploy != None:
             dune_sys.deploy_contract(dune_sys._docker.abs_host_path(args.deploy[0]), args.deploy[1])
@@ -119,6 +116,10 @@ if __name__ == '__main__':
          
          elif args.get_table != None:
             dune_sys.get_table(args.get_table[0], args.get_table[1], args.get_table[2])
+         
+         elif args.start_webapp != None:
+            dune_sys.start_webapp(args.start_webapp)
+
       except KeyboardInterrupt:
          pass
       except dune_node_not_found as err:

@@ -22,5 +22,7 @@
   "dependencies": {
     "react": "^16.9.0",
     "react-dom": "^16.9.0"
-  }
+  },
+  "name": "webapp",
+  "version": "1.0.0"
 }

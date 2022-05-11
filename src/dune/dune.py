@@ -169,10 +169,11 @@ class dune:
             else:
                print('\t   |    ✓', end='')
 
+         ports = self._context.get_config_args( node(s) )
          if simple:
-            print('|'+ctx.http_port+'|'+ctx.p2p_port+'|'+ctx.ship_port)
+            print('|'+ports[0]+'|'+ports[1]+'|'+ports[2])
          else:
-            print('     | '+ctx.http_port+' | '+ctx.p2p_port+' | '+ctx.ship_port)
+            print('     | '+ports[0]+' | '+ports[1]+' | '+ports[2])
    
    def export_node(self, n, dir):
       if self.node_exists(n):
@@ -254,7 +255,10 @@ class dune:
          self._docker.execute_cmd(['mkdir', '-p', build_dir])
       self._docker.execute_cmd2(['cmake', '-S', container_dir, '-B', build_dir]+flags)
       self._docker.execute_cmd2(['cmake', '--build', build_dir])
-   
+
+   def build_other_proj(self, cmd):
+      self._docker.execute_cmd2([cmd])
+  
    def init_project(self, name, dir, cmake=True):
       if cmake:
          bare = []
@@ -377,4 +381,9 @@ class dune:
          self.deploy_contract('/app/mandel-contracts/build/contracts/eosio.system', 'eosio')
          self.deploy_contract('/app/mandel-contracts/build/contracts/eosio.token', 'eosio.token')
          self.deploy_contract('/app/mandel-contracts/build/contracts/eosio.msig', 'eosio.msig')
+      
+   def start_webapp(self, dir):
+      self._docker.execute_cmd2(['nginx', '-c', self._docker.abs_host_path(dir)+'/nginx.conf'])
+      #self._docker.execute_cmd2(['npx', 'webpack-dev-server', '--help'])
+      self._docker.execute_cmd2(['npx', 'webpack-dev-server', '-c', self._docker.abs_host_path(dir)])
       

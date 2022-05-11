@@ -4,7 +4,10 @@ FROM ubuntu:20.04
 RUN apt-get update
 RUN apt-get update --fix-missing
 RUN DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install tzdata
-RUN apt-get -y install nginx yarn zip unzip libncurses5 wget git build-essential cmake curl libboost-all-dev libcurl4-openssl-dev libgmp-dev libssl-dev libusb-1.0.0-dev libzstd-dev llvm-11-dev time pkg-config
+RUN apt-get -y install nginx npm yarn zip unzip libncurses5 wget git build-essential cmake curl libboost-all-dev libcurl4-openssl-dev libgmp-dev libssl-dev libusb-1.0.0-dev libzstd-dev llvm-11-dev time pkg-config
+RUN npm install -D webpack-cli
+RUN npm install -D webpack
+RUN npm install -D webpack-dev-server
 
 WORKDIR /app
 
@@ -47,4 +50,4 @@ EXPOSE 8888
 # port for state history
 EXPOSE 8080
 # port for webapp
-EXPOSE 3000
+EXPOSE 8000
