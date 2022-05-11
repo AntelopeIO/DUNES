@@ -26,8 +26,13 @@ class arg_parser:
       self._parser.add_argument('--stop-container', action='store_true', help='stop the context container')
       self._parser.add_argument('--start-container', action='store_true', help='start the context container')
       self._parser.add_argument('--set-system-contract', metavar=["ACCOUNT"], help='set the system contract to an account given (default normally is `eosio`)')
+      self._parser.add_argument('--set-bios-contract', metavar=["ACCOUNT"], help='set the bios contract to an account given (default normally is `eosio`)')
       self._parser.add_argument('--set-token-contract', metavar=["ACCOUNT"], help='set the system contract to an account given (default normally is`eosio.token`)')
-      self._parser.add_argument('--bootstrap-contracts', action='store_true', help='set the system contract and token contracts')
+      self._parser.add_argument('--bootstrap-system', action='store_true', help='install boot contract to eosio and activate all protocol features')
+      self._parser.add_argument('--bootstrap-system-full', action='store_true', help='same as `--bootstrap-system` but also creating accounts needed for system contract and set codes for token, msig and system')
+      self._parser.add_argument('--send-action', nargs='+', metavar=["CMD", "ARGS..."], help='set the system contract and token contracts')
+      self._parser.add_argument('--activate-feature', metavar=["CODENAME"], help='active protocol feature')
+      self._parser.add_argument('--list-features', action='store_true', help='list available protocol feature code names')
    
    def is_forwarding(self):
       return len(sys.argv) > 1 and sys.argv[1] == '--'

@@ -86,16 +86,22 @@ class dune:
       if n.config() == None:
          self._docker.execute_cmd(['cp', '/app/config.ini', n.config_dir()])
       else:
-         print("Using Configuration ["+n.config_dir()+"/config.ini]")
-         self._docker.cp_from_host(n.config(), n.config_dir())
+         self._docker.execute_cmd(['cp', n.config(), n.config_dir()])
+         print("Using Configuration ["+n.config()+"]")
 
       stdout, stderr, ec = self._docker.execute_cmd(cmd+[n.name()])
+      
+      if ec == 0:
+         self.set_active(n)
+         print("Active ["+n.name()+"]")
+
       print(stdout)
       print(stderr)
    
    def cleos_cmd(self, cmd):
       self.unlock_wallet()
-      return self._docker.execute_cmd(['cleos']+cmd)
+      ctx = self._context.get_ctx()
+      return self._docker.execute_cmd(['cleos', '-u', 'http://'+ctx.http_port]+cmd)
 
    def monitor(self):
       stdout, stderr, ec = self.cleos_cmd(['get', 'info'])
@@ -257,13 +263,104 @@ class dune:
    def deploy_contract(self, dir, acnt):
       stdout, stderr, ec = self.cleos_cmd(['set', 'contract', acnt, dir])
 
+      if ec == 0:
+         print(stdout)
+      else:
+         print(stderr)
+         raise dune_error()
+   
+   def preactivate_feature(self):
+      ctx = self._context.get_ctx()
+      stdout, stderr, ec = self._docker.execute_cmd(['curl', '--noproxy', '-x', 'POST', ctx.http_port+'/v1/producer/schedule_protocol_feature_activations', '-d', '{"protocol_features_to_activate": ["0ec7e080177b2c02b278d5088611686b49d739925a92d9bfcacd7fc6b74053bd"]}'])
+
       if ec != 0:
          print(stderr)
          raise dune_error()
       else:
-         print(stdout)
+         print("Preactivate Features: "+stdout)
    
-   def bootstrap_system(self):
-      self.deploy_contract('/app/mandel-contracts/build/contracts/eosio.system', 'eosio')
-      self.create_account('eosio.token', 'eosio')
-      self.deploy_contract('', acnt)
+   def send_action(self, action, acnt, data, permission='eosio@active'):
+      stdout, stderr, ec = self.cleos_cmd(['push', 'action', acnt, action, data, '-p', permission])
+      if ec == 0:
+         print(stdout)
+      else:
+         print(stderr)
+   
+   def features(self):
+      return ["KV_DATABASE",
+              "ACTION_RETURN_VALUE",
+              "BLOCKCHAIN_PARAMETERS",
+              "GET_SENDER",
+              "FORWARD_SETCODE",
+              "ONLY_BILL_FIRST_AUTHORIZER",
+              "RESTRICT_ACTION_TO_SELF",
+              "DISALLOW_EMPTY_PRODUCER_SCHEDULE",
+              "FIX_LINKAUTH_RESTRICTION",
+              "REPLACE_DEFERRED",
+              "NO_DUPLICATE_DEFERRED_ID",
+              "ONLY_LINK_TO_EXISTING_PERMISSION",
+              "RAM_RESTRICTIONS",
+              "WEBAUTHN_KEY",
+              "WTMSIG_BLOCK_SIGNATURES"]
+
+   def activate_feature(self, code_name):
+      if code_name == "KV_DATABASE":
+         self.send_action('activate', 'eosio', '["825ee6288fb1373eab1b5187ec2f04f6eacb39cb3a97f356a07c91622dd61d16"]', 'eosio@active')
+      elif code_name == "ACTION_RETURN_VALUE":
+         self.send_action('activate', 'eosio', '["c3a6138c5061cf291310887c0b5c71fcaffeab90d5deb50d3b9e687cead45071"]', 'eosio@active')
+      elif code_name == "BLOCKCHAIN_PARAMETERS":
+         self.send_action('activate', 'eosio', '["5443fcf88330c586bc0e5f3dee10e7f63c76c00249c87fe4fbf7f38c082006b4"]', 'eosio@active')
+      elif code_name == "GET_SENDER":
+         self.send_action('activate', 'eosio', '["f0af56d2c5a48d60a4a5b5c903edfb7db3a736a94ed589d0b797df33ff9d3e1d"]', 'eosio@active')
+      elif code_name == "FORWARD_SETCODE":
+         self.send_action('activate', 'eosio', '["2652f5f96006294109b3dd0bbde63693f55324af452b799ee137a81a905eed25"]', 'eosio@active')
+      elif code_name == "ONLY_BILL_FIRST_AUTHORIZER":
+         self.send_action('activate', 'eosio', '["8ba52fe7a3956c5cd3a656a3174b931d3bb2abb45578befc59f283ecd816a405"', 'eosio@active')
+      elif code_name == "RESTRICT_ACTION_TO_SELF":
+         self.send_action('activate', 'eosio', '["ad9e3d8f650687709fd68f4b90b41f7d825a365b02c23a636cef88ac2ac00c43"]', 'eosio@active')
+      elif code_name == "DISALLOW_EMPTY_PRODUCER_SCHEDULE":
+         self.send_action('activate', 'eosio', '["68dcaa34c0517d19666e6b33add67351d8c5f69e999ca1e37931bc410a297428"]', 'eosio@active')
+      elif code_name == "FIX_LINKAUTH_RESTRICTION":
+         self.send_action('activate', 'eosio', '["e0fb64b1085cc5538970158d05a009c24e276fb94e1a0bf6a528b48fbc4ff526"]', 'eosio@active')
+      elif code_name == "REPLACE_DEFERRED":
+         self.send_action('activate', 'eosio', '["ef43112c6543b88db2283a2e077278c315ae2c84719a8b25f25cc88565fbea99"]', 'eosio@active')
+      elif code_name == "NO_DUPLICATE_DEFERRED_ID":
+         self.send_action('activate', 'eosio', '["4a90c00d55454dc5b059055ca213579c6ea856967712a56017487886a4d4cc0f"]', 'eosio@active')
+      elif code_name == "ONLY_LINK_TO_EXISTING_PERMISSION":
+         self.send_action('activate', 'eosio', '["1a99a59d87e06e09ec5b028a9cbb7749b4a5ad8819004365d02dc4379a8b7241"]', 'eosio@active')
+      elif code_name == "RAM_RESTRICTIONS":
+         self.send_action('activate', 'eosio', '["4e7bf348da00a945489b2a681749eb56f5de00b900014e137ddae39f48f69d67"]', 'eosio@active')
+      elif code_name == "WEBAUTHN_KEY":
+         self.send_action('activate', 'eosio', '["4fca8bd82bbd181e714e283f83e1b45d95ca5af40fb89ad3977b653c448f78c2"]', 'eosio@active')
+      elif code_name == "WTMSIG_BLOCK_SIGNATURES":
+         self.send_action('activate', 'eosio', '["299dcb6af692324b899b39f16d5a530a33062804e41f09dc97e9f156b4476707"]', 'eosio@active')
+      else:
+         print("Feature Not Found")
+         raise dune_error()
+   
+   def bootstrap_system(self, full):
+      self.preactivate_feature()
+      if full:
+         # create system accounts
+         self.create_account('eosio.token', 'eosio')
+         self.create_account('eosio.bpay', 'eosio')
+         self.create_account('eosio.msig', 'eosio')
+         self.create_account('eosio.names', 'eosio')
+         self.create_account('eosio.ram', 'eosio')
+         self.create_account('eosio.ramfee', 'eosio')
+         self.create_account('eosio.saving', 'eosio')
+         self.create_account('eosio.stake', 'eosio')
+         self.create_account('eosio.vpay', 'eosio')
+         self.create_account('eosio.rex', 'eosio')
+
+      # activate features
+      self.deploy_contract('/app/mandel-contracts/build/contracts/eosio.boot', 'eosio')
+
+      for f in self.features():
+         self.activate_feature(f)
+
+      if full:
+         self.deploy_contract('/app/mandel-contracts/build/contracts/eosio.system', 'eosio')
+         self.deploy_contract('/app/mandel-contracts/build/contracts/eosio.token', 'eosio.token')
+         self.deploy_contract('/app/mandel-contracts/build/contracts/eosio.msig', 'eosio.msig')
+      

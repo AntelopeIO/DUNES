@@ -20,7 +20,7 @@ if __name__ == '__main__':
             if len(args.start) == 1:
                n = node(args.start[0])
             else:
-               n = node(args.start[0], args.start[1])
+               n = node(args.start[0], dune_sys._docker.abs_host_path(args.start[1]))
             dune_sys.start_node(n)
          
          elif args.remove != None:
@@ -46,6 +46,9 @@ if __name__ == '__main__':
 
          elif args.set_active != None:
             dune_sys.set_active( node(args.set_active) )
+         
+         elif args.get_active:
+            print(dune_sys.get_active())
 
          elif args.monitor:
             dune_sys.monitor()
@@ -82,12 +85,28 @@ if __name__ == '__main__':
          
          elif args.deploy != None:
             dune_sys.deploy_contract(dune_sys._docker.abs_host_path(args.deploy[0]), args.deploy[1])
-         
+
+         elif args.set_bios_contract != None:
+            dune_sys.deploy_contract( '/app/mandel-contracts/build/contracts/eosio.bios', args.set_bios_contract)
+        
          elif args.set_system_contract != None:
             dune_sys.deploy_contract( '/app/mandel-contracts/build/contracts/eosio.system', args.set_system_contract)
 
          elif args.set_token_contract != None:
             dune_sys.deploy_contract( '/app/mandel-contracts/build/contracts/eosio.token', args.set_token_contract)
+         
+         elif args.bootstrap_system:
+            dune_sys.bootstrap_system(False)
+
+         elif args.bootstrap_system_full:
+            dune_sys.bootstrap_system(True)
+
+         elif args.activate_feature != None:
+            dune_sys.activate_feature(args.activate_feature)
+         
+         elif args.list_features:
+            for f in dune_sys.features():
+               print(f)
 
       except KeyboardInterrupt:
          pass
