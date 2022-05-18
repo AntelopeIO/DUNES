@@ -55,6 +55,9 @@ if __name__ == '__main__':
 
          elif args.export_wallet:
             dune_sys.export_wallet()
+         
+         elif args.import_wallet != None:
+            dune_sys.import_wallet(args.import_wallet)
 
          elif args.export_node != None:
             dune_sys.export_node( node(args.export_node[0]), args.export_node[1])

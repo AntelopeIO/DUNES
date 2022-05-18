@@ -133,6 +133,11 @@ class dune:
       self._docker.destroy()
    
    def stop_container(self):
+      stdout, stderr, ec = self._docker.execute_cmd(['ls', '/app/nodes'])
+      for s in stdout.split():
+         if self.is_node_running(node(s)):
+            self.stop_node(node(s))
+
       self._docker.stop()
    
    def start_container(self):
@@ -231,7 +236,20 @@ class dune:
    def create_key(self):
       stdout, stderr, ec = self.cleos_cmd(['create', 'key', '--to-console'])
       return stdout
-   
+
+   def export_wallet(self):
+      self._docker.execute_cmd(['mkdir', '/app/_wallet'])
+      self._docker.execute_cmd(['cp', '-R', '/root/eosio-wallet', '/app/_wallet/eosio-wallet'])
+      self._docker.execute_cmd(['cp', '-R', '/app/.wallet.pw', '/app/_wallet/.wallet.pw'])
+      self._docker.tar_dir("wallet", "/app/_wallet") 
+      self._docker.cp_to_host("/app/wallet.tgz", "wallet.tgz")
+
+   def import_wallet(self, d):
+      self._docker.cp_from_host(d, "/app/wallet.tgz")
+      self._docker.untar("/app/wallet.tgz")
+      self._docker.execute_cmd(["mv", "/app/app/_wallet/.wallet.pw", "/app"])
+      self._docker.execute_cmd(["mv", "/app/app/_wallet", "/root"])
+
    # TODO cleos has a bug displaying keys for K1 so, we need the public key if providing the private key
    # Remove that requirement when we fix cleos.
    def create_account(self, n, c=None, pub=None, priv=None):
