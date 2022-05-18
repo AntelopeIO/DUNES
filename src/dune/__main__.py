@@ -53,6 +53,12 @@ if __name__ == '__main__':
          elif args.monitor:
             dune_sys.monitor()
 
+         elif args.export_wallet:
+            dune_sys.export_wallet()
+         
+         elif args.import_wallet != None:
+            dune_sys.import_wallet(args.import_wallet)
+
          elif args.export_node != None:
             dune_sys.export_node( node(args.export_node[0]), args.export_node[1])
          
@@ -66,10 +72,12 @@ if __name__ == '__main__':
             print(dune_sys.create_key())
 
          elif args.create_account != None:
-            if len(args.create_account) > 1:
+            if len(args.create_account) > 2:
+               dune_sys.create_account(args.create_account[0], args.create_account[1], args.create_account[2], args.create_account[3])
+            elif len(args.create_account) > 1:
                dune_sys.create_account(args.create_account[0], args.create_account[1])
             else:
-               dune_sys.create_account(args.create_account[0], None)
+               dune_sys.create_account(args.create_account[0])
 
          elif args.create_cmake_app != None:
             dune_sys.init_project(args.create_cmake_app[0], dune_sys._docker.abs_host_path(args.create_cmake_app[1]), True)
@@ -83,9 +91,6 @@ if __name__ == '__main__':
             else:
                dune_sys.build_cmake_proj(args.cmake_build[0], [])
 
-         elif args.other_build != None:
-            dune_sys.build_other_proj(args.other_build[0])
-         
          elif args.deploy != None:
             dune_sys.deploy_contract(dune_sys._docker.abs_host_path(args.deploy[0]), args.deploy[1])
 
@@ -105,7 +110,7 @@ if __name__ == '__main__':
             dune_sys.bootstrap_system(True)
 
          elif args.activate_feature != None:
-            dune_sys.activate_feature(args.activate_feature)
+            dune_sys.activate_feature(args.activate_feature, True)
          
          elif args.list_features:
             for f in dune_sys.features():

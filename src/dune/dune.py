@@ -133,6 +133,11 @@ class dune:
       self._docker.destroy()
    
    def stop_container(self):
+      stdout, stderr, ec = self._docker.execute_cmd(['ls', '/app/nodes'])
+      for s in stdout.split():
+         if self.is_node_running(node(s)):
+            self.stop_node(node(s))
+
       self._docker.stop()
    
    def start_container(self):
@@ -226,23 +231,39 @@ class dune:
       self._docker.execute_cmd(['cleos', 'wallet', 'unlock', '--password', self.get_wallet_pw()])
    
    def import_key(self, k):
-      self.cleos_cmd(['wallet', 'import', '--private-key', k])
+      return self.cleos_cmd(['wallet', 'import', '--private-key', k])
    
    def create_key(self):
       stdout, stderr, ec = self.cleos_cmd(['create', 'key', '--to-console'])
       return stdout
 
-   def create_account(self, n, c):
-      keys = self.create_key() 
-      priv = keys.splitlines()[0].split(':')[1][1:]
-      pub  = keys.splitlines()[1].split(':')[1][1:]
-      print("Creating account ["+n+"] with key pair [Private: "+priv+", Public: "+pub+"]")
+   def export_wallet(self):
+      self._docker.execute_cmd(['mkdir', '/app/_wallet'])
+      self._docker.execute_cmd(['cp', '-R', '/root/eosio-wallet', '/app/_wallet/eosio-wallet'])
+      self._docker.execute_cmd(['cp', '-R', '/app/.wallet.pw', '/app/_wallet/.wallet.pw'])
+      self._docker.tar_dir("wallet", "/app/_wallet") 
+      self._docker.cp_to_host("/app/wallet.tgz", "wallet.tgz")
+
+   def import_wallet(self, d):
+      self._docker.cp_from_host(d, "/app/wallet.tgz")
+      self._docker.untar("/app/wallet.tgz")
+      self._docker.execute_cmd(["mv", "/app/app/_wallet/.wallet.pw", "/app"])
+      self._docker.execute_cmd(["mv", "/app/app/_wallet", "/root"])
+
+   # TODO cleos has a bug displaying keys for K1 so, we need the public key if providing the private key
+   # Remove that requirement when we fix cleos.
+   def create_account(self, n, c=None, pub=None, priv=None):
+      if (priv == None):
+         keys = self.create_key() 
+         priv = keys.splitlines()[0].split(':')[1][1:]
+         pub  = keys.splitlines()[1].split(':')[1][1:]
+         print("Creating account ["+n+"] with key pair [Private: "+priv+", Public: "+pub+"]")
+
       if c == None:
          stdout, stderr, ec = self.cleos_cmd(['create', 'account', 'eosio', n, pub])
       else:
          stdout, stderr, ec = self.cleos_cmd(['create', 'account', c, n, pub])
       self.import_key(priv)
-      print(ec)
       print(stderr)
    
    def execute_cmd(self, args):
@@ -321,7 +342,11 @@ class dune:
               "WEBAUTHN_KEY",
               "WTMSIG_BLOCK_SIGNATURES"]
 
-   def activate_feature(self, code_name):
+   def activate_feature(self, code_name, preactivate=False):
+      if preactivate:
+         self.preactivate_feature()
+         self.deploy_contract('/app/mandel-contracts/build/contracts/eosio.boot', 'eosio')
+
       if code_name == "KV_DATABASE":
          self.send_action('activate', 'eosio', '["825ee6288fb1373eab1b5187ec2f04f6eacb39cb3a97f356a07c91622dd61d16"]', 'eosio@active')
       elif code_name == "ACTION_RETURN_VALUE":
@@ -383,7 +408,5 @@ class dune:
          self.deploy_contract('/app/mandel-contracts/build/contracts/eosio.msig', 'eosio.msig')
       
    def start_webapp(self, dir):
-      self._docker.execute_cmd2(['nginx', '-c', self._docker.abs_host_path(dir)+'/nginx.conf'])
-      #self._docker.execute_cmd2(['npx', 'webpack-dev-server', '--help'])
-      self._docker.execute_cmd2(['npx', 'webpack-dev-server', '-c', self._docker.abs_host_path(dir)])
+      #TODO readdress after the launch 
       

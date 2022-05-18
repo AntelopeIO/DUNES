@@ -4,7 +4,7 @@ FROM ubuntu:20.04
 RUN apt-get update
 RUN apt-get update --fix-missing
 RUN DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install tzdata
-RUN apt-get -y install nginx npm yarn zip unzip libncurses5 wget git build-essential cmake curl libboost-all-dev libcurl4-openssl-dev libgmp-dev libssl-dev libusb-1.0.0-dev libzstd-dev llvm-11-dev time pkg-config
+RUN apt-get -y install zip unzip libncurses5 wget git build-essential cmake curl libboost-all-dev libcurl4-openssl-dev libgmp-dev libssl-dev libusb-1.0.0-dev libzstd-dev time pkg-config llvm-11-dev nginx npm yarn
 RUN npm install -D webpack-cli
 RUN npm install -D webpack
 RUN npm install -D webpack-dev-server
