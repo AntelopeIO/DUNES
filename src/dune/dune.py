@@ -226,23 +226,26 @@ class dune:
       self._docker.execute_cmd(['cleos', 'wallet', 'unlock', '--password', self.get_wallet_pw()])
    
    def import_key(self, k):
-      self.cleos_cmd(['wallet', 'import', '--private-key', k])
+      return self.cleos_cmd(['wallet', 'import', '--private-key', k])
    
    def create_key(self):
       stdout, stderr, ec = self.cleos_cmd(['create', 'key', '--to-console'])
       return stdout
+   
+   # TODO cleos has a bug displaying keys for K1 so, we need the public key if providing the private key
+   # Remove that requirement when we fix cleos.
+   def create_account(self, n, c=None, pub=None, priv=None):
+      if (priv == None):
+         keys = self.create_key() 
+         priv = keys.splitlines()[0].split(':')[1][1:]
+         pub  = keys.splitlines()[1].split(':')[1][1:]
+         print("Creating account ["+n+"] with key pair [Private: "+priv+", Public: "+pub+"]")
 
-   def create_account(self, n, c):
-      keys = self.create_key() 
-      priv = keys.splitlines()[0].split(':')[1][1:]
-      pub  = keys.splitlines()[1].split(':')[1][1:]
-      print("Creating account ["+n+"] with key pair [Private: "+priv+", Public: "+pub+"]")
       if c == None:
          stdout, stderr, ec = self.cleos_cmd(['create', 'account', 'eosio', n, pub])
       else:
          stdout, stderr, ec = self.cleos_cmd(['create', 'account', c, n, pub])
       self.import_key(priv)
-      print(ec)
       print(stderr)
    
    def execute_cmd(self, args):
