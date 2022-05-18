@@ -110,7 +110,7 @@ if __name__ == '__main__':
             dune_sys.bootstrap_system(True)
 
          elif args.activate_feature != None:
-            dune_sys.activate_feature(args.activate_feature)
+            dune_sys.activate_feature(args.activate_feature, True)
          
          elif args.list_features:
             for f in dune_sys.features():

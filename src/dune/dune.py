@@ -342,7 +342,11 @@ class dune:
               "WEBAUTHN_KEY",
               "WTMSIG_BLOCK_SIGNATURES"]
 
-   def activate_feature(self, code_name):
+   def activate_feature(self, code_name, preactivate=False):
+      if preactivate:
+         self.preactivate_feature()
+         self.deploy_contract('/app/mandel-contracts/build/contracts/eosio.boot', 'eosio')
+
       if code_name == "KV_DATABASE":
          self.send_action('activate', 'eosio', '["825ee6288fb1373eab1b5187ec2f04f6eacb39cb3a97f356a07c91622dd61d16"]', 'eosio@active')
       elif code_name == "ACTION_RETURN_VALUE":
@@ -404,7 +408,5 @@ class dune:
          self.deploy_contract('/app/mandel-contracts/build/contracts/eosio.msig', 'eosio.msig')
       
    def start_webapp(self, dir):
-      self._docker.execute_cmd2(['nginx', '-c', self._docker.abs_host_path(dir)+'/nginx.conf'])
-      #self._docker.execute_cmd2(['npx', 'webpack-dev-server', '--help'])
-      self._docker.execute_cmd2(['npx', 'webpack-dev-server', '-c', self._docker.abs_host_path(dir)])
+      #TODO readdress after the launch 
       
