@@ -231,6 +231,7 @@ class dune:
       self._docker.execute_cmd(['cleos', 'wallet', 'unlock', '--password', self.get_wallet_pw()])
    
    def import_key(self, k):
+      self.unlock_wallet()
       return self.cleos_cmd(['wallet', 'import', '--private-key', k])
    
    def create_key(self):
