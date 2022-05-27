@@ -12,7 +12,6 @@ class dune_node_not_found(dune_error):
    def name(self):
       return self._name
 
-
 class node:
    _name = ""
    _cfg  = ""
@@ -228,7 +227,7 @@ class dune:
       return pw
 
    def unlock_wallet(self):
-      self._docker.execute_cmd(['cleos', 'wallet', 'unlock', '--password', self.get_wallet_pw()])
+      so, se, ec = self._docker.execute_cmd(['cleos', 'wallet', 'unlock', '--password', self.get_wallet_pw()])
    
    def import_key(self, k):
       self.unlock_wallet()
@@ -410,4 +409,5 @@ class dune:
       
    def start_webapp(self, dir):
       #TODO readdress after the launch 
+      pass
       
