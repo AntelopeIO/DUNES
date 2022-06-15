@@ -33,7 +33,6 @@ else
    apt install ./${CDT_PKG_NAME}_arm64.deb
 fi
 
-
 git clone https://github.com/eosnetworkfoundation/mandel-contracts 
 cd mandel-contracts
 git pull

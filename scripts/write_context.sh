@@ -1,3 +1,3 @@
 #! /bin/sh
 
-echo $1 > /app/.dune.ctx
+echo $1 > /home/www-data/.dune.ctx
