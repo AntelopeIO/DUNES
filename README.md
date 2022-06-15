@@ -105,187 +105,133 @@ Pick your preferred terminal application and input the following command:
 
 ## `DUNE Commands`
 ---
-### -h, --help
----
-This will display the available commands and a small description of each and argument values.
+**-h** or **--help**  This will display the available commands and a small description of each and argument values.
 
 ---
-### --start
----
-This will start a new node for deploying smart contracts and send actions against
-This command takes a name of your choosing and an optional `config.ini` (look at scripts/config.ini for reference).
+
+**--start** This will start a new node for deploying smart contracts and send actions against. This command takes a name of your choosing and an optional `config.ini` (look at scripts/config.ini for reference).
 
 ---
-### --stop
----
-This will stop a node that is running.
-This command takes a name of a node that was previously started.
+
+**--stop** This will stop a node that is running. This command takes a name of a node that was previously started.
 
 ---
-### --remove
----
-This will remove a node from the system.
-This command takes a name of a node that was previously started.
+
+**--remove** This will remove a node from the system. This command takes a name of a node that was previously started.
 
 ---
-### --list
----
-This will print the status of all nodes currently in the system.
-It will display if the node is active, running, and the ports for http/p2p/SHiP.
+
+**--list** This will print the status of all nodes currently in the system. It will display if the node is active, running, and the ports for http/p2p/SHiP.
 
 ---
-### --simple-list
----
-Does the same thing as `--list` but does not use unicode and other formatting for use with scripts or plugins.
+
+**--simple-list** Does the same thing as `--list` but does not use unicode and other formatting for use with scripts or plugins.
 
 ---
-### --set-active
----
-This will set a node as the current active node.
-This command takes a name of a node that was previously started.
+
+**--set-active** This will set a node as the current active node. This command takes a name of a node that was previously started.
 
 ---
-### --get-active
----
-This will return the name of the currently active node.
+
+**--get-active** This will return the name of the currently active node.
 
 ---
-### --export-node
----
-This will create a snapshot and tar ball the state snapshot, blocklog and index and export to desired location.
-This command takes a name of a node that was previously started, and a directory to save the exported node contents.
+
+**--export-node** This will create a snapshot and tar ball the state snapshot, blocklog and index and export to desired location. This command takes a name of a node that was previously started, and a directory to save the exported node contents.
 
 ---
-### --import-node
----
-This will import a previously exported node.tgz.
-This command takes the path of the export and the name of what you want to name the imported node.
+
+**--import-node** This will import a previously exported node.tgz. This command takes the path of the export and the name of what you want to name the imported node.
 
 ---
-### --monitor
----
-This will return information from the currently active node.
+
+**--monitor** This will return information from the currently active node.
 
 ---
-### --import-dev-key
----
-This will import a private key into the precreated developer wallet.
-This command takes a private key.
+
+**--import-dev-key** This will import a private key into the precreated developer wallet. This command takes a private key.
 
 ---
-### --create-key
----
-This will produce a public key and private key pair for development uses.
----
-### --export-wallet
----
-This will export the system wallet to a directory.
-This command takes a path to place the wallet.
----
-### --import-wallet
----
-This will import an exported wallet from a given location.
-This command takes a path that points to the exported wallet.
----
-### --create-account
----
-This will create a new 'on chain' account.
-This command takes an `EOSIO` compatible name an optional Creator (also a valid `EOSIO` name).
+
+**--create-key** This will produce a public key and private key pair for development uses.
 
 ---
-### --create-cmake-app
----
-This will produce a new smart contract project that utilizes CMake as its build system.
-This command takes a project name and a directory.
+
+**--export-wallet** This will export the system wallet to your current directory.
 
 ---
-### --create-bare-app
----
-This will produce a new smart contract project that is bare, i.e. uses only `cdt-cpp` tools.
-This command takes a project name and a directory.
+
+**--import-wallet** This will import an exported wallet from a given location. This command takes a path that points to the exported wallet.
 
 ---
-### --cmake-build
----
-This will build a given cmake app project.
-This command takes a directory to the project and optional CMake flags.
+
+**--create-account** This will create a new 'on chain' account. This command takes an `EOSIO` compatible name an optional Creator (also a valid `EOSIO` name).
 
 ---
-### --destroy-container
----
-This will destroy and remove the currently running container.  WARNING! This will delete all data that is running.
-This is useful if you need to update to a new version of DUNE or if you corrupt the container some how.
+
+**--create-cmake-app** This will produce a new smart contract project that utilizes CMake as its build system. This command takes a project name and a directory.
 
 ---
-### --stop-container
----
-This will stop the currently running container.
+
+**--create-bare-app** This will produce a new smart contract project that is bare, i.e. uses only `cdt-cpp` tools. This command takes a project name and a directory.
 
 ---
-### --start-container
----
-This will start the `dune` container.
+
+**--cmake-build** This will build a given cmake app project. This command takes a directory to the project and optional CMake flags.
 
 ---
-### --set-system-contract
----
-This will deploy the system contract to an account.
-This command takes a valid `EOSIO` name.
+
+**--destroy-container** This will destroy and remove the currently running container.  WARNING! This will delete all data that is running. This is useful if you need to update to a new version of DUNE or if you corrupt the container some how.
 
 ---
-### --set-bios-contract
----
-This will deploy the bios contract to an account.
-This command takes a valid `EOSIO` name.
+
+**--stop-container** This will stop the currently running container.
 
 ---
-### --set-token-contract
----
-This will deploy the token contract to an account.
-This command takes a valid `EOSIO` name.
 
+**--start-container** This will start the `dune` container.
 
 ---
-### --bootstrap-system
----
-This will install the boot contract to `eosio` and activate all protocol features.
+
+**--set-system-contract** This will deploy the system contract to an account. This command takes a valid `EOSIO` name.
 
 ---
-### --bootstrap-system-full
----
-This will install the boot contract to `eosio` and activate all protocol features.  It will also create all accounts needed for `mandel.contracts` and deploy the system, token and msig contract.
+
+**--set-bios-contract** This will deploy the bios contract to an account. This command takes a valid `EOSIO` name.
 
 ---
-### --send-action
----
-This will send an action to an account.
-This command takes an valid `EOSIO` account name, a valid `EOSIO` action name, the data payload needed and the permission.
----
-### --get-table
----
-This will get table data from the specified table.
-This command takes an valid `EOSIO` account name, a table scope, and table name.
+
+**--set-token-contract** This will deploy the token contract to an account. This command takes a valid `EOSIO` name.
 
 ---
-### --activate-feature
----
-This will activate a protocol feature.
-This command takes a code name for the protocol feature.
+
+**--bootstrap-system** This will install the boot contract to `eosio` and activate all protocol features.
 
 ---
-### --list-features
----
-This will list the available protocol feature code names.
----
-### --start-webapp
----
-This will start a simple webapp, like the one in `example/webapp`
-This command takes a directory of the webapp.
+
+**--bootstrap-system-full** This will install the boot contract to `eosio` and activate all protocol features.  It will also create all accounts needed for `mandel.contracts` and deploy the system, token and msig contract.
 
 ---
-### -- (Not listed with -h)
-This will allow you to call the tool and pass through to the underlying system.
+**--send-acton** This will send an action to an account. This command takes an valid `EOSIO` account name, a valid `EOSIO` action name, the data payload needed and the permission.
+
 ---
+
+**--get-table** This will get table data from the specified table. This command takes an valid `EOSIO` account name, a table scope, and table name.
+
+---
+
+**--activate-feature** This will activate a protocol feature. This command takes a code name for the protocol feature.
+
+---
+
+**--list-features** This will list the available protocol feature code names.
+
+---
+**--** (Not listed with help) This will allow you to call the tool and pass through to the underlying system.
+
+---
+
+<br/><br/>
 
 ## `Concepts and Operations`
 The core concept of this utility is to abstract over `nodeos`, `cleos`, `CDT`, etc.

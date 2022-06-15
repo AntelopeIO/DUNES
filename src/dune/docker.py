@@ -1,4 +1,4 @@
-import subprocess, platform, os
+import subprocess, platform, os, getpass
 
 class docker:
    _container = ""
@@ -29,6 +29,8 @@ class docker:
       abs_path = os.path.abspath(dir)
       if platform.system() == 'Windows':
          abs_path = abs_path[3:].replace('\\', '/') # remove the drive letter prefix and replace the separators
+      else:
+         abs_path = abs_path[1:]
 
       return '/host/'+abs_path
  

@@ -5,4 +5,4 @@
 # 3 - snapshot
 # 4 - node name
 
-nodeos --data-dir=$1 --config-dir=$2 $3 &> /app/.$4.out
+nodeos --data-dir=$1 --config-dir=$2 $3 &> /home/www-data/$4.out

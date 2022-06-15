@@ -1,7 +1,7 @@
 from docker import docker
 from context import context
 
-import os, platform
+import os, platform, getpass
 class dune_error(Exception):
    pass
 class dune_node_not_found(dune_error):
@@ -25,11 +25,14 @@ class node:
    def config(self):
       return self._cfg
    
+   def set_config(self, cfg):
+      self._cfg = cfg
+   
    def data_dir(self):
-      return '/app/nodes/'+self.name()
+      return '/home/www-data/nodes/'+self.name()
    
    def config_dir(self):
-      return '/app/nodes/'+self.name()
+      return '/home/www-data/nodes/'+self.name()
 
 class dune:
    _docker    = None
@@ -44,10 +47,10 @@ class dune:
       self._context = context(self._docker)
 
    def node_exists(self, n):
-      return self._docker.dir_exists('/app/nodes/'+n.name()) 
+      return self._docker.dir_exists('/home/www-data/nodes/'+n.name()) 
 
    def is_node_running(self, n):
-     return self._docker.find_pid('/app/nodes/'+n.name()+' ') != -1
+     return self._docker.find_pid('/home/www-data/nodes/'+n.name()+' ') != -1
 
    def set_active(self, n):
       if self.node_exists(n):
@@ -61,10 +64,9 @@ class dune:
    def create_node(self, n):
       print("Creating node ["+n.name()+"]")
       self._docker.execute_cmd(['mkdir', '-p', n.data_dir()])
-      self._context.set_active(n)
 
    def start_node(self, n, snapshot=None):
-      stdout, stderr, ec = self._docker.execute_cmd(['ls',  '/app/nodes'])
+      stdout, stderr, ec = self._docker.execute_cmd(['ls',  '/home/www-data/nodes'])
 
       if self.is_node_running(n):
          print("Node ["+n.name()+"] is already running.")
@@ -73,7 +75,7 @@ class dune:
       cmd = ['sh', 'start_node.sh', n.data_dir(), n.config_dir()]
 
       if snapshot != None:
-         cmd = cmd + ['--snapshot /app/nodes/'+n.name()+'/snapshots/'+snapshot+' -e']
+         cmd = cmd + ['--snapshot /home/www-data/nodes/'+n.name()+'/snapshots/'+snapshot+' -e']
       else:
          cmd = cmd + [' ']
 
@@ -83,19 +85,33 @@ class dune:
       
       # copy config.ini to config-dir
       if n.config() == None:
-         self._docker.execute_cmd(['cp', '/app/config.ini', n.config_dir()])
-      else:
-         self._docker.execute_cmd(['cp', n.config(), n.config_dir()])
-         print("Using Configuration ["+n.config()+"]")
+         n.set_config('/home/www-data/config.ini')
+
+      self._docker.execute_cmd(['cp', n.config(), n.config_dir()])
+      print("Using Configuration ["+n.config()+"]")
+
+      ctx = self._context.get_ctx()
+      cfg_args = self._context.get_config_args(n)
+
+      if self.node_exists(node(ctx.active)):
+         if cfg_args[0] == ctx.http_port:
+            print("Currently active node ["+ctx.active+"] http port is the same as this nodes ["+n.name()+"]")
+            self.stop_node(node(ctx.active))
+         elif cfg_args[1] == ctx.p2p_port:
+            print("Currently active node ["+ctx.active+"] p2p port is the same as this nodes ["+n.name()+"]")
+            self.stop_node(node(ctx.active))
+         elif cfg_args[2] == ctx.ship_port:
+            print("Currently active node ["+ctx.active+"] ship port is the same as this nodes ["+n.name()+"]")
+            self.stop_node(node(ctx.active))
 
       stdout, stderr, ec = self._docker.execute_cmd(cmd+[n.name()])
       
       if ec == 0:
          self.set_active(n)
          print("Active ["+n.name()+"]")
-
-      print(stdout)
-      print(stderr)
+         print(stdout)
+      else:
+         print(stderr)
    
    def cleos_cmd(self, cmd, quiet=True):
       self.unlock_wallet()
@@ -115,7 +131,7 @@ class dune:
    def stop_node(self, n):
       if self.node_exists(n):
          if self.is_node_running(n):
-            pid = self._docker.find_pid('/app/nodes/'+n.name()+' ')
+            pid = self._docker.find_pid('/home/www-data/nodes/'+n.name()+' ')
             print("Stopping node ["+n.name()+"]")
             self._docker.execute_cmd(['kill', pid])
          else:
@@ -126,13 +142,13 @@ class dune:
    def remove_node(self, n):
       self.stop_node(n)
       print("Removing node ["+n.name()+"]")
-      self._docker.execute_cmd(['rm','-rf', '/app/nodes/'+n.name()])
+      self._docker.execute_cmd(['rm','-rf', '/home/www-data/nodes/'+n.name()])
    
    def destroy(self):
       self._docker.destroy()
    
    def stop_container(self):
-      stdout, stderr, ec = self._docker.execute_cmd(['ls', '/app/nodes'])
+      stdout, stderr, ec = self._docker.execute_cmd(['ls', '/home/www-data/nodes'])
       for s in stdout.split():
          if self.is_node_running(node(s)):
             self.stop_node(node(s))
@@ -148,7 +164,7 @@ class dune:
       else:
          print("Node Name        | Active? | Running? | HTTP           | P2P          | SHiP")
          print("--------------------------------------------------------------------------------------")
-      stdout, stderr, ec = self._docker.execute_cmd(['ls', '/app/nodes'])
+      stdout, stderr, ec = self._docker.execute_cmd(['ls', '/home/www-data/nodes'])
       ctx = self._context.get_ctx()
       for s in stdout.split():
          print(s, end='')
@@ -156,22 +172,22 @@ class dune:
             if simple:
                print('|Y', end='')
             else:
-               print('\t\t |    ✓', end='')
+               print('\t\t |    Y', end='')
          else:
             if simple:
                print('|N', end='')
             else:
-               print('\t\t |    ✗', end='')
+               print('\t\t |    N', end='')
          if not self.is_node_running( node(s) ):
             if simple:
                print('|N', end='')
             else:
-               print('\t   |    ✗', end='')
+               print('\t   |    N', end='')
          else:
             if simple:
                print('|Y', end='')
             else:
-               print('\t   |    ✓', end='')
+               print('\t   |    Y', end='')
 
          ports = self._context.get_config_args( node(s) )
          if simple:
@@ -187,15 +203,15 @@ class dune:
             self.start_node(n)
          self.create_snapshot()
          self.stop_node(n)
-         self._docker.execute_cmd(['mkdir', '-p', '/app/tmp/'+n.name()])
-         self._docker.execute_cmd(['cp', '-R', '/app/nodes/'+n.name()+'/blocks', '/app/tmp/'+n.name()+'/blocks'])
-         self._docker.execute_cmd(['cp', '/app/nodes/'+n.name()+'/config.ini', '/app/tmp/'+n.name()+'/config.ini'])
-         self._docker.execute_cmd(['cp', '-R', '/app/nodes/'+n.name()+'/protocol_features', '/app/tmp/'+n.name()+'/protocol_features'])
-         self._docker.execute_cmd(['cp', '-R', '/app/nodes/'+n.name()+'/snapshots', '/app/tmp/'+n.name()+'/snapshots'])
+         self._docker.execute_cmd(['mkdir', '-p', '/home/www-data/tmp/'+n.name()])
+         self._docker.execute_cmd(['cp', '-R', '/home/www-data/nodes/'+n.name()+'/blocks', '/home/www-data/tmp/'+n.name()+'/blocks'])
+         self._docker.execute_cmd(['cp', '/home/www-data/nodes/'+n.name()+'/config.ini', '/home/www-data/tmp/'+n.name()+'/config.ini'])
+         self._docker.execute_cmd(['cp', '-R', '/home/www-data/nodes/'+n.name()+'/protocol_features', '/home/www-data/tmp/'+n.name()+'/protocol_features'])
+         self._docker.execute_cmd(['cp', '-R', '/home/www-data/nodes/'+n.name()+'/snapshots', '/home/www-data/tmp/'+n.name()+'/snapshots'])
          self._docker.tar_dir(n.name(), 'tmp/'+n.name())
-         self._docker.cp_to_host('/app/'+n.name()+'.tgz', dir)
-         self._docker.rm('/app/'+n.name()+'.tgz')
-         self._docker.rm('/app/tmp/'+n.name())
+         self._docker.cp_to_host('/home/www-data/'+n.name()+'.tgz', dir)
+         self._docker.rm('/home/www-data/'+n.name()+'.tgz')
+         self._docker.rm('/home/www-data/tmp/'+n.name())
          self.start_node(n)
       else:
          raise dune_node_not_found(n.name())
@@ -204,21 +220,21 @@ class dune:
       print("Importing node data ["+n.name()+"]")
       if self.node_exists(n):
          self.remove_node(n)
-      stdout, stderr, ec = self._docker.cp_from_host(dir, '/app/tmp.tgz')
+      stdout, stderr, ec = self._docker.cp_from_host(dir, '/home/www-data/tmp.tgz')
       if ec != 0:
          print(stderr)
          raise dune_error
-      self._docker.untar('/app/tmp.tgz')
-      self._docker.rm('/app/tmp.tgz')
-      stdout, stderr, ec = self._docker.execute_cmd(['ls', '/app/tmp'])
-      self._docker.execute_cmd(['mkdir', '-p', '/app/nodes/'+n.name()])
-      self._docker.execute_cmd(['mv', '/app/tmp/'+stdout.split()[0]+'/blocks/blocks.index', '/app/nodes/'+n.name()+'/blocks/blocks.index'])
-      self._docker.execute_cmd(['mv', '/app/tmp/'+stdout.split()[0]+'/blocks/blocks.log', '/app/nodes/'+n.name()+'/blocks/blocks.log'])
-      self._docker.execute_cmd(['mv', '/app/tmp/'+stdout.split()[0]+'/config.ini', '/app/nodes/'+n.name()+'/config.ini'])
-      self._docker.execute_cmd(['mv', '/app/tmp/'+stdout.split()[0]+'/protocol_features', '/app/nodes/'+n.name()+'/protocol_features'])
-      self._docker.execute_cmd(['mv', '/app/tmp/'+stdout.split()[0]+'/snapshots', '/app/nodes/'+n.name()+'/snapshots'])
-      self._docker.rm('/app/tmp/'+stdout.split()[0])
-      stdout, stderr, ec = self._docker.execute_cmd(['ls', '/app/nodes/'+n.name()+'/snapshots'])
+      self._docker.untar('/home/www-data/tmp.tgz')
+      self._docker.rm('/home/www-data/tmp.tgz')
+      stdout, stderr, ec = self._docker.execute_cmd(['ls', '/home/www-data/tmp'])
+      self._docker.execute_cmd(['mkdir', '-p', '/home/www-data/nodes/'+n.name()])
+      self._docker.execute_cmd(['mv', '/home/www-data/tmp/'+stdout.split()[0]+'/blocks/blocks.index', '/home/www-data/nodes/'+n.name()+'/blocks/blocks.index'])
+      self._docker.execute_cmd(['mv', '/home/www-data/tmp/'+stdout.split()[0]+'/blocks/blocks.log', '/home/www-data/nodes/'+n.name()+'/blocks/blocks.log'])
+      self._docker.execute_cmd(['mv', '/home/www-data/tmp/'+stdout.split()[0]+'/config.ini', '/home/www-data/nodes/'+n.name()+'/config.ini'])
+      self._docker.execute_cmd(['mv', '/home/www-data/tmp/'+stdout.split()[0]+'/protocol_features', '/home/www-data/nodes/'+n.name()+'/protocol_features'])
+      self._docker.execute_cmd(['mv', '/home/www-data/tmp/'+stdout.split()[0]+'/snapshots', '/home/www-data/nodes/'+n.name()+'/snapshots'])
+      self._docker.rm('/home/www-data/tmp/'+stdout.split()[0])
+      stdout, stderr, ec = self._docker.execute_cmd(['ls', '/home/www-data/nodes/'+n.name()+'/snapshots'])
       self.start_node(n, stdout.split()[0])
       self.set_active(n)
    
@@ -238,17 +254,17 @@ class dune:
       return stdout
 
    def export_wallet(self):
-      self._docker.execute_cmd(['mkdir', '/app/_wallet'])
-      self._docker.execute_cmd(['cp', '-R', '/root/eosio-wallet', '/app/_wallet/eosio-wallet'])
-      self._docker.execute_cmd(['cp', '-R', '/app/.wallet.pw', '/app/_wallet/.wallet.pw'])
-      self._docker.tar_dir("wallet", "/app/_wallet") 
-      self._docker.cp_to_host("/app/wallet.tgz", "wallet.tgz")
+      self._docker.execute_cmd(['mkdir', '/home/www-data/_wallet'])
+      self._docker.execute_cmd(['cp', '-R', '/root/eosio-wallet', '/home/www-data/_wallet/eosio-wallet'])
+      self._docker.execute_cmd(['cp', '-R', '/home/www-data/.wallet.pw', '/home/www-data/_wallet/.wallet.pw'])
+      self._docker.tar_dir("wallet", "/home/www-data/_wallet") 
+      self._docker.cp_to_host("/home/www-data/wallet.tgz", "wallet.tgz")
 
    def import_wallet(self, d):
-      self._docker.cp_from_host(d, "/app/wallet.tgz")
-      self._docker.untar("/app/wallet.tgz")
-      self._docker.execute_cmd(["mv", "/app/app/_wallet/.wallet.pw", "/app"])
-      self._docker.execute_cmd(["mv", "/app/app/_wallet", "/root"])
+      self._docker.cp_from_host(d, "/home/www-data/wallet.tgz")
+      self._docker.untar("/home/www-data/wallet.tgz")
+      self._docker.execute_cmd(["mv", "/home/www-data/_wallet/.wallet.pw", "/app"])
+      self._docker.execute_cmd(["mv", "/home/www-data/_wallet", "/root"])
 
    # TODO cleos has a bug displaying keys for K1 so, we need the public key if providing the private key
    # Remove that requirement when we fix cleos.
@@ -288,8 +304,9 @@ class dune:
 
       stdout, stderr, ec = self._docker.execute_cmd(['cdt-init', '-project', name, '-path', dir]+bare)
       if ec != 0:
-         print(stderr)
+         print(stdout)
          raise dune_error()
+      
    
    def create_snapshot(self):
       ctx = self._context.get_ctx()
@@ -345,7 +362,7 @@ class dune:
    def activate_feature(self, code_name, preactivate=False):
       if preactivate:
          self.preactivate_feature()
-         self.deploy_contract('/app/mandel-contracts/build/contracts/eosio.boot', 'eosio')
+         self.deploy_contract('/home/www-data/mandel-contracts/build/contracts/eosio.boot', 'eosio')
 
       if code_name == "KV_DATABASE":
          self.send_action('activate', 'eosio', '["825ee6288fb1373eab1b5187ec2f04f6eacb39cb3a97f356a07c91622dd61d16"]', 'eosio@active')
@@ -397,15 +414,15 @@ class dune:
          self.create_account('eosio.rex', 'eosio')
 
       # activate features
-      self.deploy_contract('/app/mandel-contracts/build/contracts/eosio.boot', 'eosio')
+      self.deploy_contract('/home/www-data/mandel-contracts/build/contracts/eosio.boot', 'eosio')
 
       for f in self.features():
          self.activate_feature(f)
 
       if full:
-         self.deploy_contract('/app/mandel-contracts/build/contracts/eosio.system', 'eosio')
-         self.deploy_contract('/app/mandel-contracts/build/contracts/eosio.token', 'eosio.token')
-         self.deploy_contract('/app/mandel-contracts/build/contracts/eosio.msig', 'eosio.msig')
+         self.deploy_contract('/home/www-data/mandel-contracts/build/contracts/eosio.system', 'eosio')
+         self.deploy_contract('/home/www-data/mandel-contracts/build/contracts/eosio.token', 'eosio.token')
+         self.deploy_contract('/home/www-data/mandel-contracts/build/contracts/eosio.msig', 'eosio.msig')
       
    def start_webapp(self, dir):
       #TODO readdress after the launch 
