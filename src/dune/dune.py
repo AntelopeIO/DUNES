@@ -299,8 +299,11 @@ class dune:
 
    def ctest_runner(self, dir, flags):
       container_dir = self._docker.abs_host_path(dir)
-      #self._docker.execute_cmd_at(container_dir, ['ctest']+flags)
-      self._docker.execute_cmd_at(container_dir, ['./unit_test'])
+      self._docker.execute_cmd_at(container_dir, ['ctest']+flags)
+   
+   def gdb(self, exec, flags):
+      container_exec = self._docker.abs_host_path(exec)
+      self._docker.execute_interactive_cmd(['gdb', container_exec]+flags)
 
    def build_other_proj(self, cmd):
       self._docker.execute_cmd2([cmd])

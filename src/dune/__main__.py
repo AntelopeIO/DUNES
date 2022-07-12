@@ -100,7 +100,12 @@ if __name__ == '__main__':
                dune_sys.ctest_runner(args.ctest[0], parse_optional(args.ctest[1]))
             else:
                dune_sys.ctest_runner(args.ctest[0], [])
-
+         
+         elif args.gdb != None:
+            if len(args.gdb) > 1:
+               dune_sys.gdb(args.gdb[0], parse_optional(args.gdb[1]))
+            else:
+               dune_sys.gdb(args.gdb[0], [])
 
          elif args.deploy != None:
             dune_sys.deploy_contract(dune_sys._docker.abs_host_path(args.deploy[0]), args.deploy[1])

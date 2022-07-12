@@ -61,7 +61,6 @@ class arg_parser:
       self._parser.add_argument('--cmake-build', nargs='+', metavar=["DIR", "FLAGS (Optional)"], help='build a smart contract project at the directory given optional flags are of the form [-DFLAG1=On -DFLAG2=Off]')
       self._parser.add_argument('--ctest', nargs='+', metavar=["DIR", "FLAGS (Optional)"], help='run the ctest tests for a smart contract project at the directory given optional flags are of the form [-VV]')
       self._parser.add_argument('--gdb', nargs='+', metavar=["DIR", "FLAGS (Optional)"], help='run the ctest tests for a smart contract project at the directory given optional flags are of the form [-VV]')
-      self._parser.add_argument('--lldb', nargs='+', metavar=["DIR", "FLAGS (Optional)"], help='run the ctest tests for a smart contract project at the directory given optional flags are of the form [-VV]')
       self._parser.add_argument('--deploy', nargs=2, metavar=["DIR", "ACCOUNT"], help='deploy a smart contract and ABI to account given')
       self._parser.add_argument('--destroy-container', action='store_true', help='destroy context container <Warning, this will destroy your state and block log>')
       self._parser.add_argument('--stop-container', action='store_true', help='stop the context container')
