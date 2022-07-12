@@ -3,6 +3,7 @@ from dune import node
 from dune import dune_error
 from dune import dune_node_not_found
 from args import arg_parser
+from args import parse_optional
 
 import os
 
@@ -12,7 +13,8 @@ if __name__ == '__main__':
    dune_sys = dune()
 
    if parser.is_forwarding():
-      dune_sys.execute_cmd(parser.get_forwarded_args())
+      #dune_sys.execute_interactive_cmd(parser.get_forwarded_args())
+      dune_sys.execute_interactive_cmd(parser.get_forwarded_args())
    else:
       args = parser.parse()
 
@@ -89,9 +91,16 @@ if __name__ == '__main__':
 
          elif args.cmake_build != None:
             if len(args.cmake_build) > 1:
-               dune_sys.build_cmake_proj(args.cmake_build[0], args.cmake_build[1].split())
+               dune_sys.build_cmake_proj(args.cmake_build[0], parse_optional(args.cmake_build[1]))
             else:
                dune_sys.build_cmake_proj(args.cmake_build[0], [])
+
+         elif args.ctest != None:
+            if len(args.ctest) > 1:
+               dune_sys.ctest_runner(args.ctest[0], parse_optional(args.ctest[1]))
+            else:
+               dune_sys.ctest_runner(args.ctest[0], [])
+
 
          elif args.deploy != None:
             dune_sys.deploy_contract(dune_sys._docker.abs_host_path(args.deploy[0]), args.deploy[1])
@@ -123,9 +132,6 @@ if __name__ == '__main__':
          
          elif args.get_table != None:
             dune_sys.get_table(args.get_table[0], args.get_table[1], args.get_table[2])
-         
-         elif args.start_webapp != None:
-            dune_sys.start_webapp(args.start_webapp)
 
       except KeyboardInterrupt:
          pass

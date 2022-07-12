@@ -110,6 +110,7 @@ class dune:
          self.set_active(n)
          print("Active ["+n.name()+"]")
          print(stdout)
+         print(stderr)
       else:
          print(stderr)
    
@@ -285,6 +286,9 @@ class dune:
    def execute_cmd(self, args):
       self._docker.execute_cmd2(args)
    
+   def execute_interactive_cmd(self, args):
+      self._docker.execute_interactive_cmd(args);
+   
    def build_cmake_proj(self, dir, flags):
       container_dir = self._docker.abs_host_path(dir)
       build_dir = container_dir+'/build'
@@ -292,6 +296,11 @@ class dune:
          self._docker.execute_cmd(['mkdir', '-p', build_dir])
       self._docker.execute_cmd2(['cmake', '-S', container_dir, '-B', build_dir]+flags)
       self._docker.execute_cmd2(['cmake', '--build', build_dir])
+
+   def ctest_runner(self, dir, flags):
+      container_dir = self._docker.abs_host_path(dir)
+      #self._docker.execute_cmd_at(container_dir, ['ctest']+flags)
+      self._docker.execute_cmd_at(container_dir, ['./unit_test'])
 
    def build_other_proj(self, cmd):
       self._docker.execute_cmd2([cmd])
