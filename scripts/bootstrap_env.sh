@@ -14,7 +14,7 @@ curl -s -L -H "Authorization: Bearer ${GH_ANON_BEARER}" https://ghcr.io/v2/${CON
 if [ "${ARCH}" = "x86_64" ]; then
    wget https://github.com/${ORG}/mandel/releases/download/v${NODE_VERSION}/mandel-${NODE_VERSION}-ubuntu20.04-x86_64.deb
    apt install ./mandel-${NODE_VERSION}-ubuntu20.04-x86_64.deb
-   #apt install ./mandel-dev-${NODE_VERSION}-ubuntu20.04-x86_64.deb
+   apt install ./mandel-dev-${NODE_VERSION}-ubuntu20.04-x86_64.deb
    wget https://github.com/${ORG}/mandel.cdt/releases/download/v${CDT_VERSION}/cdt_${CDT_VERSION}_amd64.deb
    apt install ./cdt_${CDT_VERSION}_amd64.deb
 else
