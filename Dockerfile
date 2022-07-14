@@ -14,16 +14,6 @@ RUN npm install -D webpack-dev-server
 
 WORKDIR /app
 
-RUN git clone https://github.com/eosnetworkfoundation/mandel
-WORKDIR /app/mandel
-RUN git submodule update --init --recursive
-RUN mkdir build
-WORKDIR /app/mandel/build
-RUN cmake .. -DENABLE_OC=Off 
-RUN make -j10
-
-WORKDIR /app
-
 COPY ./scripts/ .
 RUN chmod +x bootstrap_env.sh
 RUN chmod +x start_node.sh
