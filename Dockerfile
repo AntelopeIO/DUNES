@@ -7,7 +7,7 @@ ARG GROUP_ID
 RUN apt-get update
 RUN apt-get update --fix-missing
 RUN DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install tzdata
-RUN apt-get -y install zip unzip libncurses5 wget git build-essential cmake curl libboost-all-dev libcurl4-openssl-dev libgmp-dev libssl-dev libusb-1.0.0-dev libzstd-dev time pkg-config llvm-11-dev nginx npm yarn
+RUN apt-get -y install zip unzip libncurses5 wget git build-essential cmake curl libboost-all-dev libcurl4-openssl-dev libgmp-dev libssl-dev libusb-1.0.0-dev libzstd-dev time pkg-config llvm-11-dev nginx npm yarn jq gdb lldb
 RUN npm install -D webpack-cli
 RUN npm install -D webpack
 RUN npm install -D webpack-dev-server
@@ -23,6 +23,7 @@ RUN mv my_init /sbin
 
 RUN ./bootstrap_env.sh
 RUN ./setup_system.sh
+RUN cp -R /usr/lib/x86_64-linux-gnu/* /usr/lib
 
 RUN if [ ${USER_ID:-0} -ne 0 ] && [ ${GROUP_ID:-0} -ne 0 ]; then \
     userdel -f www-data && \
@@ -38,6 +39,7 @@ RUN if [ ${USER_ID:-0} -ne 0 ] && [ ${GROUP_ID:-0} -ne 0 ]; then \
 USER www-data
 
 RUN mkdir /home/www-data/nodes
+RUN cp /app/config.ini /home/www-data/config.ini
 
 # thanks to github.com/phusion
 # this should solve reaping issues of stopped nodes

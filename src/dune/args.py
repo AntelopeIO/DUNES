@@ -9,6 +9,35 @@ class fix_action_data(argparse.Action):
       fixed_list.append(values[2].strip())
       fixed_list.append(values[3])
       setattr(namespace, self.dest, fixed_list)
+
+def fix_args(args):
+   arg_list = list()
+   arg_so_far = ""
+   state = False
+   for arg in args:
+      if not state:
+         if arg.startswith('['):
+            state = True
+            arg_so_far = arg[1:]
+            continue
+         else:
+            arg_list.append(arg)
+            continue
+      if state:
+         if arg.endswith(']'):
+            arg_so_far = arg_so_far + arg[:-1]
+            state = False
+            arg_list.append(arg_so_far)
+            arg_so_far = ""
+            continue
+         else:
+            arg_so_far = arg_so_far + arg
+
+   return arg_list
+
+def parse_optional(cmd):
+   cmd = cmd[1:-1] # remove containing []
+   return cmd.split()
 class arg_parser:
    def __init__(self):
       self._parser = argparse.ArgumentParser(description='DUNE: Docker Utilities for Node Execution')
@@ -29,7 +58,9 @@ class arg_parser:
       self._parser.add_argument('--create-account', nargs='+', metavar=["NAME","CREATOR (Optional)", "PUB_KEY (Optional)", "PRIV_KEY (Optional)"], help='create an EOSIO account and an optional creator (the default is eosio)')
       self._parser.add_argument('--create-cmake-app', nargs=2, metavar=["PROJ_NAME", "DIR"], help='create a smart contract project at from a specific host location')
       self._parser.add_argument('--create-bare-app', nargs=2, metavar=["PROJ_NAME", "DIR"], help='create a smart contract project at from a specific host location')
-      self._parser.add_argument('--cmake-build', nargs='+', metavar=["DIR", "FLAGS (Optional)"], help='build a smart contract project at the directory given')
+      self._parser.add_argument('--cmake-build', nargs='+', metavar=["DIR", "FLAGS (Optional)"], help='build a smart contract project at the directory given optional flags are of the form [-DFLAG1=On -DFLAG2=Off]')
+      self._parser.add_argument('--ctest', nargs='+', metavar=["DIR", "FLAGS (Optional)"], help='run the ctest tests for a smart contract project at the directory given optional flags are of the form [-VV]')
+      self._parser.add_argument('--gdb', nargs='+', metavar=["DIR", "FLAGS (Optional)"], help='run the ctest tests for a smart contract project at the directory given optional flags are of the form [-VV]')
       self._parser.add_argument('--deploy', nargs=2, metavar=["DIR", "ACCOUNT"], help='deploy a smart contract and ABI to account given')
       self._parser.add_argument('--destroy-container', action='store_true', help='destroy context container <Warning, this will destroy your state and block log>')
       self._parser.add_argument('--stop-container', action='store_true', help='stop the context container')
