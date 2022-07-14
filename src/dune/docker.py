@@ -107,7 +107,6 @@ class docker:
    def execute_interactive_cmd(self, cmd):
       proc = subprocess.Popen(['docker', 'container', 'exec', '-i', self._container]+cmd)
       proc.communicate()
-      #return self.execute_docker_cmd(['container', 'exec', '-i', self._container] + cmd)
 
    def execute_cmd2(self, cmd):
       proc = subprocess.Popen(['docker', 'container', 'exec', self._container] + cmd)
