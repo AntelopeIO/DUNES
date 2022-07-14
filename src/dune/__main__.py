@@ -13,7 +13,6 @@ if __name__ == '__main__':
    dune_sys = dune()
 
    if parser.is_forwarding():
-      #dune_sys.execute_interactive_cmd(parser.get_forwarded_args())
       dune_sys.execute_interactive_cmd(parser.get_forwarded_args())
    else:
       args = parser.parse()
