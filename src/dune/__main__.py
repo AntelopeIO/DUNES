@@ -89,22 +89,13 @@ if __name__ == '__main__':
             dune_sys.init_project(args.create_bare_app[0], dune_sys._docker.abs_host_path(args.create_bare_app[1]), False)
 
          elif args.cmake_build != None:
-            if len(args.cmake_build) > 1:
-               dune_sys.build_cmake_proj(args.cmake_build[0], parse_optional(args.cmake_build[1]))
-            else:
-               dune_sys.build_cmake_proj(args.cmake_build[0], [])
+            dune_sys.build_cmake_proj(args.cmake_build[0], parse_optional(args.remainder))
 
          elif args.ctest != None:
-            if len(args.ctest) > 1:
-               dune_sys.ctest_runner(args.ctest[0], parse_optional(args.ctest[1]))
-            else:
-               dune_sys.ctest_runner(args.ctest[0], [])
+            dune_sys.ctest_runner(args.ctest[0], parse_optional(args.remainder))
          
          elif args.gdb != None:
-            if len(args.gdb) > 1:
-               dune_sys.gdb(args.gdb[0], parse_optional(args.gdb[1]))
-            else:
-               dune_sys.gdb(args.gdb[0], [])
+            dune_sys.gdb(args.gdb[0], parse_optional(args.remainder))
 
          elif args.deploy != None:
             dune_sys.deploy_contract(dune_sys._docker.abs_host_path(args.deploy[0]), args.deploy[1])
