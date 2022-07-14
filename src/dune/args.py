@@ -36,8 +36,10 @@ def fix_args(args):
    return arg_list
 
 def parse_optional(cmd):
-   cmd = cmd[1:-1] # remove containing []
-   return cmd.split()
+   if cmd is not None:
+      return cmd[1:] # remove leading --
+   else:
+      return cmd # empty list
 class arg_parser:
    def __init__(self):
       self._parser = argparse.ArgumentParser(description='DUNE: Docker Utilities for Node Execution')
@@ -58,9 +60,9 @@ class arg_parser:
       self._parser.add_argument('--create-account', nargs='+', metavar=["NAME","CREATOR (Optional)", "PUB_KEY (Optional)", "PRIV_KEY (Optional)"], help='create an EOSIO account and an optional creator (the default is eosio)')
       self._parser.add_argument('--create-cmake-app', nargs=2, metavar=["PROJ_NAME", "DIR"], help='create a smart contract project at from a specific host location')
       self._parser.add_argument('--create-bare-app', nargs=2, metavar=["PROJ_NAME", "DIR"], help='create a smart contract project at from a specific host location')
-      self._parser.add_argument('--cmake-build', nargs='+', metavar=["DIR", "FLAGS (Optional)"], help='build a smart contract project at the directory given optional flags are of the form [-DFLAG1=On -DFLAG2=Off]')
-      self._parser.add_argument('--ctest', nargs='+', metavar=["DIR", "FLAGS (Optional)"], help='run the ctest tests for a smart contract project at the directory given optional flags are of the form [-VV]')
-      self._parser.add_argument('--gdb', nargs='+', metavar=["DIR", "FLAGS (Optional)"], help='run the ctest tests for a smart contract project at the directory given optional flags are of the form [-VV]')
+      self._parser.add_argument('--cmake-build', nargs=1, metavar=["DIR", "-- FLAGS (Optional)"], help='build a smart contract project at the directory given optional flags are of the form -- -DFLAG1=On -DFLAG2=Off]')
+      self._parser.add_argument('--ctest', nargs=1, metavar=["DIR", "-- FLAGS (Optional)"], help='run the ctest tests for a smart contract project at the directory given optional flags are of the form -- -VV')
+      self._parser.add_argument('--gdb', nargs=1, metavar=["DIR", "-- FLAGS (Optional)"], help='run the ctest tests for a smart contract project at the directory given optional flags are of the form -- -VV')
       self._parser.add_argument('--deploy', nargs=2, metavar=["DIR", "ACCOUNT"], help='deploy a smart contract and ABI to account given')
       self._parser.add_argument('--destroy-container', action='store_true', help='destroy context container <Warning, this will destroy your state and block log>')
       self._parser.add_argument('--stop-container', action='store_true', help='stop the context container')
@@ -74,6 +76,7 @@ class arg_parser:
       self._parser.add_argument('--get-table', nargs=3, metavar=["ACCOUNT", "SCOPE", "TABLE"], help='get the data from the given table')
       self._parser.add_argument('--activate-feature', metavar=["CODENAME"], help='active protocol feature')
       self._parser.add_argument('--list-features', action='store_true', help='list available protocol feature code names')
+      self._parser.add_argument('remainder', nargs=argparse.REMAINDER) # used to store arguments to individual programs, starting with --
       #TODO readdress after the launch
       #self._parser.add_argument('--start-webapp', metavar=["DIR"], help='start a webapp with ')
    
