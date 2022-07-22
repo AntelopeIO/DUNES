@@ -76,6 +76,7 @@ class arg_parser:
       self._parser.add_argument('--get-table', nargs=3, metavar=["ACCOUNT", "SCOPE", "TABLE"], help='get the data from the given table')
       self._parser.add_argument('--activate-feature', metavar=["CODENAME"], help='active protocol feature')
       self._parser.add_argument('--list-features', action='store_true', help='list available protocol feature code names')
+      self._parser.add_argument('--version', action='store_true', help='display the current version of DUNE')
       self._parser.add_argument('remainder', nargs=argparse.REMAINDER) # used to store arguments to individual programs, starting with --
       #TODO readdress after the launch
       #self._parser.add_argument('--start-webapp', metavar=["DIR"], help='start a webapp with ')
