@@ -7,4 +7,4 @@ GROUP_ID=$(id -g ${USER})
 if [[ $(uname) == "Darwin" ]]; then
   GROUP_ID=200
 fi
-docker build --no-cache --build-arg USER_ID=$(id -u ${USER}) --build-arg GROUP_ID=${GROUP_ID}  -t dune $SDIR
+docker build --no-cache --build-arg USER_ID=$(id -u ${USER}) --build-arg GROUP_ID=${GROUP_ID} -f Dockerfile.unix -t dune $SDIR

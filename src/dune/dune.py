@@ -2,6 +2,18 @@ from docker import docker
 from context import context
 
 import os, platform, getpass
+
+# VERSION INFORMATION
+def version_major():
+   return 1
+def version_minor():
+   return 0
+def version_patch():
+   return 0
+def version_suffix():
+   return "rc1"
+def version_full():
+   return "v"+str(version_major())+"."+str(version_minor())+"."+str(version_patch())+"."+version_suffix()
 class dune_error(Exception):
    pass
 class dune_node_not_found(dune_error):

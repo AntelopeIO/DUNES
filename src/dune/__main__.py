@@ -2,6 +2,7 @@ from dune import dune
 from dune import node
 from dune import dune_error
 from dune import dune_node_not_found
+from dune import version_full
 from args import arg_parser
 from args import parse_optional
 
@@ -127,6 +128,9 @@ if __name__ == '__main__':
          
          elif args.get_table != None:
             dune_sys.get_table(args.get_table[0], args.get_table[1], args.get_table[2])
+
+         elif args.version:
+            print ("DUNE "+version_full())
 
       except KeyboardInterrupt:
          pass
