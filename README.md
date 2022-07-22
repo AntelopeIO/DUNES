@@ -81,15 +81,13 @@ C:\<PathToDUNE>\DUNE$ .\bootstrap.bat
 ```
 
 ## `Mac OS`
-*** M1 Users ***
-You will need to do a `git checkout arm64` from this repo.
 
 When finished installing. Check the installation with the command. 
 ```console
 $ docker --help
 ```
 ### `Python3`
-Python3 should already be installed.
+python3 should already be installed.
 
 ### `Add DUNE To Path`
 To keep from having to install files to the users system, the perferred method of usage is to add this directory to your 'PATH'.

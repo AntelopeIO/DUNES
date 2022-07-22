@@ -20,7 +20,7 @@ if [ "${ARCH}" = "x86_64" ]; then
 else
    apt install ./mandel-${NODE_VERSION}-ubuntu20.04-aarch64.deb
    apt install ./mandel-dev-${NODE_VERSION}-ubuntu20.04-aarch64.deb
-   wget https://github.com/${ORG}/${CDT_REPO}/releases/download/v${CDT_VERSION}/cdt_${CDT_VERSION}_arm64.deb
+   wget https://github.com/${ORG}/mandel.cdt/releases/download/v${CDT_VERSION}/cdt_${CDT_VERSION}_arm64.deb
    apt install ./cdt_${CDT_VERSION}_arm64.deb
 fi
 

@@ -23,7 +23,6 @@ RUN mv my_init /sbin
 
 RUN ./bootstrap_env.sh
 RUN ./setup_system.sh
-RUN cp -R /usr/lib/x86_64-linux-gnu/* /usr/lib
 
 RUN if [ ${USER_ID:-0} -ne 0 ] && [ ${GROUP_ID:-0} -ne 0 ]; then \
     userdel -f www-data && \
