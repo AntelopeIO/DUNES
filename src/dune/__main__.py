@@ -102,13 +102,13 @@ if __name__ == '__main__':
             dune_sys.deploy_contract(dune_sys._docker.abs_host_path(args.deploy[0]), args.deploy[1])
 
          elif args.set_bios_contract != None:
-            dune_sys.deploy_contract( '/home/www-data/mandel-contracts/build/contracts/eosio.bios', args.set_bios_contract)
+            dune_sys.deploy_contract( '/home/www-data/eos-system-contracts/build/contracts/eosio.bios', args.set_bios_contract)
         
-         elif args.set_system_contract != None:
-            dune_sys.deploy_contract( '/home/www-data/mandel-contracts/build/contracts/eosio.system', args.set_system_contract)
+         elif args.set_core_contract != None:
+            dune_sys.deploy_contract( '/home/www-data/eos-system-contracts/build/contracts/eosio.system', args.set_core_contract)
 
          elif args.set_token_contract != None:
-            dune_sys.deploy_contract( '/home/www-data/mandel-contracts/build/contracts/eosio.token', args.set_token_contract)
+            dune_sys.deploy_contract( '/home/www-data/eos-system-contracts/build/contracts/eosio.token', args.set_token_contract)
          
          elif args.bootstrap_system:
             dune_sys.bootstrap_system(False)

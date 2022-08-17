@@ -243,8 +243,8 @@ This will start the `dune` container.
 
 ---
 
-**--set-system-contract** 
-This will deploy the core system contract to an account. This command takes a valid Antelope account name.
+**--set-core-contract** 
+This will deploy the core contract to an account. This command takes a valid Antelope account name.
 
 ---
 
