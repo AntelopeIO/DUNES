@@ -24,8 +24,8 @@ else
    apt install ./cdt_${CDT_VERSION}_arm64.deb
 fi
 
-git clone https://github.com/eosnetworkfoundation/mandel-contracts 
-cd mandel-contracts
+git clone https://github.com/eosnetworkfoundation/eos-system-contracts 
+cd eos-system-contracts
 git checkout main
 mkdir build
 cd build
