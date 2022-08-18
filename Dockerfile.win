@@ -24,7 +24,7 @@ RUN mv my_init /sbin
 RUN ./bootstrap_env.sh
 RUN ./setup_system.sh
 
-RUN mkdir /home/www-data/nodes
+RUN mkdir -p /home/www-data/nodes
 RUN cp /app/config.ini /home/www-data/config.ini
 
 # thanks to github.com/phusion
