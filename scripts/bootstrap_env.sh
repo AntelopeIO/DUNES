@@ -9,7 +9,7 @@ CDT_VERSION="3.0.0-rc2"
 
 CONTAINER_PACKAGE=AntelopeIO/experimental-binaries
 GH_ANON_BEARER=$(curl -s "https://ghcr.io/token?service=registry.docker.io&scope=repository:${CONTAINER_PACKAGE}:pull" | jq -r .token)
-curl -s -L -H "Authorization: Bearer ${GH_ANON_BEARER}" https://ghcr.io/v2/${CONTAINER_PACKAGE}/blobs/$(curl -s -L -H "Authorization: Bearer ${GH_ANON_BEARER}" https://ghcr.io/v2/${CONTAINER_PACKAGE}/manifests/v3.1.0-rc2 | jq -r .layers[0].digest) | tar zx
+curl -s -L -H "Authorization: Bearer ${GH_ANON_BEARER}" https://ghcr.io/v2/${CONTAINER_PACKAGE}/blobs/$(curl -s -L -H "Authorization: Bearer ${GH_ANON_BEARER}" https://ghcr.io/v2/${CONTAINER_PACKAGE}/manifests/v${NODE_VERSION} | jq -r .layers[0].digest) | tar -xz
 
 if [ "${ARCH}" = "x86_64" ]; then
    wget https://github.com/${ORG}/leap/releases/download/v${NODE_VERSION}/leap-${NODE_VERSION}-ubuntu20.04-x86_64.deb
