@@ -35,10 +35,10 @@ RUN if [ ${USER_ID:-0} -ne 0 ] && [ ${GROUP_ID:-0} -ne 0 ]; then \
           /home/www-data \
           /app \
    ;fi
-USER www-data
 
-RUN mkdir /home/www-data/nodes
+RUN mkdir -p /home/www-data/nodes
 RUN cp /app/config.ini /home/www-data/config.ini
+USER www-data
 
 # thanks to github.com/phusion
 # this should solve reaping issues of stopped nodes
