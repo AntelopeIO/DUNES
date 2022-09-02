@@ -11,7 +11,7 @@ def version_minor():
 def version_patch():
    return 0
 def version_suffix():
-   return "rc2"
+   return "rc3"
 def version_full():
    return "v"+str(version_major())+"."+str(version_minor())+"."+str(version_patch())+"."+version_suffix()
 class dune_error(Exception):
