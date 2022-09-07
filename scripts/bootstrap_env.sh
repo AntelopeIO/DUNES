@@ -4,7 +4,7 @@ ARCH=`uname -m`
 
 ORG="AntelopeIO"
 NODE_VERSION="3.1.0"
-CDT_VERSION="3.0.0-rc3"
+CDT_VERSION="3.0.0"
 
 
 CONTAINER_PACKAGE=AntelopeIO/experimental-binaries
