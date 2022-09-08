@@ -13,7 +13,11 @@ def version_patch():
 def version_suffix():
    return ""
 def version_full():
-   return "v"+str(version_major())+"."+str(version_minor())+"."+str(version_patch())+"."+version_suffix()
+   main_version = "v"+str(version_major())+"."+str(version_minor())+"."+str(version_patch())
+   if version_suffix() == "":
+      return main_version
+   else:
+      return main_version+"."+version_suffix()
 class dune_error(Exception):
    pass
 class dune_node_not_found(dune_error):
