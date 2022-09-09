@@ -11,9 +11,13 @@ def version_minor():
 def version_patch():
    return 0
 def version_suffix():
-   return "rc3"
+   return ""
 def version_full():
-   return "v"+str(version_major())+"."+str(version_minor())+"."+str(version_patch())+"."+version_suffix()
+   main_version = "v"+str(version_major())+"."+str(version_minor())+"."+str(version_patch())
+   if version_suffix() == "":
+      return main_version
+   else:
+      return main_version+"."+version_suffix()
 class dune_error(Exception):
    pass
 class dune_node_not_found(dune_error):
@@ -386,7 +390,7 @@ class dune:
    def activate_feature(self, code_name, preactivate=False):
       if preactivate:
          self.preactivate_feature()
-         self.deploy_contract('/home/www-data/eos-system-contracts/build/contracts/eosio.boot', 'eosio')
+         self.deploy_contract('/app/reference-contracts/build/contracts/eosio.boot', 'eosio')
 
       if code_name == "KV_DATABASE":
          self.send_action('activate', 'eosio', '["825ee6288fb1373eab1b5187ec2f04f6eacb39cb3a97f356a07c91622dd61d16"]', 'eosio@active')
@@ -440,15 +444,15 @@ class dune:
          self.create_account('eosio.rex', 'eosio')
 
       # activate features
-      self.deploy_contract('/home/www-data/eos-system-contracts/build/contracts/eosio.boot', 'eosio')
+      self.deploy_contract('/app/reference-contracts/build/contracts/eosio.boot', 'eosio')
 
       for f in self.features():
          self.activate_feature(f)
 
       if full:
-         self.deploy_contract('/home/www-data/eos-system-contracts/build/contracts/eosio.msig', 'eosio.msig')
-         self.deploy_contract('/home/www-data/eos-system-contracts/build/contracts/eosio.token', 'eosio.token')
-         self.deploy_contract('/home/www-data/eos-system-contracts/build/contracts/eosio.system', 'eosio')
+         self.deploy_contract('/app/reference-contracts/build/contracts/eosio.msig', 'eosio.msig')
+         self.deploy_contract('/app/reference-contracts/build/contracts/eosio.token', 'eosio.token')
+         self.deploy_contract('/app/reference-contracts/build/contracts/eosio.system', 'eosio')
       
    def start_webapp(self, dir):
       #TODO readdress after the launch 
