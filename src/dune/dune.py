@@ -403,7 +403,7 @@ class dune:
       elif code_name == "FORWARD_SETCODE":
          self.send_action('activate', 'eosio', '["2652f5f96006294109b3dd0bbde63693f55324af452b799ee137a81a905eed25"]', 'eosio@active')
       elif code_name == "ONLY_BILL_FIRST_AUTHORIZER":
-         self.send_action('activate', 'eosio', '["8ba52fe7a3956c5cd3a656a3174b931d3bb2abb45578befc59f283ecd816a405"', 'eosio@active')
+         self.send_action('activate', 'eosio', '["8ba52fe7a3956c5cd3a656a3174b931d3bb2abb45578befc59f283ecd816a405"]', 'eosio@active')
       elif code_name == "RESTRICT_ACTION_TO_SELF":
          self.send_action('activate', 'eosio', '["ad9e3d8f650687709fd68f4b90b41f7d825a365b02c23a636cef88ac2ac00c43"]', 'eosio@active')
       elif code_name == "DISALLOW_EMPTY_PRODUCER_SCHEDULE":
