@@ -338,6 +338,10 @@ class dune:
    
    def create_snapshot(self):
       ctx = self._context.get_ctx()
+      if ctx.http_port == '':
+         print('Could not find running node. Check you have bootstrapped DUNE and started a node.')
+         raise dune_error()
+
       url = "http://"+ctx.http_port+"/v1/producer/create_snapshot"
       stdout, stderr, ec = self._docker.execute_cmd(['curl', '-X', 'POST', url])
       print(stdout)
@@ -356,6 +360,10 @@ class dune:
    
    def preactivate_feature(self):
       ctx = self._context.get_ctx()
+      if ctx.http_port == '':
+         print('Could not find running node. Check you have bootstrapped DUNE and started a node.')
+         raise dune_error()
+
       stdout, stderr, ec = self._docker.execute_cmd(['curl', '--noproxy', '-x', 'POST', ctx.http_port+'/v1/producer/schedule_protocol_feature_activations', '-d', '{"protocol_features_to_activate": ["0ec7e080177b2c02b278d5088611686b49d739925a92d9bfcacd7fc6b74053bd"]}'])
 
       if ec != 0:
