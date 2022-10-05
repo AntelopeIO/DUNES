@@ -11,9 +11,13 @@ def version_minor():
 def version_patch():
    return 0
 def version_suffix():
-   return "rc2"
+   return ""
 def version_full():
-   return "v"+str(version_major())+"."+str(version_minor())+"."+str(version_patch())+"."+version_suffix()
+   main_version = "v"+str(version_major())+"."+str(version_minor())+"."+str(version_patch())
+   if version_suffix() == "":
+      return main_version
+   else:
+      return main_version+"."+version_suffix()
 class dune_error(Exception):
    pass
 class dune_node_not_found(dune_error):
@@ -386,7 +390,7 @@ class dune:
    def activate_feature(self, code_name, preactivate=False):
       if preactivate:
          self.preactivate_feature()
-         self.deploy_contract('/home/www-data/eos-system-contracts/build/contracts/eosio.boot', 'eosio')
+         self.deploy_contract('/app/reference-contracts/build/contracts/eosio.boot', 'eosio')
 
       if code_name == "KV_DATABASE":
          self.send_action('activate', 'eosio', '["825ee6288fb1373eab1b5187ec2f04f6eacb39cb3a97f356a07c91622dd61d16"]', 'eosio@active')
@@ -399,7 +403,7 @@ class dune:
       elif code_name == "FORWARD_SETCODE":
          self.send_action('activate', 'eosio', '["2652f5f96006294109b3dd0bbde63693f55324af452b799ee137a81a905eed25"]', 'eosio@active')
       elif code_name == "ONLY_BILL_FIRST_AUTHORIZER":
-         self.send_action('activate', 'eosio', '["8ba52fe7a3956c5cd3a656a3174b931d3bb2abb45578befc59f283ecd816a405"', 'eosio@active')
+         self.send_action('activate', 'eosio', '["8ba52fe7a3956c5cd3a656a3174b931d3bb2abb45578befc59f283ecd816a405"]', 'eosio@active')
       elif code_name == "RESTRICT_ACTION_TO_SELF":
          self.send_action('activate', 'eosio', '["ad9e3d8f650687709fd68f4b90b41f7d825a365b02c23a636cef88ac2ac00c43"]', 'eosio@active')
       elif code_name == "DISALLOW_EMPTY_PRODUCER_SCHEDULE":
@@ -440,15 +444,15 @@ class dune:
          self.create_account('eosio.rex', 'eosio')
 
       # activate features
-      self.deploy_contract('/home/www-data/eos-system-contracts/build/contracts/eosio.boot', 'eosio')
+      self.deploy_contract('/app/reference-contracts/build/contracts/eosio.boot', 'eosio')
 
       for f in self.features():
          self.activate_feature(f)
 
       if full:
-         self.deploy_contract('/home/www-data/eos-system-contracts/build/contracts/eosio.msig', 'eosio.msig')
-         self.deploy_contract('/home/www-data/eos-system-contracts/build/contracts/eosio.token', 'eosio.token')
-         self.deploy_contract('/home/www-data/eos-system-contracts/build/contracts/eosio.system', 'eosio')
+         self.deploy_contract('/app/reference-contracts/build/contracts/eosio.msig', 'eosio.msig')
+         self.deploy_contract('/app/reference-contracts/build/contracts/eosio.token', 'eosio.token')
+         self.deploy_contract('/app/reference-contracts/build/contracts/eosio.system', 'eosio')
       
    def start_webapp(self, dir):
       #TODO readdress after the launch 

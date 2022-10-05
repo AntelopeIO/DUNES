@@ -3,8 +3,8 @@
 ARCH=`uname -m`
 
 ORG="AntelopeIO"
-NODE_VERSION="3.1.0-rc4"
-CDT_VERSION="3.0.0-rc2"
+NODE_VERSION="3.1.0"
+CDT_VERSION="3.0.0"
 
 
 CONTAINER_PACKAGE=AntelopeIO/experimental-binaries
@@ -24,9 +24,9 @@ else
    apt install ./cdt_${CDT_VERSION}_arm64.deb
 fi
 
-git clone https://github.com/eosnetworkfoundation/eos-system-contracts 
-cd eos-system-contracts
-git checkout main
+git clone https://github.com/${ORG}/reference-contracts
+cd reference-contracts
+git checkout 074bc11394d13395e82015f6c41db32a67170d73
 mkdir build
 cd build
 cmake ..

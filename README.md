@@ -47,6 +47,8 @@ To keep from having to install files to the user's system, the preferred method 
 $ echo "PATH=<LocationOfDUNE>:$PATH" >> .bashrc
 ```
 
+### Bootstrap DUNE
+
 Pick your preferred terminal application and input the following command:
 
 ```console
@@ -92,6 +94,8 @@ From here add a new line with the location of the downloaded DUNE project:
 
 <img src="docs/images/env-vars-2.png" alt="env-vars-2" width="300">
 
+### Bootstrap DUNE
+
 Pick your preferred command line application and input the following command:
 
 ```console:
@@ -115,6 +119,8 @@ To keep from having to install files to the user's system, the preferred method 
 ```console
 $ echo "PATH=<LocationOfDUNE>:$PATH" >> .bashrc
 ```
+
+### Bootstrap DUNE
 
 Pick your preferred terminal application and input the following command:
 
@@ -265,7 +271,7 @@ This will install the boot contract to the `eosio` account and activate all prot
 
 **--bootstrap-system-full** 
 This will install the boot contract to the `eosio` account and activate all protocol features. 
-It will also create all the accounts needed by the core, token, and multisig contracts from [eos-system-contracts](https://github.com/eosnetworkfoundation/eos-system-contracts) and deploy those three contracts to their corresponding accounts. Note that the core contract will replace the boot contract on the `eosio` account.
+It will also create all the accounts needed by the core, token, and multisig contracts from [reference-contracts](https://github.com/AntelopeIO/reference-contracts) and deploy those three contracts to their corresponding accounts. Note that the core contract will replace the boot contract on the `eosio` account.
 
 ---
 **--send-acton** 
@@ -510,7 +516,7 @@ $ dune --bootstrap-system-full
 ```
 
 This will do the same as `--bootstrap-system` but additionally set the contracts 
-from [eos-system-contracts](https://github.com/eosnetworkfoundation/eos-system-contracts) 
+from [reference-contracts](https://github.com/AntelopeIO/reference-contracts)
 and create the correct accounts needed for those.
 
 ## System-level commands
