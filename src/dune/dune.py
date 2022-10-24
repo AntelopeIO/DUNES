@@ -54,11 +54,13 @@ class dune:
    _docker    = None
    _wallet_pw = None
    _context   = None
+   _cl_args = None
    _token_priv_key = "5JPJoZXizFVi19wHkboX5fwwEU2jZVvtSJpQkQu3uqgNu8LNdQN"
    _token_pub_key  = "EOS6v86d8DAxjfGu92CLrnEzq7pySpVWYV2LjaxPaDJJvyf9Vpx5R"
 
-   def __init__(self):
-      self._docker = docker('dune_container', 'dune:latest')
+   def __init__(self, cl_args):
+      self._cl_args = cl_args
+      self._docker = docker('dune_container', 'dune:latest', cl_args)
       self._wallet_pw = self.get_wallet_pw()
       self._context = context(self._docker)
 

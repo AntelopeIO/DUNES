@@ -11,12 +11,13 @@ import os
 if __name__ == '__main__':
    parser = arg_parser()
 
-   dune_sys = dune()
+   args = parser.parse()
+
+   dune_sys = dune(args)
 
    if parser.is_forwarding():
       dune_sys.execute_interactive_cmd(parser.get_forwarded_args())
    else:
-      args = parser.parse()
 
       try:
          if args.start != None:
