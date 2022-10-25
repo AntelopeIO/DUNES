@@ -36,7 +36,6 @@ RUN if [ ${USER_ID:-0} -ne 0 ] && [ ${GROUP_ID:-0} -ne 0 ]; then \
           /app \
    ;fi
 
-# USER www-data
 RUN mkdir -p /home/www-data/nodes
 RUN cp /app/config.ini /home/www-data/config.ini
 
