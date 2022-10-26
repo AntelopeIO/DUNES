@@ -23,7 +23,7 @@ class docker:
             if platform.system() == 'Windows':
                host_dir = 'C:/'
 
-            stdout, stderr, ec = self.execute_docker_cmd(['run', '-p', '8888:8888', '-p', '9876:9876', '-p', '8080:8080', '-p', '3000:3000', '-p', '8000:8000', '-v', host_dir+':/host', '-d', '--name='+self._container, self._image, 'tail', '-f', '&>', '/dev/null', '&'])
+            stdout, stderr, ec = self.execute_docker_cmd(['run', '-p', '8888:8888', '-p', '9876:9876', '-p', '8080:8080', '-p', '3000:3000', '-p', '8000:8000', '-v', host_dir+':/host', '-d', '--name='+self._container, self._image, 'tail', '-f', '/dev/null'])
 
    def abs_host_path(self, dir):
       abs_path = os.path.abspath(dir)
