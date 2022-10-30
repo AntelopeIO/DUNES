@@ -1,116 +1,132 @@
-import subprocess, platform, os, getpass
+import os
+import platform
+import subprocess
+
 
 class docker:
-   _container = ""
-   _image     = ""
-   def __init__(self, container, image):
-      self._container = container
-      self._image     = image
+    _container = ""
+    _image = ""
 
-      # check if container is running
-      stdout, stderr, ec = self.execute_docker_cmd(['container', 'ls'])
+    def __init__(self, container, image):
+        self._container = container
+        self._image = image
 
-      # if container is not in the list then create one
-      if not self._container in stdout:
-      # check if container is stopped
-         stdout, stderr, ec = self.execute_docker_cmd(['container', 'ls', '-a'])
-         if self._container in stdout:
-            self.execute_docker_cmd(['container', 'start', self._container])
-         else:
-            # start a new container
-            print("Creating docker container ["+self._container+"]")
-            host_dir = '/'
-            if platform.system() == 'Windows':
-               host_dir = 'C:/'
+        # check if container is running
+        stdout, stderr, exit_code = self.execute_docker_cmd(['container', 'ls'])
 
-            stdout, stderr, ec = self.execute_docker_cmd(['run', '-p', '8888:8888', '-p', '9876:9876', '-p', '8080:8080', '-p', '3000:3000', '-p', '8000:8000', '-v', host_dir+':/host', '-d', '--name='+self._container, self._image, 'tail', '-f', '&>', '/dev/null', '&'])
+        # if container is not in the list then create one
+        if self._container not in stdout:
+            # check if container is stopped
+            stdout, stderr, exit_code = self.execute_docker_cmd(
+                ['container', 'ls', '-a'])
+            if self._container in stdout:
+                self.execute_docker_cmd(
+                    ['container', 'start', self._container])
+            else:
+                # start a new container
+                print("Creating docker container [" + self._container + "]")
+                host_dir = '/'
+                if platform.system() == 'Windows':
+                    host_dir = 'C:/'
 
-   def abs_host_path(self, dir):
-      abs_path = os.path.abspath(dir)
-      if platform.system() == 'Windows':
-         abs_path = abs_path[3:].replace('\\', '/') # remove the drive letter prefix and replace the separators
-      else:
-         abs_path = abs_path[1:]
+                stdout, stderr, exit_code = self.execute_docker_cmd(
+                    ['run', '-p', '8888:8888', '-p', '9876:9876', '-p',
+                     '8080:8080', '-p', '3000:3000', '-p', '8000:8000', '-v',
+                     host_dir + ':/host', '-d', '--name=' + self._container,
+                     self._image, 'tail', '-f', '&>', '/dev/null', '&'])
 
-      return '/host/'+abs_path
- 
-   def get_container(self):
-      return self._container
+    @staticmethod
+    def abs_host_path(directory):
+        abs_path = os.path.abspath(directory)
+        if platform.system() == 'Windows':
+            # remove the drive letter prefix and replace the separators
+            abs_path = abs_path[3:].replace('\\', '/')
+        else:
+            abs_path = abs_path[1:]
 
-   def get_image(self):
-      return self._image
+        return '/host/' + abs_path
 
-   def execute_docker_cmd(self, cmd):
-      proc = subprocess.Popen(['docker']+cmd,
-                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-      stdout, stderr = proc.communicate()
-      return [stdout.decode('UTF-8'), stderr.decode('UTF-8'), proc.poll()]
-   
-   def file_exists(self, fn):
-      return self.execute_cmd(['test', '-f', fn])[2] == 0
-   
-   def dir_exists(self, d):
-      return self.execute_cmd(['test', '-d', d])[2] == 0
+    def get_container(self):
+        return self._container
 
-   def tar_dir(self, n, d):
-      return self.execute_cmd(['tar', 'cvzf', n+'.tgz', d])
- 
-   def untar(self, d):
-      return self.execute_cmd(['tar', 'xvzf', d])
-   
-   def cp_to_host(self, cf, hf):
-      return self.execute_docker_cmd(['cp', self._container+":"+cf, hf])
-   
-   def cp_from_host(self, hf, cf):
-      return self.execute_docker_cmd(['cp', hf, self._container+":"+cf])
-   
-   def rm(self, f):
-      self.execute_cmd(['rm', '-rf', f])
+    def get_image(self):
+        return self._image
 
-   def find_pid(self, s):
-      stdout, stderr, ec = self.execute_cmd(['ps', 'ax'])
-      for line in stdout.splitlines(True):
-         if "PID TTY" in line:
-            continue
-         else:
-            if s in line:
-               return line.split()[0]
-      
-      return -1
-   
-   def get_container_name(self):
-      return self._container
-   
-   def commit(self, name):
-      self.execute_docker_cmd(['commit', 'dune', 'dune'])
+    @staticmethod
+    def execute_docker_cmd(cmd):
+        with subprocess.Popen(['docker'] + cmd,
+                              stdout=subprocess.PIPE, stderr=subprocess.PIPE) as proc:
+            stdout, stderr = proc.communicate()
+        return [stdout.decode('UTF-8'), stderr.decode('UTF-8'), proc.poll()]
 
-   def start(self):
-      print("Starting docker container ["+self._container+"]") 
-      self.execute_docker_cmd(['container', 'start', self._container])
-   
-   def stop(self):
-      print("Stopping docker container ["+self._container+"]")
-      self.execute_docker_cmd(['container', 'stop', self._container])
+    def file_exists(self, file_name):
+        return self.execute_cmd(['test', '-f', file_name])[2] == 0
 
-   def destroy(self):
-      print("Destroying docker container ["+self._container+"]")
-      self.execute_docker_cmd(['container', 'stop', self._container])
-      self.execute_docker_cmd(['container', 'rm', self._container])
+    def dir_exists(self, directory):
+        return self.execute_cmd(['test', '-d', directory])[2] == 0
 
-   def execute_cmd_at(self, dir, cmd):
-      proc = subprocess.Popen(['docker', 'container', 'exec', '-w', dir, self._container]+cmd)
-      proc.communicate()
+    def tar_dir(self, file_name, directory):
+        return self.execute_cmd(['tar', 'cvzf', file_name + '.tgz', directory])
 
-   def execute_cmd(self, cmd):
-      return self.execute_docker_cmd(['container', 'exec', self._container] + cmd)
+    def untar(self, directory):
+        return self.execute_cmd(['tar', 'xvzf', directory])
 
-   def execute_interactive_cmd(self, cmd):
-      proc = subprocess.Popen(['docker', 'container', 'exec', '-i', self._container]+cmd)
-      proc.communicate()
+    def cp_to_host(self, container_file, host_file):
+        return self.execute_docker_cmd(['cp', self._container + ":" + container_file, host_file])
 
-   def execute_cmd2(self, cmd):
-      proc = subprocess.Popen(['docker', 'container', 'exec', self._container] + cmd)
-      proc.communicate()
+    def cp_from_host(self, host_file, container_file):
+        return self.execute_docker_cmd(['cp', host_file, self._container + ":" + container_file])
 
-   def execute_bg_cmd(self, cmd):
-      return self.execute_cmd(cmd+['&'])
+    def rm_file(self, file_name):
+        self.execute_cmd(['rm', '-rf', file_name])
+
+    def find_pid(self, process_name):
+        stdout, stderr, exit_code = self.execute_cmd(['ps', 'ax'])
+        for line in stdout.splitlines(True):
+            if "PID TTY" in line:
+                continue
+            if process_name in line:
+                return line.split()[0]
+
+        return -1
+
+    def get_container_name(self):
+        return self._container
+
+    def commit(self, name):
+        self.execute_docker_cmd(['commit', 'dune', 'dune'])
+
+    def start(self):
+        print("Starting docker container [" + self._container + "]")
+        self.execute_docker_cmd(['container', 'start', self._container])
+
+    def stop(self):
+        print("Stopping docker container [" + self._container + "]")
+        self.execute_docker_cmd(['container', 'stop', self._container])
+
+    def destroy(self):
+        print("Destroying docker container [" + self._container + "]")
+        self.execute_docker_cmd(['container', 'stop', self._container])
+        self.execute_docker_cmd(['container', 'rm', self._container])
+
+    def execute_cmd_at(self, directory, cmd):
+        with subprocess.Popen(['docker', 'container', 'exec', '-w', directory,
+                               self._container] + cmd) as proc:
+            proc.communicate()
+
+    def execute_cmd(self, cmd):
+        return self.execute_docker_cmd(
+            ['container', 'exec', self._container] + cmd)
+
+    def execute_interactive_cmd(self, cmd):
+        with subprocess.Popen(['docker', 'container',
+                               'exec', '-i', self._container] + cmd) as proc:
+            proc.communicate()
+
+    def execute_cmd2(self, cmd):
+        with subprocess.Popen(['docker', 'container',
+                               'exec', self._container] + cmd) as proc:
+            proc.communicate()
+
+    def execute_bg_cmd(self, cmd):
+        return self.execute_cmd(cmd + ['&'])
