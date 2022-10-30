@@ -211,7 +211,7 @@ class dune:
             print('|'+ports[0]+'|'+ports[1]+'|'+ports[2])
          else:
             print('     | '+ports[0]+' | '+ports[1]+' | '+ports[2])
-
+   
    def export_node(self, n, dir):
       if self.node_exists(n):
          self.set_active(n)
