@@ -43,11 +43,15 @@ class docker:
       return self._image
 
    def execute_docker_cmd(self, cmd):
-      if self._cl_args.debug:
-          print('docker '+' '.join(cmd))
       proc = subprocess.Popen(['docker']+cmd,
                               stdout=subprocess.PIPE, stderr=subprocess.PIPE)
       stdout, stderr = proc.communicate()
+
+      if self._cl_args.debug:
+          print('docker '+' '.join(cmd))
+          print(stdout.decode('UTF-8'))
+          print(stderr.decode('UTF-8'))
+
       return [stdout.decode('UTF-8'), stderr.decode('UTF-8'), proc.poll()]
    
    def file_exists(self, fn):
