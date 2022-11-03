@@ -3,9 +3,11 @@ import subprocess, platform, os, getpass
 class docker:
    _container = ""
    _image     = ""
-   def __init__(self, container, image):
+   _cl_args = None
+   def __init__(self, container, image, cl_args):
       self._container = container
       self._image     = image
+      self._cl_args = cl_args
 
       # check if container is running
       stdout, stderr, ec = self.execute_docker_cmd(['container', 'ls'])
@@ -44,6 +46,12 @@ class docker:
       proc = subprocess.Popen(['docker']+cmd,
                               stdout=subprocess.PIPE, stderr=subprocess.PIPE)
       stdout, stderr = proc.communicate()
+
+      if self._cl_args.debug:
+          print('docker '+' '.join(cmd))
+          print(stdout.decode('UTF-8'))
+          print(stderr.decode('UTF-8'))
+
       return [stdout.decode('UTF-8'), stderr.decode('UTF-8'), proc.poll()]
    
    def file_exists(self, fn):
