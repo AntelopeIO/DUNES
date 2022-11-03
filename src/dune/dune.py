@@ -273,17 +273,17 @@ class dune:
       return stdout
 
    def export_wallet(self):
-      self._docker.execute_cmd(['mkdir', '/home/www-data/_wallet'])
-      self._docker.execute_cmd(['cp', '-R', '/root/eosio-wallet', '/home/www-data/_wallet/eosio-wallet'])
-      self._docker.execute_cmd(['cp', '-R', '/home/www-data/.wallet.pw', '/home/www-data/_wallet/.wallet.pw'])
-      self._docker.tar_dir("wallet", "/home/www-data/_wallet") 
-      self._docker.cp_to_host("/home/www-data/wallet.tgz", "wallet.tgz")
+      self._docker.execute_cmd(['mkdir', '_wallet'])
+      self._docker.execute_cmd(['cp', '-R', '/root/eosio-wallet', '_wallet/eosio-wallet'])
+      self._docker.execute_cmd(['cp', '-R', '.wallet.pw', '_wallet/.wallet.pw'])
+      self._docker.tar_dir("wallet", "_wallet") 
+      self._docker.cp_to_host("/app/wallet.tgz", "wallet.tgz")
 
    def import_wallet(self, d):
-      self._docker.cp_from_host(d, "/home/www-data/wallet.tgz")
-      self._docker.untar("/home/www-data/wallet.tgz")
-      self._docker.execute_cmd(["mv", "/home/www-data/_wallet/.wallet.pw", "/app"])
-      self._docker.execute_cmd(["mv", "/home/www-data/_wallet", "/root"])
+      self._docker.cp_from_host(d, "wallet.tgz")
+      self._docker.untar("wallet.tgz")
+      self._docker.execute_cmd(["mv", "_wallet/.wallet.pw", "/app"])
+      self._docker.execute_cmd(["mv", "_wallet", "/root"])
 
    # TODO cleos has a bug displaying keys for K1 so, we need the public key if providing the private key
    # Remove that requirement when we fix cleos.
