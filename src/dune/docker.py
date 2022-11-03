@@ -4,12 +4,15 @@ import subprocess
 
 
 class docker:
+
     _container = ""
     _image = ""
+    _cl_args = None
 
-    def __init__(self, container, image):
+    def __init__(self, container, image, cl_args):
         self._container = container
         self._image = image
+        self._cl_args = cl_args
 
         # check if container is running
         stdout, stderr, exit_code = self.execute_docker_cmd(['container', 'ls'])
@@ -52,11 +55,14 @@ class docker:
     def get_image(self):
         return self._image
 
-    @staticmethod
-    def execute_docker_cmd(cmd):
+    def execute_docker_cmd(self, cmd):
         with subprocess.Popen(['docker'] + cmd,
                               stdout=subprocess.PIPE, stderr=subprocess.PIPE) as proc:
             stdout, stderr = proc.communicate()
+            if self._cl_args.debug:
+                print('docker '+' '.join(cmd))
+                print(stdout.decode('UTF-8'))
+                print(stderr.decode('UTF-8'))
         return [stdout.decode('UTF-8'), stderr.decode('UTF-8'), proc.poll()]
 
     def file_exists(self, file_name):
@@ -87,7 +93,6 @@ class docker:
                 continue
             if process_name in line:
                 return line.split()[0]
-
         return -1
 
     def get_container_name(self):

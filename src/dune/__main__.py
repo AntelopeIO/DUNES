@@ -7,14 +7,16 @@ from dune import node
 from dune import version_full
 
 if __name__ == '__main__':
+
     parser = arg_parser()
 
-    dune_sys = dune()
+    args = parser.parse()
+
+    dune_sys = dune(args)
 
     if parser.is_forwarding():
         dune_sys.execute_interactive_cmd(parser.get_forwarded_args())
     else:
-        args = parser.parse()
 
         try:
             if args.start is not None:
@@ -146,7 +148,7 @@ if __name__ == '__main__':
             elif args.send_action is not None:
                 dune_sys.send_action(args.send_action[1], args.send_action[0],
                                      args.send_action[2], args.send_action[3])
-
+    
             elif args.get_table is not None:
                 dune_sys.get_table(args.get_table[0], args.get_table[1],
                                    args.get_table[2])

@@ -39,6 +39,7 @@ def parse_optional(cmd):
 
 
 class arg_parser:
+
     def __init__(self):
         self._parser = argparse.ArgumentParser(
             description='DUNE: Docker Utilities for Node Execution')
@@ -128,6 +129,10 @@ class arg_parser:
                                   help='list available protocol feature code names')
         self._parser.add_argument('--version', action='store_true',
                                   help='display the current version of DUNE')
+        self._parser.add_argument('--debug', action='store_true', help='print additional info '
+                                                                       'useful for debugging, '
+                                                                       'like running docker '
+                                                                       'commands')
         # used to store arguments to individual programs, starting with --
         self._parser.add_argument('remainder',
                                   nargs=argparse.REMAINDER)

@@ -2,6 +2,7 @@
 from context import context
 from docker import docker
 
+
 # VERSION INFORMATION
 def version_major():
     return 1
@@ -69,11 +70,13 @@ class dune:
     _docker = None
     _wallet_pw = None
     _context = None
+    _cl_args = None
     _token_priv_key = "5JPJoZXizFVi19wHkboX5fwwEU2jZVvtSJpQkQu3uqgNu8LNdQN"
     _token_pub_key = "EOS6v86d8DAxjfGu92CLrnEzq7pySpVWYV2LjaxPaDJJvyf9Vpx5R"
 
-    def __init__(self):
-        self._docker = docker('dune_container', 'dune:latest')
+    def __init__(self, cl_args):
+        self._cl_args = cl_args
+        self._docker = docker('dune_container', 'dune:latest', cl_args)
         self._wallet_pw = self.get_wallet_pw()
         self._context = context(self._docker)
 
@@ -340,20 +343,17 @@ class dune:
         return stdout
 
     def export_wallet(self):
-        self._docker.execute_cmd(['mkdir', '/home/www-data/_wallet'])
-        self._docker.execute_cmd(['cp', '-R', '/root/eosio-wallet',
-                                  '/home/www-data/_wallet/eosio-wallet'])
-        self._docker.execute_cmd(['cp', '-R', '/home/www-data/.wallet.pw',
-                                  '/home/www-data/_wallet/.wallet.pw'])
-        self._docker.tar_dir("wallet", "/home/www-data/_wallet")
-        self._docker.cp_to_host("/home/www-data/wallet.tgz", "wallet.tgz")
+        self._docker.execute_cmd(['mkdir', '_wallet'])
+        self._docker.execute_cmd(['cp', '-R', '/root/eosio-wallet', '_wallet/eosio-wallet'])
+        self._docker.execute_cmd(['cp', '-R', '.wallet.pw', '_wallet/.wallet.pw'])
+        self._docker.tar_dir("wallet", "_wallet")
+        self._docker.cp_to_host("/app/wallet.tgz", "wallet.tgz")
 
-    def import_wallet(self, host):
-        self._docker.cp_from_host(host, "/home/www-data/wallet.tgz")
-        self._docker.untar("/home/www-data/wallet.tgz")
-        self._docker.execute_cmd(
-            ["mv", "/home/www-data/_wallet/.wallet.pw", "/app"])
-        self._docker.execute_cmd(["mv", "/home/www-data/_wallet", "/root"])
+    def import_wallet(self, d):
+        self._docker.cp_from_host(d, "wallet.tgz")
+        self._docker.untar("wallet.tgz")
+        self._docker.execute_cmd(["mv", "_wallet/.wallet.pw", "/app"])
+        self._docker.execute_cmd(["mv", "_wallet", "/root"])
 
     # pylint: disable=fixme
     # TODO cleos has a bug displaying keys for K1 so, we need the public key
