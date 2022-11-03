@@ -1,6 +1,6 @@
 # Docker Utilities for Node Execution (DUNE)
 
-<img src="docs/images/logo.png" alt="logo" width="480">
+![Logo](docs/images/logo.png)
 
 Docker Utilities for Node Execution (DUNE) is a tool to abstract over [Leap](https://github.com/AntelopeIO/leap) programs, 
 [CDT](https://github.com/AntelopeIO/cdt), and other services/tools to perform the functions of node management, compiling smart contracts, 
@@ -19,7 +19,13 @@ Once you select the Docker Desktop for your operating system the installation pr
 They have both .DEB and .RPM packages available.
 If you can't get these to work for some reason most repos have packages available for the engine and auxillary components.
 
-When finished installing. Check the installation with the command
+When finished installing. 
+
+Start your Docker Desktop, visit to its settings and add the root directory of the host system to shared directories.  
+
+![Docker Desctop settings](docs/images/linux_docker_settings_shares.png)
+
+Check the installation with the command
 
 ```console
 $ docker --help
