@@ -349,8 +349,8 @@ class dune:
         self._docker.tar_dir("wallet", "_wallet")
         self._docker.cp_to_host("/app/wallet.tgz", "wallet.tgz")
 
-    def import_wallet(self, d):
-        self._docker.cp_from_host(d, "wallet.tgz")
+    def import_wallet(self, path):
+        self._docker.cp_from_host(path, "wallet.tgz")
         self._docker.untar("wallet.tgz")
         self._docker.execute_cmd(["mv", "_wallet/.wallet.pw", "/app"])
         self._docker.execute_cmd(["mv", "_wallet", "/root"])

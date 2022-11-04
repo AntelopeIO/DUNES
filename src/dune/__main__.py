@@ -148,7 +148,7 @@ if __name__ == '__main__':
             elif args.send_action is not None:
                 dune_sys.send_action(args.send_action[1], args.send_action[0],
                                      args.send_action[2], args.send_action[3])
-    
+
             elif args.get_table is not None:
                 dune_sys.get_table(args.get_table[0], args.get_table[1],
                                    args.get_table[2])
