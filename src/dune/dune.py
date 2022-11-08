@@ -60,10 +60,10 @@ class node:
         self._cfg = cfg
 
     def data_dir(self):
-        return '/home/www-data/nodes/' + self.name()
+        return '/app/nodes/' + self.name()
 
     def config_dir(self):
-        return '/home/www-data/nodes/' + self.name()
+        return '/app/nodes/' + self.name()
 
 
 class dune:
@@ -81,11 +81,11 @@ class dune:
         self._context = context(self._docker)
 
     def node_exists(self, nod):
-        return self._docker.dir_exists('/home/www-data/nodes/' + nod.name())
+        return self._docker.dir_exists('/app/nodes/' + nod.name())
 
     def is_node_running(self, nod):
         return self._docker.find_pid(
-            '/home/www-data/nodes/' + nod.name() + ' ') != -1
+            '/app/nodes/' + nod.name() + ' ') != -1
 
     def set_active(self, nod):
         if self.node_exists(nod):
@@ -102,7 +102,7 @@ class dune:
 
     def start_node(self, nod, snapshot=None):
         stdout, stderr, exit_code = self._docker.execute_cmd(
-            ['ls', '/home/www-data/nodes'])
+            ['ls', '/app/nodes'])
 
         if self.is_node_running(nod):
             print("Node [" + nod.name() + "] is already running.")
@@ -112,7 +112,7 @@ class dune:
 
         if snapshot is not None:
             cmd = cmd + [
-                '--snapshot /home/www-data/nodes/' + nod.name() + '/snapshots/' +
+                '--snapshot /app/nodes/' + nod.name() + '/snapshots/' +
                 snapshot + ' -e']
         else:
             cmd = cmd + [' ']
@@ -123,7 +123,7 @@ class dune:
 
         # copy config.ini to config-dir
         if nod.config() is None:
-            nod.set_config('/home/www-data/config.ini')
+            nod.set_config('/app/config.ini')
 
         self._docker.execute_cmd(['cp', nod.config(), nod.config_dir()])
         print("Using Configuration [" + nod.config() + "]")
@@ -178,7 +178,7 @@ class dune:
         if self.node_exists(nod):
             if self.is_node_running(nod):
                 pid = self._docker.find_pid(
-                    '/home/www-data/nodes/' + nod.name() + ' ')
+                    '/app/nodes/' + nod.name() + ' ')
                 print("Stopping node [" + nod.name() + "]")
                 self._docker.execute_cmd(['kill', pid])
             else:
@@ -190,14 +190,14 @@ class dune:
         self.stop_node(nod)
         print("Removing node [" + nod.name() + "]")
         self._docker.execute_cmd(
-            ['rm', '-rf', '/home/www-data/nodes/' + nod.name()])
+            ['rm', '-rf', '/app/nodes/' + nod.name()])
 
     def destroy(self):
         self._docker.destroy()
 
     def stop_container(self):
         stdout, stderr, exit_code = self._docker.execute_cmd(
-            ['ls', '/home/www-data/nodes'])
+            ['ls', '/app/nodes'])
         for string in stdout.split():
             if self.is_node_running(node(string)):
                 self.stop_node(node(string))
@@ -219,7 +219,7 @@ class dune:
                 "---------------------------------------------------------"
                 "-----------------------------")
         stdout, stderr, exit_code = self._docker.execute_cmd(
-            ['ls', '/home/www-data/nodes'])
+            ['ls', '/app/nodes'])
         ctx = self._context.get_ctx()
         for string in stdout.split():
             print(string, end='')
@@ -262,26 +262,26 @@ class dune:
             self.create_snapshot()
             self.stop_node(nod)
             self._docker.execute_cmd(
-                ['mkdir', '-p', '/home/www-data/tmp/' + nod.name()])
+                ['mkdir', '-p', '/app/tmp/' + nod.name()])
             self._docker.execute_cmd(
-                ['cp', '-R', '/home/www-data/nodes/' + nod.name() + '/blocks',
-                 '/home/www-data/tmp/' + nod.name() + '/blocks'])
+                ['cp', '-R', '/app/nodes/' + nod.name() + '/blocks',
+                 '/app/tmp/' + nod.name() + '/blocks'])
             self._docker.execute_cmd(
-                ['cp', '/home/www-data/nodes/' + nod.name() + '/config.ini',
-                 '/home/www-data/tmp/' + nod.name() + '/config.ini'])
+                ['cp', '/app/nodes/' + nod.name() + '/config.ini',
+                 '/app/tmp/' + nod.name() + '/config.ini'])
             self._docker.execute_cmd(['cp', '-R',
-                                      '/home/www-data/nodes/' + nod.name() +
+                                      '/app/nodes/' + nod.name() +
                                       '/protocol_features',
-                                      '/home/www-data/tmp/' + nod.name() +
+                                      '/app/tmp/' + nod.name() +
                                       '/protocol_features'])
             self._docker.execute_cmd(
-                ['cp', '-R', '/home/www-data/nodes/' + nod.name() + '/snapshots',
-                 '/home/www-data/tmp/' + nod.name() + '/snapshots'])
+                ['cp', '-R', '/app/nodes/' + nod.name() + '/snapshots',
+                 '/app/tmp/' + nod.name() + '/snapshots'])
             self._docker.tar_dir(nod.name(), 'tmp/' + nod.name())
-            self._docker.cp_to_host('/home/www-data/' + nod.name() + '.tgz',
+            self._docker.cp_to_host('/app/' + nod.name() + '.tgz',
                                     directory)
-            self._docker.rm_file('/home/www-data/' + nod.name() + '.tgz')
-            self._docker.rm_file('/home/www-data/tmp/' + nod.name())
+            self._docker.rm_file('/app/' + nod.name() + '.tgz')
+            self._docker.rm_file('/app/tmp/' + nod.name())
             self.start_node(nod)
         else:
             raise dune_node_not_found(nod.name())
@@ -292,37 +292,37 @@ class dune:
             self.remove_node(nod)
         stdout, stderr, exit_code = \
             self._docker.cp_from_host(directory,
-                                      '/home/www-data/tmp.tgz')
+                                      '/app/tmp.tgz')
         if exit_code != 0:
             print(stderr)
             raise dune_error
-        self._docker.untar('/home/www-data/tmp.tgz')
-        self._docker.rm_file('/home/www-data/tmp.tgz')
+        self._docker.untar('/app/tmp.tgz')
+        self._docker.rm_file('/app/tmp.tgz')
         stdout, stderr, exit_code = self._docker.execute_cmd(
-            ['ls', '/home/www-data/tmp'])
+            ['ls', '/app/tmp'])
         self._docker.execute_cmd(
-            ['mkdir', '-p', '/home/www-data/nodes/' + nod.name()])
-        self._docker.execute_cmd(['mv', '/home/www-data/tmp/' + stdout.split()[
+            ['mkdir', '-p', '/app/nodes/' + nod.name()])
+        self._docker.execute_cmd(['mv', '/app/tmp/' + stdout.split()[
             0] + '/blocks/blocks.index',
-                                  '/home/www-data/nodes/' + nod.name() +
+                                  '/app/nodes/' + nod.name() +
                                   '/blocks/blocks.index'])
-        self._docker.execute_cmd(['mv', '/home/www-data/tmp/' + stdout.split()[
+        self._docker.execute_cmd(['mv', '/app/tmp/' + stdout.split()[
             0] + '/blocks/blocks.log',
-                                  '/home/www-data/nodes/' + nod.name() +
+                                  '/app/nodes/' + nod.name() +
                                   '/blocks/blocks.log'])
         self._docker.execute_cmd(
-            ['mv', '/home/www-data/tmp/' + stdout.split()[0] + '/config.ini',
-             '/home/www-data/nodes/' + nod.name() + '/config.ini'])
-        self._docker.execute_cmd(['mv', '/home/www-data/tmp/' + stdout.split()[
+            ['mv', '/app/tmp/' + stdout.split()[0] + '/config.ini',
+             '/app/nodes/' + nod.name() + '/config.ini'])
+        self._docker.execute_cmd(['mv', '/app/tmp/' + stdout.split()[
             0] + '/protocol_features',
-                                  '/home/www-data/nodes/' + nod.name() +
+                                  '/app/nodes/' + nod.name() +
                                   '/protocol_features'])
         self._docker.execute_cmd(
-            ['mv', '/home/www-data/tmp/' + stdout.split()[0] + '/snapshots',
-             '/home/www-data/nodes/' + nod.name() + '/snapshots'])
-        self._docker.rm_file('/home/www-data/tmp/' + stdout.split()[0])
+            ['mv', '/app/tmp/' + stdout.split()[0] + '/snapshots',
+             '/app/nodes/' + nod.name() + '/snapshots'])
+        self._docker.rm_file('/app/tmp/' + stdout.split()[0])
         stdout, stderr, exit_code = self._docker.execute_cmd(
-            ['ls', '/home/www-data/nodes/' + nod.name() + '/snapshots'])
+            ['ls', '/app/nodes/' + nod.name() + '/snapshots'])
         self.start_node(nod, stdout.split()[0])
         self.set_active(nod)
 
