@@ -343,17 +343,19 @@ class dune:
         return stdout
 
     def export_wallet(self):
-        self._docker.execute_cmd(['mkdir', '_wallet'])
-        self._docker.execute_cmd(['cp', '-R', '/root/eosio-wallet', '_wallet/eosio-wallet'])
-        self._docker.execute_cmd(['cp', '-R', '.wallet.pw', '_wallet/.wallet.pw'])
+        self._docker.execute_cmd(['mkdir', '/app/_wallet'])
+        self._docker.execute_cmd(['cp', '-R', '/root/eosio-wallet/', '/app/_wallet/eosio-wallet'])
+        self._docker.execute_cmd(['cp', '-R', '/app/.wallet.pw', '/app/_wallet/.wallet.pw'])
         self._docker.tar_dir("wallet", "_wallet")
         self._docker.cp_to_host("/app/wallet.tgz", "wallet.tgz")
 
     def import_wallet(self, path):
-        self._docker.cp_from_host(path, "wallet.tgz")
-        self._docker.untar("wallet.tgz")
-        self._docker.execute_cmd(["mv", "_wallet/.wallet.pw", "/app"])
-        self._docker.execute_cmd(["mv", "_wallet", "/root"])
+        self._docker.cp_from_host(path, "/app/wallet.tgz")
+        self._docker.untar("/app/wallet.tgz")
+        self._docker.execute_cmd(["mv", "/app/_wallet/.wallet.pw", "/app"])
+        self._docker.execute_cmd(["cp", "-R", "/app/_wallet/eosio-wallet/", "/root"])
+        self._docker.execute_cmd(["rm", "-R", "/app/_wallet/"])
+        self._docker.execute_cmd(["rm", "/app/wallet.tgz"])
 
     # pylint: disable=fixme
     # TODO cleos has a bug displaying keys for K1 so, we need the public key
