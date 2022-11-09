@@ -24,8 +24,7 @@ RUN mv my_init /sbin
 RUN ./bootstrap_env.sh
 RUN ./setup_system.sh
 
-RUN mkdir -p /home/www-data/nodes
-RUN cp /app/config.ini /home/www-data/config.ini
+RUN mkdir -p /app/nodes
 
 # thanks to github.com/phusion
 # this should solve reaping issues of stopped nodes

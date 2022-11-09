@@ -7,7 +7,7 @@ class ctx:
 
 class context:
     _file_name = ".dune.ctx"
-    _dir = '/home/www-data/'
+    _dir = '/app/'
     _docker = None
     _ctx = ctx()
 
@@ -49,7 +49,7 @@ class context:
 
     def get_config_args(self, nod):
         conf, stderr, exit_code = self._docker.execute_cmd(
-            ['cat', '/home/www-data/nodes/' + nod.name() + '/config.ini'])
+            ['cat', '/app/nodes/' + nod.name() + '/config.ini'])
 
         http_port = None
         p2p_port = None
