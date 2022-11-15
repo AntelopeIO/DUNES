@@ -33,7 +33,8 @@ if __name__ == '__main__':
                     if os.path.isdir(cfg_temp):
                         cfg_temp = os.path.join(cfg_temp, "config.ini")
                     if os.path.split(cfg_temp)[1] != "config.ini":
-                        parser.exit_with_help_message("--config: config must either be a a config.ini file or a path containg one\n"
+                        parser.exit_with_help_message("--config: config must either be a config.ini"
+                                                      "file or a path containg one\n"
                                                       "bad value: ", cfg_temp)
                     if not os.path.exists(cfg_temp):
                         parser.exit_with_help_message("--config: config.ini file must exist\n"
