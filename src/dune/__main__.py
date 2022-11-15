@@ -1,3 +1,5 @@
+import os   # path
+
 from args import arg_parser
 from args import parse_optional
 from dune import dune
@@ -21,12 +23,28 @@ if __name__ == '__main__':
         try:
             if args.start is not None:
                 n: object
-                if len(args.start) == 1:
+                if args.config is None:
                     n = node(args.start[0])
+                elif len(args.config) == 1:
+                    cfg_temp = args.config[0]
+                    if not os.path.exists(cfg_temp):
+                        parser.exit_with_help_message("--config: config.ini unknown path\n",
+                                                       "bad value: ", cfg_temp)
+                    if os.path.isdir(cfg_temp):
+                        cfg_temp = os.path.join(cfg_temp, "config.ini")
+                    if os.path.split(cfg_temp)[1] != "config.ini":
+                        parser.exit_with_help_message("--config: config must either be a a config.ini file or a path containg one\n"
+                                                      "bad value: ", cfg_temp)
+                    if not os.path.exists(cfg_temp):
+                        parser.exit_with_help_message("--config: config.ini file must exist\n"
+                                                      "bad value: ", cfg_temp)
+                    n = node(args.start[0], dune_sys.docker.abs_host_path(cfg_temp))
                 else:
-                    n = node(args.start[0],
-                             dune_sys.docker.abs_host_path(args.start[1]))
+                    parser.exit_with_help_message("--start / --config error")
                 dune_sys.start_node(n)
+
+            elif args.config is not None:
+                parser.exit_with_help_message("--config without --start")
 
             elif args.remove is not None:
                 dune_sys.remove_node(node(args.remove))

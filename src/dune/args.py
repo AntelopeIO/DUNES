@@ -43,9 +43,11 @@ class arg_parser:
     def __init__(self):
         self._parser = argparse.ArgumentParser(
             description='DUNE: Docker Utilities for Node Execution')
-        self._parser.add_argument('--start', nargs='+', metavar=["NODE", "CONFIG-DIR (Optional)"],
-                                  help='start a new node with a given name and an optional '
-                                       'config.ini')
+        self._parser.add_argument('-s','--start', nargs=1, metavar=("NODE"),
+                                  help='start a new node with a given name' )
+        self._parser.add_argument('-c','--config', nargs=1, metavar=("CONFIG_DIR"),
+                                  help='optionally used with --start, a path containing'
+                                  ' the config.ini file to use' )
         self._parser.add_argument('--stop', metavar="NODE", help='stop a node with a given name')
         self._parser.add_argument('--remove', metavar="NODE",
                                   help='a node with a given name, will stop the node if running')
@@ -150,3 +152,8 @@ class arg_parser:
 
     def parse(self):
         return self._parser.parse_args()
+
+    def exit_with_help_message(self, *args, return_value=1):
+        self._parser.print_help(sys.stderr)
+        print("\nError: ", *args, file=sys.stderr)
+        sys.exit(return_value)
