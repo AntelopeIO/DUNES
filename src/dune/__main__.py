@@ -1,4 +1,5 @@
 import os   # path
+import sys  # sys.exit()
 
 from args import arg_parser
 from args import parse_optional
@@ -178,6 +179,8 @@ if __name__ == '__main__':
         except KeyboardInterrupt:
             pass
         except dune_node_not_found as err:
-            print('Node not found [' + err.name() + ']')
+            print('Node not found [' + err.name() + ']', file=sys.stderr)
+            sys.exit(1)
         except dune_error as err:
-            print("Internal Error")
+            print("Internal Error", file=sys.stderr)
+            sys.exit(1)
