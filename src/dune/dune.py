@@ -124,7 +124,7 @@ class dune:
         if not is_restart and nod.config() is None:
             nod.set_config('/app/config.ini')
 
-        if nod.config() != None:
+        if nod.config() is not None:
             self._docker.execute_cmd(['cp', nod.config(), nod.config_dir()])
             print("Using Configuration [" + nod.config() + "]")
 
