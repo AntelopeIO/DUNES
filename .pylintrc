@@ -327,7 +327,8 @@ indent-after-paren=4
 indent-string='    '
 
 # Maximum number of characters on a single line.
-max-line-length=100
+#   140 was chosen to work nicely on 14" laptops.
+max-line-length=140
 
 # Maximum number of lines in a module.
 max-module-lines=1000

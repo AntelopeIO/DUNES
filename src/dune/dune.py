@@ -101,8 +101,7 @@ class dune:
         self._docker.execute_cmd(['mkdir', '-p', nod.data_dir()])
 
     def start_node(self, nod, snapshot=None):
-        stdout, stderr, exit_code = self._docker.execute_cmd(
-            ['ls', '/app/nodes'])
+        stdout, stderr, exit_code = self._docker.execute_cmd(['ls', '/app/nodes'])
 
         if self.is_node_running(nod):
             print("Node [" + nod.name() + "] is already running.")
@@ -111,41 +110,36 @@ class dune:
         cmd = ['sh', 'start_node.sh', nod.data_dir(), nod.config_dir()]
 
         if snapshot is not None:
-            cmd = cmd + [
-                '--snapshot /app/nodes/' + nod.name() + '/snapshots/' +
-                snapshot + ' -e']
+            cmd = cmd + ['--snapshot /app/nodes/' + nod.name() + '/snapshots/' + snapshot + ' -e']
         else:
             cmd = cmd + [' ']
 
         # if node name is not found we need to create it
+        is_restart=True
         if not nod.name() in stdout:
+            is_restart=False
             self.create_node(nod)
 
         # copy config.ini to config-dir
-        if nod.config() is None:
+        if not is_restart and nod.config() is None:
             nod.set_config('/app/config.ini')
 
-        self._docker.execute_cmd(['cp', nod.config(), nod.config_dir()])
-        print("Using Configuration [" + nod.config() + "]")
+        if nod.config() is not None:
+            self._docker.execute_cmd(['cp', nod.config(), nod.config_dir()])
+            print("Using Configuration [" + nod.config() + "]")
 
         ctx = self._context.get_ctx()
         cfg_args = self._context.get_config_args(nod)
 
         if self.node_exists(node(ctx.active)):
             if cfg_args[0] == ctx.http_port:
-                print(
-                    "Currently active node [" + ctx.active +
-                    "] http port is the same as this nodes [" + nod.name() + "]")
+                print("Currently active node [" + ctx.active + "] http port is the same as this nodes [" + nod.name() + "]")
                 self.stop_node(node(ctx.active))
             elif cfg_args[1] == ctx.p2p_port:
-                print(
-                    "Currently active node [" + ctx.active +
-                    "] p2p port is the same as this nodes [" + nod.name() + "]")
+                print("Currently active node [" + ctx.active + "] p2p port is the same as this nodes [" + nod.name() + "]")
                 self.stop_node(node(ctx.active))
             elif cfg_args[2] == ctx.ship_port:
-                print(
-                    "Currently active node [" + ctx.active +
-                    "] ship port is the same as this nodes [" + nod.name() + "]")
+                print("Currently active node [" + ctx.active + "] ship port is the same as this nodes [" + nod.name() + "]")
                 self.stop_node(node(ctx.active))
 
         stdout, stderr, exit_code = self._docker.execute_cmd(cmd + [nod.name()])
