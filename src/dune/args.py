@@ -91,10 +91,10 @@ class arg_parser:
                                        '-DFLAG2=Off]')
         self._parser.add_argument('--ctest', nargs=1, metavar=["DIR", "-- FLAGS (Optional)"],
                                   help='run the ctest tests for a smart contract project at the '
-                                       'directory given optional flags are of the form -- -VV')
-        self._parser.add_argument('--gdb', nargs=1, metavar=["DIR", "-- FLAGS (Optional)"],
-                                  help='run the ctest tests for a smart contract project at the '
-                                       'directory given optional flags are of the form -- -VV')
+                                       'directory given. Optional flags are of the form -- -VV')
+        self._parser.add_argument('--gdb', nargs=1, metavar=["PROGRAM", "-- FLAGS (Optional)"],
+                                  help='start gdb into the container with given executive binary'
+                                       'Optional flags are of the form -- -VV')
         self._parser.add_argument('--deploy', nargs=2, metavar=["DIR", "ACCOUNT"],
                                   help='deploy a smart contract and ABI to account given')
         self._parser.add_argument('--destroy-container', action='store_true',
