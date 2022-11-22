@@ -231,97 +231,98 @@ class dune:
         for state in states:
             print( state.string(sep=sep, simple=simple) )
 
-
+    # pylint: disable=too-many-locals,too-many-statements
     def export_node(self, nod, path):
         # Sanity check
         if not self.node_exists(nod):
             raise dune_node_not_found(nod.name())
-        else:
 
-            ctx = self._context.get_ctx()
+        ctx = self._context.get_ctx()
 
-            is_active=nod.name() == ctx.active
-            is_running=self.is_node_running(nod)
-            my_addrs=self._context.get_config_args(nod)
+        is_active=nod.name() == ctx.active
+        is_running=self.is_node_running(nod)
+        my_addrs=self._context.get_config_args(nod)
 
-            was_running=[]
-            was_active=None
+        was_running=[]
+        was_active=None
 
-            initial_states=[]
+        initial_states=[]
 
-            if not is_active or not is_running:
-                # Get the current states.
-                initial_states=self.state_list()
+        if not is_active or not is_running:
+            # Get the current states.
+            initial_states=self.state_list()
 
-                # For each state, make decisions based on it's
-                for state in initial_states:
-                    if state.name != nod.name():
-                        if state.is_active:
-                            was_active = state.name
-                        if state.is_running:
-                            # We only need to stop an running node if there are address collisions.
-                            if my_addrs[0] == state.http or my_addrs[1] == state.p2p or my_addrs[2] == state.ship:
-                                was_running.append(state.name)
-                                self.stop_node(node(state.name))
-                                print("\t", state.name, "was stopped due to address collision.")
+            # For each state, make decisions based on it's
+            for state in initial_states:
+                # Don't operate on our node.
+                if state.name == nod.name():
+                    continue
+                if state.is_active:
+                    was_active = state.name
+                if state.is_running:
+                    # We only need to stop a running node if there are address collisions.
+                    if state.http in my_addrs or state.p2p in my_addrs or state.ship in my_addrs:
+                        was_running.append(state.name)
+                        self.stop_node(node(state.name))
+                        print("\t", state.name, "was stopped due to address collision.")
 
-            # Get this node ready for export.
-            if not is_active:
-                self.set_active(nod)
-            if not is_running:
-                self.start_node(nod)
-
-
-            # Paths:
-            directory=path
-            filename=nod.name()+".tgz"
-
-            # Update paths based on input.
-            if os.path.splitext(path)[1].lower() == ".tgz":
-                directory=os.path.split(path)[0]
-                filename=os.path.split(path)[1]
-
-            # Ensure the directory is absolute and it exists.
-            directory=os.path.realpath(directory)
-            if not os.path.exists(directory):
-                os.makedirs(directory)
-
-            # Determine the final full path.
-            fullpath=os.path.join(directory,filename)
-
-            src_path='/app/nodes/' + nod.name()
-            dst_path='/app/tmp/' + nod.name()
+        # Get this node ready for export.
+        if not is_active:
+            self.set_active(nod)
+        if not is_running:
+            self.start_node(nod)
 
 
-            print("Exporting data from node [" + nod.name() + "] to location " + fullpath)
+        # Paths:
+        directory=path
+        filename=nod.name()+".tgz"
 
-            # Create the snapshot
-            self.create_snapshot()
-            # Stop the node for copy.
-            self.stop_node(nod)
+        # Update paths based on input.
+        if os.path.splitext(path)[1].lower() == ".tgz":
+            directory=os.path.split(path)[0]
+            filename=os.path.split(path)[1]
 
-            self._docker.execute_cmd(['mkdir', '-p', dst_path])
-            self._docker.execute_cmd(['cp', '-R', src_path + '/blocks', dst_path + '/blocks'])
-            self._docker.execute_cmd(['cp', src_path + '/config.ini', dst_path + '/config.ini'])
-            self._docker.execute_cmd(['cp', '-R', src_path + '/protocol_features', dst_path + '/protocol_features'])
-            self._docker.execute_cmd(['cp', '-R', src_path + '/snapshots', dst_path + '/snapshots'])
+        # Ensure the directory is absolute and it exists.
+        directory=os.path.realpath(directory)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
 
-            self._docker.tar_dir(nod.name(), 'tmp/' + nod.name())
-            self._docker.cp_to_host('/app/' + nod.name() + '.tgz', fullpath)
-            self._docker.rm_file('/app/' + nod.name() + '.tgz')
-            self._docker.rm_file(dst_path)
+        # Determine the final full path.
+        fullpath=os.path.join(directory,filename)
 
-            # Restore previously active node.
-            if not is_active and was_active != None:
-                self.set_active(node(was_active))
+        src_path='/app/nodes/' + nod.name()
+        dst_path='/app/tmp/' + nod.name()
 
-            # Restart the node if necessary.
-            if is_running:
-                self.start_node(nod)
 
-            # Restart any nodes that were previously running.
-            for old_runner in was_running:
-                self.start_node(node(old_runner))
+        print("Exporting data from node [" + nod.name() + "] to location " + fullpath)
+
+        # Create the snapshot
+        self.create_snapshot()
+        # Stop the node for copy.
+        self.stop_node(nod)
+
+        self._docker.execute_cmd(['mkdir', '-p', dst_path])
+        self._docker.execute_cmd(['cp', '-R', src_path + '/blocks', dst_path + '/blocks'])
+        self._docker.execute_cmd(['cp', src_path + '/config.ini', dst_path + '/config.ini'])
+        self._docker.execute_cmd(['cp', '-R', src_path + '/protocol_features', dst_path + '/protocol_features'])
+        self._docker.execute_cmd(['cp', '-R', src_path + '/snapshots', dst_path + '/snapshots'])
+
+        self._docker.tar_dir(nod.name(), 'tmp/' + nod.name())
+        self._docker.cp_to_host('/app/' + nod.name() + '.tgz', fullpath)
+        self._docker.rm_file('/app/' + nod.name() + '.tgz')
+        self._docker.rm_file(dst_path)
+
+        # Restore previously active node.
+        if not is_active and was_active is not None:
+            self.set_active(node(was_active))
+
+        # Restart the node if necessary.
+        if is_running:
+            self.start_node(nod)
+
+        # Restart any nodes that were previously running.
+        for old_runner in was_running:
+            self.start_node(node(old_runner))
 
 
     def import_node(self, path, nod):

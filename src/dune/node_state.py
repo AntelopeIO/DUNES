@@ -2,8 +2,9 @@ import sys
 #from typing import NamedTuple
 
 
-"""A simple class for reporting node state."""
 class node_state:
+    """A simple class for reporting node state."""
+
     name: str
     is_active: bool
     is_running: bool
@@ -12,6 +13,7 @@ class node_state:
     ship: str
 
 
+    # pylint: disable=too-many-arguments
     def __init__(self, name, is_active, is_running, http, p2p, ship):
         self.name=name
         self.is_active=is_active
