@@ -42,7 +42,9 @@ class arg_parser:
 
     def __init__(self):
         self._parser = argparse.ArgumentParser(
-            description='DUNE: Docker Utilities for Node Execution')
+            description='''DUNE: Docker Utilities for Node Execution.
+                        -- [COMMANDS] run any number of commands in the container.
+                        Example: dune -- cleos --help''')
         self._parser.add_argument('-s','--start', nargs=1, metavar=("NODE"),
                                   help='start a new node with a given name' )
         self._parser.add_argument('-c','--config', nargs=1, metavar=("CONFIG_DIR"),
