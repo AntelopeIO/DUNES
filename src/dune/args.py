@@ -60,10 +60,12 @@ class arg_parser:
                                   help='set a node to active status')
         self._parser.add_argument('--get-active', action='store_true',
                                   help='get the name of the node that is currently active')
-        self._parser.add_argument('--export-node', metavar=("NODE", "DIR"), nargs=2,
-                                  help='export state and blocks log for the given node.')
-        self._parser.add_argument('--import-node', metavar=("DIR", "NODE"), nargs=2,
-                                  help='import state and blocks log to a given node')
+        self._parser.add_argument('--export-node', metavar=("NODE", "PATH"), nargs=2,
+                                  help='export state and blocks log for the given node. '
+                                  'PATH may be a directory or a filename with `.tgz` extension.')
+        self._parser.add_argument('--import-node', metavar=("NODE", "PATH"), nargs=2,
+                                  help='import state and blocks log to a given node'
+                                  'PATH *must* be a previously exported node ending in `.tgz`.')
         self._parser.add_argument('--monitor', action='store_true',
                                   help='monitor the currently active node')
         self._parser.add_argument('--import-dev-key', metavar="KEY",
