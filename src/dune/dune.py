@@ -1,7 +1,9 @@
 # pylint: disable=missing-function-docstring, missing-module-docstring
+import os
+import sys                      # sys.stderr
 from context import context
 from docker import docker
-
+from node_state import node_state
 
 # VERSION INFORMATION
 def version_major():
@@ -84,8 +86,7 @@ class dune:
         return self._docker.dir_exists('/app/nodes/' + nod.name())
 
     def is_node_running(self, nod):
-        return self._docker.find_pid(
-            '/app/nodes/' + nod.name() + ' ') != -1
+        return self._docker.find_pid('/app/nodes/' + nod.name() + ' ') != -1
 
     def set_active(self, nod):
         if self.node_exists(nod):
@@ -201,122 +202,181 @@ class dune:
     def start_container(self):
         self._docker.start()
 
+
+    def state_list(self):
+        # [(node_name, active, running, ports),...]
+        rv=[]
+        stdout, stderr, exit_code = self._docker.execute_cmd(['ls', '/app/nodes'])
+        ctx = self._context.get_ctx()
+        for node_name in stdout.split():
+            active = False
+            if node_name == ctx.active:
+                active=True
+            running = self.is_node_running(node(node_name))
+            addrs = self._context.get_config_args(node(node_name))
+            rv.append( node_state(node_name, active, running, addrs[0], addrs[1], addrs[2]) )
+        return rv
+
+
     # pylint: disable=too-many-branches
-    def list_nodes(self, simple=False):
+    def list_nodes(self, simple=False, sep='|'):
+
         if simple:
             print("Node|Active|Running|HTTP|P2P|SHiP")
         else:
-            print(
-                "Node Name        | Active? | Running? | HTTP           | "
-                "P2P          | SHiP")
-            print(
-                "---------------------------------------------------------"
-                "-----------------------------")
-        stdout, stderr, exit_code = self._docker.execute_cmd(
-            ['ls', '/app/nodes'])
-        ctx = self._context.get_ctx()
-        for string in stdout.split():
-            print(string, end='')
-            if string == ctx.active:
-                if simple:
-                    print('|Y', end='')
-                else:
-                    print('\t\t |    Y', end='')
-            else:
-                if simple:
-                    print('|N', end='')
-                else:
-                    print('\t\t |    N', end='')
-            if not self.is_node_running(node(string)):
-                if simple:
-                    print('|N', end='')
-                else:
-                    print('\t   |    N', end='')
-            else:
-                if simple:
-                    print('|Y', end='')
-                else:
-                    print('\t   |    Y', end='')
+            print("Node Name\t\t | Active? | Running? | HTTP           | P2P          | SHiP\n"
+                  "----------------------------------------------------------------------------------------------")
 
-            ports = self._context.get_config_args(node(string))
-            if simple:
-                print('|' + ports[0] + '|' + ports[1] + '|' + ports[2])
-            else:
-                print(
-                    '     | ' + ports[0] + ' | ' + ports[1] + ' | ' + ports[2])
+        states=self.state_list()
+        for state in states:
+            print( state.string(sep=sep, simple=simple) )
 
-    def export_node(self, nod, directory):
-        if self.node_exists(nod):
-            self.set_active(nod)
-            print(
-                "Exporting data from node [" + nod.name() + "] to location " +
-                directory)
-            if not self.is_node_running(nod):
-                self.start_node(nod)
-            self.create_snapshot()
-            self.stop_node(nod)
-            self._docker.execute_cmd(
-                ['mkdir', '-p', '/app/tmp/' + nod.name()])
-            self._docker.execute_cmd(
-                ['cp', '-R', '/app/nodes/' + nod.name() + '/blocks',
-                 '/app/tmp/' + nod.name() + '/blocks'])
-            self._docker.execute_cmd(
-                ['cp', '/app/nodes/' + nod.name() + '/config.ini',
-                 '/app/tmp/' + nod.name() + '/config.ini'])
-            self._docker.execute_cmd(['cp', '-R',
-                                      '/app/nodes/' + nod.name() +
-                                      '/protocol_features',
-                                      '/app/tmp/' + nod.name() +
-                                      '/protocol_features'])
-            self._docker.execute_cmd(
-                ['cp', '-R', '/app/nodes/' + nod.name() + '/snapshots',
-                 '/app/tmp/' + nod.name() + '/snapshots'])
-            self._docker.tar_dir(nod.name(), 'tmp/' + nod.name())
-            self._docker.cp_to_host('/app/' + nod.name() + '.tgz',
-                                    directory)
-            self._docker.rm_file('/app/' + nod.name() + '.tgz')
-            self._docker.rm_file('/app/tmp/' + nod.name())
-            self.start_node(nod)
-        else:
+    # pylint: disable=too-many-locals,too-many-statements
+    def export_node(self, nod, path):
+        # Sanity check
+        if not self.node_exists(nod):
             raise dune_node_not_found(nod.name())
 
-    def import_node(self, directory, nod):
+        ctx = self._context.get_ctx()
+
+        is_active=nod.name() == ctx.active
+        is_running=self.is_node_running(nod)
+        my_addrs=self._context.get_config_args(nod)
+
+        was_running=[]
+        was_active=None
+
+        initial_states=[]
+
+        if not is_active or not is_running:
+            # Get the current states.
+            initial_states=self.state_list()
+
+            # For each state, make decisions based on it's
+            for state in initial_states:
+                # Don't operate on our node.
+                if state.name == nod.name():
+                    continue
+                if state.is_active:
+                    was_active = state.name
+                if state.is_running:
+                    # We only need to stop a running node if there are address collisions.
+                    if state.http in my_addrs or state.p2p in my_addrs or state.ship in my_addrs:
+                        was_running.append(state.name)
+                        self.stop_node(node(state.name))
+                        print("\t", state.name, "was stopped due to address collision.")
+
+        # Get this node ready for export.
+        if not is_active:
+            self.set_active(nod)
+        if not is_running:
+            self.start_node(nod)
+
+
+        # Paths:
+        directory=path
+        filename=nod.name()+".tgz"
+
+        # Update paths based on input.
+        if os.path.splitext(path)[1].lower() == ".tgz":
+            directory=os.path.split(path)[0]
+            filename=os.path.split(path)[1]
+
+        # Ensure the directory is absolute and it exists.
+        directory=os.path.realpath(directory)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
+        # Determine the final full path.
+        fullpath=os.path.join(directory,filename)
+
+        src_path='/app/nodes/' + nod.name()
+        dst_path='/app/tmp/' + nod.name()
+
+
+        print("Exporting data from node [" + nod.name() + "] to location " + fullpath)
+
+        # Create the snapshot
+        self.create_snapshot()
+        # Stop the node for copy.
+        self.stop_node(nod)
+
+        self._docker.execute_cmd(['mkdir', '-p', dst_path])
+        self._docker.execute_cmd(['cp', '-R', src_path + '/blocks', dst_path + '/blocks'])
+        self._docker.execute_cmd(['cp', src_path + '/config.ini', dst_path + '/config.ini'])
+        self._docker.execute_cmd(['cp', '-R', src_path + '/protocol_features', dst_path + '/protocol_features'])
+        self._docker.execute_cmd(['cp', '-R', src_path + '/snapshots', dst_path + '/snapshots'])
+
+        self._docker.tar_dir(nod.name(), 'tmp/' + nod.name())
+        self._docker.cp_to_host('/app/' + nod.name() + '.tgz', fullpath)
+        self._docker.rm_file('/app/' + nod.name() + '.tgz')
+        self._docker.rm_file(dst_path)
+
+        # Restore previously active node.
+        if not is_active and was_active is not None:
+            self.set_active(node(was_active))
+
+        # Restart the node if necessary.
+        if is_running:
+            self.start_node(nod)
+
+        # Restart any nodes that were previously running.
+        for old_runner in was_running:
+            self.start_node(node(old_runner))
+
+
+    def import_node(self, path, nod):
+
+        # Sanity check path
+        if not os.path.exists(path):
+            print("File not found: ", path, file=sys.stderr)
+            raise dune_error
+        if os.path.splitext(path)[1].lower() != ".tgz":
+            print("Path extension must be `.tgz`: ", path, file=sys.stderr)
+            raise dune_error
+
         print("Importing node data [" + nod.name() + "]")
+
+        # If the node already exists we delete it.
         if self.node_exists(nod):
             self.remove_node(nod)
-        stdout, stderr, exit_code = \
-            self._docker.cp_from_host(directory,
-                                      '/app/tmp.tgz')
+
+        # Copy the tgz file.
+        stdout, stderr, exit_code = self._docker.cp_from_host(path, '/app/tmp.tgz')
         if exit_code != 0:
             print(stderr)
             raise dune_error
+
+        # Clean up the tmp file, untar, and remove the file.
+        self._docker.rm_file('/app/tmp') # remove any existing file
         self._docker.untar('/app/tmp.tgz')
         self._docker.rm_file('/app/tmp.tgz')
-        stdout, stderr, exit_code = self._docker.execute_cmd(
-            ['ls', '/app/tmp'])
-        self._docker.execute_cmd(
-            ['mkdir', '-p', '/app/nodes/' + nod.name()])
-        self._docker.execute_cmd(['mv', '/app/tmp/' + stdout.split()[
-            0] + '/blocks/blocks.index',
-                                  '/app/nodes/' + nod.name() +
-                                  '/blocks/blocks.index'])
-        self._docker.execute_cmd(['mv', '/app/tmp/' + stdout.split()[
-            0] + '/blocks/blocks.log',
-                                  '/app/nodes/' + nod.name() +
-                                  '/blocks/blocks.log'])
-        self._docker.execute_cmd(
-            ['mv', '/app/tmp/' + stdout.split()[0] + '/config.ini',
-             '/app/nodes/' + nod.name() + '/config.ini'])
-        self._docker.execute_cmd(['mv', '/app/tmp/' + stdout.split()[
-            0] + '/protocol_features',
-                                  '/app/nodes/' + nod.name() +
-                                  '/protocol_features'])
-        self._docker.execute_cmd(
-            ['mv', '/app/tmp/' + stdout.split()[0] + '/snapshots',
-             '/app/nodes/' + nod.name() + '/snapshots'])
-        self._docker.rm_file('/app/tmp/' + stdout.split()[0])
-        stdout, stderr, exit_code = self._docker.execute_cmd(
-            ['ls', '/app/nodes/' + nod.name() + '/snapshots'])
+
+        # Find the path inside temp of the import data.
+        stdout, stderr, exit_code = self._docker.execute_cmd(['ls', '/app/tmp'])
+        src_name=stdout.split()[0]
+        src_path='/app/tmp/' + src_name
+
+        # Calculate and create the destination path.
+        dst_path='/app/nodes/' + nod.name()
+        self._docker.execute_cmd(['mkdir', '-p', dst_path + '/blocks'])
+
+        # Move data to the destination.
+        self._docker.execute_cmd(['mv', src_path + '/blocks/blocks.index', dst_path + '/blocks/blocks.index'])
+        self._docker.execute_cmd(['mv', src_path + '/blocks/blocks.log',   dst_path + '/blocks/blocks.log'])
+        self._docker.execute_cmd(['mv', src_path + '/config.ini',          dst_path + '/config.ini'])
+        self._docker.execute_cmd(['mv', src_path + '/protocol_features',   dst_path + '/protocol_features'])
+        self._docker.execute_cmd(['mv', src_path + '/snapshots',           dst_path + '/snapshots'])
+        # Clean up the temp.
+        self._docker.rm_file('/app/tmp')
+
+        # Ensure a snapshot exists
+        stdout, stderr, exit_code = self._docker.execute_cmd(['ls', dst_path + '/snapshots'])
+        if len(stdout) == 0:
+            print('No snapshot found for ', nod.name(), ' sourced from: \n\t', path, file=sys.stderr)
+            raise dune_error
+
+        # Start and activate the node...
         self.start_node(nod, stdout.split()[0])
         self.set_active(nod)
 
@@ -414,8 +474,7 @@ class dune:
     def create_snapshot(self):
         ctx = self._context.get_ctx()
         url = "http://" + ctx.http_port + "/v1/producer/create_snapshot"
-        stdout, stderr, exit_code = self._docker.execute_cmd(
-            ['curl', '-X', 'POST', url])
+        stdout, stderr, exit_code = self._docker.execute_cmd(['curl', '-X', 'POST', url])
         print(stdout)
         print(stderr)
         print(url)
