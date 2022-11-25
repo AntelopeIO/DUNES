@@ -21,6 +21,9 @@ RUN chmod +x setup_system.sh
 RUN chmod +x write_context.sh
 RUN mv my_init /sbin
 
+ARG LEAP_VERSION=3.1.0
+ARG CDT_VERSION=3.0.0
+
 RUN ./bootstrap_env.sh
 RUN ./setup_system.sh
 
@@ -28,7 +31,7 @@ RUN mkdir -p /app/nodes
 
 # thanks to github.com/phusion
 # this should solve reaping issues of stopped nodes
-CMD ["/sbin/my_init"]
+CMD ["/usr/bin/python3", "/sbin/my_init"]
 
 # port for nodeos p2p
 EXPOSE 9876
