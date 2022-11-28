@@ -225,7 +225,7 @@ class dune:
         node_name = "Node Name"
 
         states=self.state_list()
-        name_width = len(node_name) + buffer;
+        name_width = len(node_name) + buffer
         if not simple:
             for state in states:
                 name_width = max( len(state.name) + buffer, name_width)

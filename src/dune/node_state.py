@@ -45,4 +45,5 @@ class node_state:
         buffer = ""
         while (len(self.name) + len(buffer)) < name_width:
             buffer += " "
-        return f"{self.name}{buffer}{sep}    {active_str}    {sep}    {running_str}     {sep} {self.http} {sep} {self.p2p} {sep} {self.ship}"
+        return \
+            f"{self.name}{buffer}{sep}    {active_str}    {sep}    {running_str}     {sep} {self.http} {sep} {self.p2p} {sep} {self.ship}"
