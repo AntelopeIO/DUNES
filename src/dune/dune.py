@@ -233,13 +233,9 @@ class dune:
         if simple:
             print("Node|Active|Running|HTTP|P2P|SHiP")
         else:
-            while len(node_name) < name_width:
-                node_name += " "
-            dash = ""
-            while len(dash) < name_width:
-                dash += "-"
-            print(node_name + "| Active? | Running? | HTTP           | P2P          | SHiP\n"
-                  + dash +    "---------------------------------------------------------------------")
+            header = '| Active? | Running? | HTTP           | P2P          | SHiP          '
+            print(f'{node_name : <{name_width}}{header}')
+            print(f'{"":{"-"}<{name_width + len(header)}}')
 
         for state in states:
             print( state.string(sep=sep, simple=simple, name_width=name_width) )
