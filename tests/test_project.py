@@ -3,21 +3,25 @@
 """Test DUNE Version
 
 This script tests work with the a smart contract project keys:
---create-cmake-app
---create-bare-app
---cmake-build
---ctest
---gdb
+  --create-cmake-app
+  --create-bare-app
+  --cmake-build
+  --ctest
+  --gdb
 """
+
 import glob
 import os
 import shutil
 import subprocess
 
-from common import DUNE_EXE
+from common import DUNE_EXE,TEST_PATH
 
 
-TEST_APP_DIR = "./test_app"
+PROJECT_NAME = "test_app"
+TEST_APP_DIR = TEST_PATH + "/" + PROJECT_NAME
+TEST_APP_BLD_DIR = TEST_APP_DIR + "/build/" + PROJECT_NAME
+TEST_APP_WASM = TEST_APP_BLD_DIR + "/" + PROJECT_NAME + ".wasm"    # TEST_APP_BLD_DIR + "/test_app.wasm"
 
 
 def remove_existing():
@@ -34,24 +38,24 @@ def test_create_cmake_app():
     remove_existing()
 
     # Expected files.
-    filelist = ['./test_app/',
-                './test_app/src',
-                './test_app/src/test_app.cpp',
-                './test_app/src/CMakeLists.txt',
-                './test_app/include',
-                './test_app/include/test_app.hpp',
-                './test_app/ricardian',
-                './test_app/ricardian/test_app.contracts.md',
-                './test_app/build',
-                './test_app/CMakeLists.txt',
-                './test_app/README.txt']
+    filelist = [TEST_APP_DIR + '/',
+                TEST_APP_DIR + '/src',
+                TEST_APP_DIR + '/src/' + PROJECT_NAME + '.cpp',
+                TEST_APP_DIR + '/src/CMakeLists.txt',
+                TEST_APP_DIR + '/include',
+                TEST_APP_DIR + '/include/' + PROJECT_NAME + '.hpp',
+                TEST_APP_DIR + '/ricardian',
+                TEST_APP_DIR + '/ricardian/' + PROJECT_NAME + '.contracts.md',
+                TEST_APP_DIR + '/build',
+                TEST_APP_DIR + '/CMakeLists.txt',
+                TEST_APP_DIR + '/README.txt']
 
     # Create the test app.
-    subprocess.run([DUNE_EXE, "--create-cmake-app", "test_app", "./"], check=True)
-    assert os.path.isdir("./test_app") is True
+    subprocess.run([DUNE_EXE, "--create-cmake-app", PROJECT_NAME, TEST_PATH], check=True)
+    assert os.path.isdir(TEST_APP_DIR) is True
 
     # Get a list of the files created.
-    lst = glob.glob("./test_app/**", recursive=True)
+    lst = glob.glob(TEST_APP_DIR + "/**", recursive=True)
 
     # Sort the lists and compare.
     filelist.sort()
@@ -59,7 +63,7 @@ def test_create_cmake_app():
     assert filelist == lst
 
     # Cleanup
-    shutil.rmtree("./test_app")
+    shutil.rmtree(TEST_APP_DIR)
 
 
 def test_create_bare_app():
@@ -68,18 +72,18 @@ def test_create_bare_app():
     remove_existing()
 
     # Expected file list.
-    filelist = ['./test_app/',
-                './test_app/test_app.hpp',
-                './test_app/test_app.cpp',
-                './test_app/test_app.contracts.md',
-                './test_app/README.txt']
+    filelist = [TEST_APP_DIR + '/',
+                TEST_APP_DIR + '/' + PROJECT_NAME + '.hpp',
+                TEST_APP_DIR + '/' + PROJECT_NAME + '.cpp',
+                TEST_APP_DIR + '/' + PROJECT_NAME + '.contracts.md',
+                TEST_APP_DIR + '/README.txt']
 
 
-    subprocess.run([DUNE_EXE, "--create-bare-app", "test_app", "./"], check=True)
-    assert os.path.isdir("./test_app") is True
+    subprocess.run([DUNE_EXE, "--create-bare-app", PROJECT_NAME, TEST_PATH], check=True)
+    assert os.path.isdir(TEST_APP_DIR) is True
 
     # Actual file list.
-    lst = glob.glob("./test_app/**", recursive=True)
+    lst = glob.glob(TEST_APP_DIR + "/**", recursive=True)
 
     # Sort and compare expected and actual.
     filelist.sort()
@@ -87,7 +91,7 @@ def test_create_bare_app():
     assert filelist == lst
 
     # Cleanup
-    shutil.rmtree("./test_app")
+    shutil.rmtree(TEST_APP_DIR)
 
 
 
@@ -97,25 +101,25 @@ def test_cmake_and_ctest():
     remove_existing()
 
     # Create the cmake app, test it exists.
-    subprocess.run([DUNE_EXE, "--create-cmake-app", "test_app", "./"], check=True)
-    assert os.path.isdir("./test_app") is True
+    subprocess.run([DUNE_EXE, "--create-cmake-app", PROJECT_NAME, TEST_PATH], check=True)
+    assert os.path.isdir(TEST_APP_DIR) is True
 
     # Build the app, test that the expected output file is created.
-    subprocess.run([DUNE_EXE, "--cmake-build", "./test_app"], check=True)
-    assert os.path.isfile("./test_app/build/test_app/test_app.wasm") is True
+    subprocess.run([DUNE_EXE, "--cmake-build", TEST_APP_DIR], check=True)
+    assert os.path.isfile(TEST_APP_WASM) is True
 
     # Test that CTest files are run.
     #    @TODO - This should be updated to create and test some PASSING tests.
     #    @TODO - This should be updated to create and test some FAILING tests.
     with subprocess.Popen(
-            [DUNE_EXE, "--debug", "--ctest", "./test_app", "--", "--no-tests=ignore"],
+            [DUNE_EXE, "--debug", "--ctest", TEST_APP_DIR, "--", "--no-tests=ignore"],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding="utf-8") as proc:
         stdout, stderr = proc.communicate()
 
         assert "No tests were found!!!" in stderr
 
 
-    shutil.rmtree("./test_app")
+    shutil.rmtree(TEST_APP_DIR)
 
 
 def test_gdb():
