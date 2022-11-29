@@ -33,7 +33,7 @@ class node_state:
         return f"{self.name}, {active_str}, {running_str}, {self.http}, {self.p2p}, {self.ship}"
 
 
-    def string(self, file=sys.stdout, sep=',', simple=True):
+    def string(self, file=sys.stdout, sep=',', simple=True, name_width=0):
         active_str='N'
         if self.is_active:
             active_str='Y'
@@ -42,4 +42,5 @@ class node_state:
             running_str='Y'
         if simple:
             return f"{self.name}{sep}{active_str}{sep}{running_str}{sep}{self.http}{sep}{self.p2p}{sep}{self.ship}"
-        return f"{self.name}\t\t {sep}    {active_str}\t   {sep}    {running_str}     {sep} {self.http} {sep} {self.p2p} {sep} {self.ship}"
+        return f"{self.name}{' ' * (name_width - len(self.name))}" + \
+            f"{sep}    {active_str}    {sep}    {running_str}     {sep} {self.http} {sep} {self.p2p} {sep} {self.ship}"

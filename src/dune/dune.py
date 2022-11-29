@@ -221,15 +221,24 @@ class dune:
     # pylint: disable=too-many-branches
     def list_nodes(self, simple=False, sep='|'):
 
+        buffer = 3
+        node_name = "Node Name"
+
+        states=self.state_list()
+        name_width = len(node_name) + buffer
+        if not simple:
+            for state in states:
+                name_width = max( len(state.name) + buffer, name_width)
+
         if simple:
             print("Node|Active|Running|HTTP|P2P|SHiP")
         else:
-            print("Node Name\t\t | Active? | Running? | HTTP           | P2P          | SHiP\n"
-                  "----------------------------------------------------------------------------------------------")
+            header = '| Active? | Running? | HTTP           | P2P          | SHiP          '
+            print(f'{node_name : <{name_width}}{header}')
+            print(f'{"":{"-"}<{name_width + len(header)}}')
 
-        states=self.state_list()
         for state in states:
-            print( state.string(sep=sep, simple=simple) )
+            print( state.string(sep=sep, simple=simple, name_width=name_width) )
 
     # pylint: disable=too-many-locals,too-many-statements
     def export_node(self, nod, path):
