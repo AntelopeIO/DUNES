@@ -42,8 +42,5 @@ class node_state:
             running_str='Y'
         if simple:
             return f"{self.name}{sep}{active_str}{sep}{running_str}{sep}{self.http}{sep}{self.p2p}{sep}{self.ship}"
-        buffer = ""
-        while (len(self.name) + len(buffer)) < name_width:
-            buffer += " "
-        return \
-            f"{self.name}{buffer}{sep}    {active_str}    {sep}    {running_str}     {sep} {self.http} {sep} {self.p2p} {sep} {self.ship}"
+        return f"{self.name}{' ' * (name_width - len(self.name))}" + \
+            f"{sep}    {active_str}    {sep}    {running_str}     {sep} {self.http} {sep} {self.p2p} {sep} {self.ship}"
