@@ -326,6 +326,16 @@ This will list the available protocol feature code names.
 
 ---
 
+**--leap** 
+Sets specific version of leap
+
+---
+
+**--cdt** 
+Sets specific versino of CDT (Contract Development Toolkit)
+
+---
+
 **--** 
 (Not listed with help) This will allow you to call the tool and pass through to the underlying system.
 

@@ -1,4 +1,5 @@
 import os   # path
+import subprocess #Popen
 import sys  # sys.exit()
 
 from args import arg_parser
@@ -175,6 +176,15 @@ if __name__ == '__main__':
 
             elif args.version:
                 print("DUNE " + version_full())
+
+            elif args.upgrade:
+                dune_sys.docker.upgrade()
+
+            elif args.leap:
+                dune_sys.execute_cmd(['sh', 'bootstrap_leap.sh', args.leap])
+
+            elif args.cdt:
+                dune_sys.execute_cmd(['sh', 'bootstrap_cdt.sh', args.cdt])
 
         except KeyboardInterrupt:
             pass

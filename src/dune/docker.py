@@ -8,6 +8,7 @@ class docker:
     _container = ""
     _image = ""
     _cl_args = None
+    _dune_url = 'ghcr.io/mikelik/dune:latest' #ghcr.io/AntelopeIO/dune:latest
 
     def __init__(self, container, image, cl_args):
         self._container = container
@@ -26,6 +27,16 @@ class docker:
                 self.execute_docker_cmd(
                     ['container', 'start', self._container])
             else:
+                # download dune image
+                dune_image = subprocess.check_output(['docker', 'images', '-q', self._image], stderr=None, encoding='utf-8')
+
+                if dune_image == '':
+                    print('Downloading Dune image')
+                    self.upgrade()
+                    with subprocess.Popen(['docker', 'tag', self._dune_url, 'dune:latest']) as proc:
+                        proc.communicate()
+
+
                 # start a new container
                 print("Creating docker container [" + self._container + "]")
                 host_dir = '/'
@@ -135,3 +146,7 @@ class docker:
 
     def execute_bg_cmd(self, cmd):
         return self.execute_cmd(cmd + ['&'])
+
+    def upgrade(self):
+        with subprocess.Popen(['docker', 'pull', self._dune_url]) as proc:
+            proc.communicate()
