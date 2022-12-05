@@ -36,7 +36,7 @@ class docker:
                     ['run', '-p', '8888:8888', '-p', '9876:9876', '-p',
                      '8080:8080', '-p', '3000:3000', '-p', '8000:8000', '-v',
                      host_dir + ':/host', '-d', '--name=' + self._container,
-                     self._image, 'tail', '-f', '&>', '/dev/null', '&'])
+                     self._image, 'tail', '-f', '/dev/null'])
 
     @staticmethod
     def abs_host_path(directory):
