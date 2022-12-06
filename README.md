@@ -33,6 +33,29 @@ $ docker --help
 
 This should display the list of commands and features.  If it fails with unknown command the installation did not work correctly.
 
+###Several facts which good to know about work with Docker in Linux
+Installation package of Docker contains and installs two independent products: Docker Engine and Docker Desktop.
+  
+It is easy to confuse which system you are currently working with.
+  
+Docker Desktop has builtin daemon which works in parallel with the `dockerd` daemon.
+  
+Docker Desktop keep it's settings and storage of images and containers in the user's home directory.
+  
+Docker Engine keep it's settings and storage of images and containers in the system directories.
+  
+Docker Desktop works with userns-remap turned on only.
+  
+Docker Desktop has builtin daemon which works in parallel with the dockerd daemon.   
+
+Therefore for successful work with DUNE you need:
+
+>+ Clone latest DUNE repository.
+>+ Rebuild the image by call ./bootstrap.sh.
+>+ Add a root directory of host system to list of shared directories in Docker Desktop settings.
+>+ Keep Docker Desktop running all the time when you work with DUNE.
+
+
 #### Python 3
 
 Depending on the distro you are using will determine which `python3` package to install.
