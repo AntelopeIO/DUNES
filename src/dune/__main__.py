@@ -1,5 +1,4 @@
 import os   # path
-import subprocess #Popen
 import sys  # sys.exit()
 
 from args import arg_parser
