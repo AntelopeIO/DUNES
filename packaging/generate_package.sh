@@ -12,7 +12,7 @@ if [[ ${VARIANT} == "deb" ]]; then
 fi
 
 VERSION_NO_SUFFIX="1.0.0"
-VERSION_SUFFIX="dev"
+VERSION_SUFFIX=""
 VERSION="$VERSION_NO_SUFFIX"-"$VERSION_SUFFIX"
 
 # Using CMAKE_BINARY_DIR uses an absolute path and will break cross-vm building/download/make functionality
@@ -39,7 +39,7 @@ mkdir -p tmp
 if [[ ${VARIANT} == "brew" ]]; then
    . ./generate_bottle.sh
 elif [[ ${VARIANT} == "deb" ]]; then
-   . ./generate_deb.sh ${OS} ${ARCH}
+   . ./generate_deb.sh "${OS}" "${ARCH}"
 else
    echo "Error, unknown package type. Use either ['brew', 'deb']."
    exit 2

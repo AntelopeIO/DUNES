@@ -8,7 +8,7 @@ class docker:
     _container = ""
     _image = ""
     _cl_args = None
-    _dune_url = 'ghcr.io/mikelik/dune:latest' #ghcr.io/AntelopeIO/dune:latest
+    _dune_url = 'ghcr.io/antelopeio/dune:latest'
 
     def __init__(self, container, image, cl_args):
         self._container = container
