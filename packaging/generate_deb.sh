@@ -1,7 +1,5 @@
 #!/bin/bash
 
-. ./generate_common.sh
-
 OS=$1
 ARCH=$2
 
@@ -19,9 +17,9 @@ fi
 NAME="${PROJECT}_${VERSION_NO_SUFFIX}-${RELEASE}_${ARCH}"
 
 mkdir -p "$PROJECT"/DEBIAN
-echo "Package: $PROJECT
+echo "Package: $PROJECT_PREFIX-$PROJECT
 Version: $VERSION_NO_SUFFIX-$RELEASE
-Depends: python, docker-desktop
+Depends: python3, docker
 Section: devel
 Priority: optional
 Architecture: $ARCH

@@ -68,7 +68,27 @@ Depending on the distro you are using will determine which `python3` package to 
 | Centos | python3                                                   |
 | Arch   | python                                                    |
 
+### Binary Installation on Linux
 
+This is the fastest way to get started. From the [latest release](https://github.com/AntelopeIO/DUNE/releases/latest) page, download DUNE (mainly python scripts) or visit the [release tags](https://github.com/AntelopeIO/DUNE/releases) page to download specific version of DUNE.
+
+Once you have a `*.deb` file downloaded, you can install it as follows:
+```bash
+sudo apt-get update
+sudo apt-get install -y ~/Downloads/DUNE*.deb
+```
+Your download path may vary.
+
+Finally, verify DUNE was installed correctly in `/usr/opt/DUNE/`. First [add DUNE to Path](#add-dune-to-path) and check:
+```bash
+dune --version
+```
+You should see a DUNE version number. For example:
+```
+v1.0.0
+```
+
+Latest DUNE docker image will be downloaded automatically when starting the DUNE as described in [Node management](#node-management).
 #### Add DUNE to PATH
 
 To keep from having to install files to the user's system, the preferred method of usage is to add this directory to your `PATH`.
@@ -76,10 +96,9 @@ To keep from having to install files to the user's system, the preferred method 
 ```console
 $ echo "PATH=<LocationOfDUNE>:$PATH" >> .bashrc
 ```
+### Build the DUNE image
 
-### Bootstrap DUNE
-
-Pick your preferred terminal application and input the following command:
+If you want to build the DUNE image pick your preferred terminal application and input the following command:
 
 ```console
 <PathToDUNE>/DUNE$ ./bootstrap.sh
@@ -336,6 +355,11 @@ Sets specific versino of CDT (Contract Development Toolkit)
 
 ---
 
+**--upgrade** 
+Upgrades DUNE docker image to the latest version
+
+---
+
 **--** 
 (Not listed with help) This will allow you to call the tool and pass through to the underlying system.
 
@@ -373,7 +397,7 @@ Let's create a new node.
 $ dune --start test_node
 ```
 
-This will create a new Leap node and start it running.
+If you run this for the first time DUNE docker image will be downloaded. It will create a new Leap node and start it up.
 
 If you have custom ports or options you need for the node, a config.ini file can be provided.
 

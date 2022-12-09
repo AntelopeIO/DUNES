@@ -12,13 +12,14 @@ if [[ ${VARIANT} == "deb" ]]; then
 fi
 
 VERSION_NO_SUFFIX="1.0.0"
-VERSION_SUFFIX=""
+VERSION_SUFFIX="dev"
 VERSION="$VERSION_NO_SUFFIX"-"$VERSION_SUFFIX"
 
 # Using CMAKE_BINARY_DIR uses an absolute path and will break cross-vm building/download/make functionality
 BUILD_DIR="../"
 
 VENDOR="EOSNetworkFoundation"
+PROJECT_PREFIX="ANTELOPEIO"
 PROJECT="DUNE"
 DESC="Docker Utilities for Node Execution (DUNE) is a tool to abstract over Leap programs, CDT and other services/tools related to Antelope blockchains."
 URL="https://github.com/AntelopeIO/DUNE"
@@ -29,6 +30,7 @@ export VERSION_NO_SUFFIX
 export VERSION_SUFFIX
 export VERSION
 export VENDOR
+export PROJECT-PREFIX
 export PROJECT
 export DESC
 export URL
