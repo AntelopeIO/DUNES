@@ -18,4 +18,4 @@ def test_all_options_tested():
 
     script=TEST_PATH+"/show_untested_options.sh"
 
-    completed_process = subprocess.run(script, check=True)
+    subprocess.run(script, check=True)
