@@ -39,21 +39,21 @@ The Docker installation package consists of two independent products which insta
   
 It is easy to confuse which system you are currently working with.
   
-Docker Desktop has a builtin daemon which works in parallel with the `dockerd` daemon.
+Docker Desktop has a built-in daemon which works in parallel with the `dockerd` daemon.
   
-Docker Desktop keep it's settings and storage of images and containers in the user's home directory.
+Docker Desktop keeps its settings and storage of images and containers in the user's home directory.
   
-Docker Engine keep it's settings and the storage in the system directories.
+Docker Engine keeps its settings and the storage in the system directories.
   
 Docker Desktop works with userns-remap turned on only. It is hardcoded and can't be changed.
   
-Docker Desktop has builtin daemon which works in parallel with the dockerd daemon.   
+Docker Desktop has a built-in daemon which works in parallel with the `dockerd` daemon.   
 
 Therefore, to successfully work with DUNE you should:
 
->+ Clone latest DUNE repository.
+>+ Clone the latest DUNE repository.
 >+ Rebuild the image by calling ./bootstrap.sh.
->+ Add a root directory of host system to list of shared directories in Docker Desktop settings.
+>+ Add a root directory of the host system to the list of shared directories in Docker Desktop settings.
 >+ Keep Docker Desktop running all the time when you work with DUNE.
 
 
