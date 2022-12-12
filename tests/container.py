@@ -63,7 +63,7 @@ class container:
         self.execute_cmd(['rm', '-rf', file_name])
 
     def find_pid(self, process_name):
-        stdout, stderr, exit_code = self.execute_cmd(['ps', 'ax'])
+        stdout, _, _ = self.execute_cmd(['ps', 'ax'])
         for line in stdout.splitlines(True):
             if "PID TTY" in line:
                 continue
