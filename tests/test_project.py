@@ -51,7 +51,8 @@ def test_create_cmake_app():
                 TEST_APP_DIR + '/README.txt']
 
     # Create the test app.
-    subprocess.run([DUNE_EXE, "--create-cmake-app", PROJECT_NAME, TEST_PATH], check=True)
+    completed_process = subprocess.run([DUNE_EXE, "--create-cmake-app", PROJECT_NAME, TEST_PATH], check=True)
+    assert completed_process.returncode == 0
     assert os.path.isdir(TEST_APP_DIR) is True
 
     # Get a list of the files created.
