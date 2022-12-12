@@ -74,7 +74,7 @@ class container:
     def get_container_name(self):
         return self._container_name
 
-    def commit(self, name):
+    def commit(self):
         self.execute_docker_cmd(['commit', 'dune', 'dune'])
 
     def start(self):
@@ -114,7 +114,7 @@ class container:
 
     # possible values for the status: created, restarting, running, removing, paused, exited, dead
     def check_status(self, status):
-        stdout, stderr, exit_code = self.execute_docker_cmd(['ps', '--filter',
+        stdout, _, _ = self.execute_docker_cmd(['ps', '--filter',
                                                              'status=' + status])
         for line in stdout.splitlines(True):
             if "CONTAINER ID" in line:
@@ -125,7 +125,7 @@ class container:
 
     # check if the container is still exists and was not deleted
     def exists(self):
-        stdout, stderr, exit_code = self.execute_docker_cmd(['ps', '--filter',
+        stdout, _, _ = self.execute_docker_cmd(['ps', '--filter',
                                                              'name=' + self._container_name])
         for line in stdout.splitlines(True):
             if "CONTAINER ID" in line:
