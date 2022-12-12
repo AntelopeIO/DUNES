@@ -19,4 +19,4 @@ def test_version_debug():
 
     # Call DUNE, we only care that `--debug` is available, not that it
     # does anything. For now.
-    completed_process = subprocess.run([DUNE_EXE,"--version","--debug"], check=True)
+    subprocess.run([DUNE_EXE,"--version","--debug"], check=True)
