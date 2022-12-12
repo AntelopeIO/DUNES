@@ -191,11 +191,10 @@ def validate_node_list( node_list ):
 def expect_empty_verbose_list():
     """Test that the output of list options are empty."""
 
-    # List of expected output lines from `dune --list-features`.
+    # List of expected output lines from `dune --list`.
     empty_verbose_list = \
-        "Node Name		 | Active? | Running? | HTTP           | P2P          | SHiP\n" + \
-        "----------------------------------------------------------------------------------------------\n"
-
+        "Node Name   | Active? | Running? | HTTP           | P2P          | SHiP          \n" + \
+        "---------------------------------------------------------------------------------\n"
 
     # Call the tool, check expected value.
     completed_process = subprocess.run([DUNE_EXE,"--list"], check=True, stdout=subprocess.PIPE)
