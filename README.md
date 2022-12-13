@@ -43,7 +43,7 @@ Docker Desktop has a built-in daemon which works in parallel with the `dockerd` 
   
 Docker Desktop keeps its settings and storage of images and containers in the user's home directory.
   
-Docker Engine keeps its settings and the storage in the system directories.
+Docker Engine keeps its settings and storage in the system directories.
   
 Docker Desktop works with userns-remap turned on only. It is hardcoded and can't be changed.
   
