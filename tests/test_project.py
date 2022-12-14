@@ -16,6 +16,7 @@ import shutil
 import subprocess
 
 from common import DUNE_EXE,TEST_PATH
+from container import container
 
 
 PROJECT_NAME = "test_app"
@@ -26,6 +27,9 @@ TEST_APP_WASM = TEST_APP_BLD_DIR + "/" + PROJECT_NAME + ".wasm"    # TEST_APP_BL
 
 def remove_existing():
     """ Remove an existing `./test_app` dir. """
+
+    cntr = container('dune_container', 'dune:latest')
+    cntr.stop()
 
     if os.path.exists(TEST_APP_DIR):
         print("Removing TEST_APP_DIR: ", TEST_APP_DIR)
