@@ -30,7 +30,7 @@ export VERSION_NO_SUFFIX
 export VERSION_SUFFIX
 export VERSION
 export VENDOR
-export PROJECT-PREFIX
+export PROJECT_PREFIX
 export PROJECT
 export DESC
 export URL
