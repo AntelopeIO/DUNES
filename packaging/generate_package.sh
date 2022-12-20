@@ -1,13 +1,12 @@
-#! /bin/bash
+#! /bin/bash -e
 
 VARIANT=$1
 if [[ ${VARIANT} == "deb" ]]; then
-    if [ -z "$3" ]; then
-        echo "Error, OS name and architecture missing for deb package type"
+    if [ -z "$2" ]; then
+        echo "Error, OS name missing for deb package type"
         exit 1
     else
         OS=$2
-	ARCH=$3
     fi
 fi
 
@@ -15,8 +14,12 @@ VERSION_NO_SUFFIX="1.0.0"
 VERSION_SUFFIX="dev"
 VERSION="$VERSION_NO_SUFFIX"-"$VERSION_SUFFIX"
 
+SCRIPT=$(readlink -f "$0")
+DIR=$(dirname "$SCRIPT")
+export DIR
+
 # Using CMAKE_BINARY_DIR uses an absolute path and will break cross-vm building/download/make functionality
-BUILD_DIR="../"
+BUILD_DIR="$DIR/../"
 
 VENDOR="EOSNetworkFoundation"
 PROJECT_PREFIX="ANTELOPEIO"
@@ -39,12 +42,12 @@ export EMAIL
 mkdir -p tmp
 
 if [[ ${VARIANT} == "brew" ]]; then
-   . ./generate_bottle.sh
+   . "$DIR"./generate_bottle.sh
 elif [[ ${VARIANT} == "deb" ]]; then
-   . ./generate_deb.sh "${OS}" "${ARCH}"
+   . "$DIR"/generate_deb.sh "${OS}"
 else
    echo "Error, unknown package type. Use either ['brew', 'deb']."
    exit 2
 fi
 
-rm -r tmp || exit 1
+rm -r tmp

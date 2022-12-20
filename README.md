@@ -75,7 +75,7 @@ This is the fastest way to get started. From the [latest release](https://github
 Once you have a `*.deb` file downloaded, you can install it as follows:
 ```bash
 sudo apt-get update
-sudo apt-get install -y ~/Downloads/DUNE*.deb
+sudo apt-get install -y ~/Downloads/antelopeio-dune*.deb
 ```
 Your download path may vary.
 
@@ -631,3 +631,7 @@ $ dune --start-container
 
 As mentioned above all commands that use the container will automatically create a new container if one does not exist 
 and automatically start the container if is stopped.
+
+# Preparing DUNE release
+
+[Steps for preparing a new DUNE release](docs/RELEASE.md)

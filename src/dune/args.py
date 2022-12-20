@@ -126,8 +126,7 @@ class arg_parser:
                                        'needed for core contract and deploys core, token, '
                                        'and multisig contracts')
         self._parser.add_argument('--send-action', nargs=4, action=fix_action_data,
-                                  metavar=["ACCOUNT", "ACTION",
-                                           "DATA", "PERMISSION"],
+                                  metavar=["ACCOUNT", "ACTION", "DATA", "PERMISSION"],
                                   help='send action to account with data given and permission')
         self._parser.add_argument('--get-table', nargs=3, metavar=["ACCOUNT", "SCOPE", "TABLE"],
                                   help='get the data from the given table')
