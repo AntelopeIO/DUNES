@@ -1,7 +1,6 @@
-#!/bin/bash
+#!/bin/bash -e
 
 OS=$1
-ARCH=$2
 
 PREFIX="usr"
 SPREFIX="$PREFIX"
@@ -14,15 +13,16 @@ if [[ -z $RELEASE ]]; then
   RELEASE="1"
 fi
 
-NAME="${PROJECT}_${VERSION_NO_SUFFIX}-${RELEASE}_${ARCH}"
+PACKAGE_NAME=$(echo "$PROJECT_PREFIX-$PROJECT" | tr '[:upper:]' '[:lower:]')
+NAME="${PACKAGE_NAME}_${VERSION_NO_SUFFIX}-${RELEASE}_all"
 
 mkdir -p "$PROJECT"/DEBIAN
-echo "Package: $PROJECT_PREFIX-$PROJECT
+echo "Package: $PACKAGE_NAME
 Version: $VERSION_NO_SUFFIX-$RELEASE
 Depends: python3, docker
 Section: devel
 Priority: optional
-Architecture: $ARCH
+Architecture: all
 Homepage: $URL
 Maintainer: $EMAIL
 Description: $DESC" &> "$PROJECT"/DEBIAN/control
@@ -33,11 +33,11 @@ export SUBPREFIX
 export SPREFIX
 export SSUBPREFIX
 
-. ./generate_tarball.sh "$NAME" "$OS"
+. "$DIR"/generate_tarball.sh "$NAME" "$OS"
 echo "Unpacking tarball: $NAME.tar.gz..."
-tar -xzvf "$NAME".tar.gz -C "$PROJECT" || exit 1
-dpkg-deb --build "$PROJECT" || exit 1
-mv "$PROJECT".deb "$NAME".deb || exit 1
-rm -r "$PROJECT" || exit 1
+tar -xzvf "$DIR"/"$NAME".tar.gz -C "$PROJECT"
+dpkg-deb --build "$PROJECT"
+mv "$PROJECT".deb "$NAME".deb
+rm -r "$PROJECT"
 
 exit 0
