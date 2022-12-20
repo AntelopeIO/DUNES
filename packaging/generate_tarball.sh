@@ -15,6 +15,9 @@ cp -R "$BUILD_DIR"/bootstrap* "$DUNE_PREFIX"
 cp -R "$BUILD_DIR"/src/* "$DUNE_PREFIX"/src
 cp -R "$BUILD_DIR"/scripts/* "$DUNE_PREFIX"/scripts
 cp -R "$BUILD_DIR"/LICENSE* "$DUNE_PREFIX"/licenses
+# Add symbolic link
+mkdir ./usr/bin
+ln -s /"$DUNE_PREFIX/dune" ./usr/bin/antelopeio-dune
 
 echo "Generating Tarball $NAME.tar.gz..."
 tar -cvzf "$NAME".tar.gz ./"$PREFIX"/*
