@@ -19,7 +19,7 @@ NAME="${PACKAGE_NAME}_${VERSION_NO_SUFFIX}-${RELEASE}_all"
 mkdir -p "$PROJECT"/DEBIAN
 echo "Package: $PACKAGE_NAME
 Version: $VERSION_NO_SUFFIX-$RELEASE
-Depends: python3, docker
+Depends: python3, docker | docker-ce-cli
 Section: devel
 Priority: optional
 Architecture: all
