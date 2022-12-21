@@ -18,6 +18,9 @@ SCRIPT=$(readlink -f "$0")
 DIR=$(dirname "$SCRIPT")
 export DIR
 
+ORIGINAL_DIR=`pwd`
+cd $DIR
+
 # Using CMAKE_BINARY_DIR uses an absolute path and will break cross-vm building/download/make functionality
 BUILD_DIR="$DIR/../"
 
