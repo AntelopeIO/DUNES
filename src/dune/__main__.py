@@ -9,11 +9,22 @@ from dune import dune_node_not_found
 from dune import node
 from dune import version_full
 
+def handle_version():
+    print("DUNE " + version_full())
+
+def handle_simple_args():
+    # Handle args that do not require docker started up
+    if args.version is True:
+        handle_version()
+        sys.exit(0)
+
 if __name__ == '__main__':
 
     parser = arg_parser()
 
     args = parser.parse()
+
+    handle_simple_args()
 
     dune_sys = dune(args)
 
@@ -173,9 +184,6 @@ if __name__ == '__main__':
                 dune_sys.get_table(args.get_table[0], args.get_table[1],
                                    args.get_table[2])
 
-            elif args.version:
-                print("DUNE " + version_full())
-
             elif args.upgrade:
                 dune_sys.docker.upgrade()
 
@@ -184,6 +192,11 @@ if __name__ == '__main__':
 
             elif args.cdt:
                 dune_sys.execute_cmd(['sh', 'bootstrap_cdt.sh', args.cdt])
+
+            elif args.version_all:
+                handle_version()
+                dune_sys.execute_interactive_cmd(['apt','list','leap'])
+                dune_sys.execute_interactive_cmd(['apt','list','cdt'])
 
         except KeyboardInterrupt:
             pass
