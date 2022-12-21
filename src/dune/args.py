@@ -136,6 +136,8 @@ class arg_parser:
                                   help='list available protocol feature code names')
         self._parser.add_argument('--version', action='store_true',
                                   help='display the current version of DUNE')
+        self._parser.add_argument('--version-all', action='store_true',
+                                  help='display the current version of DUNE, CDT and leap')
         self._parser.add_argument('--debug', action='store_true', help='print additional info '
                                                                        'useful for debugging, '
                                                                        'like running docker '

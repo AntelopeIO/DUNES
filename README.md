@@ -351,7 +351,11 @@ Sets specific version of leap
 ---
 
 **--cdt** 
-Sets specific versino of CDT (Contract Development Toolkit)
+Sets specific version of CDT (Contract Development Toolkit)
+
+---
+**--version-all** 
+Lists version of DUNE, leap and CDT
 
 ---
 
