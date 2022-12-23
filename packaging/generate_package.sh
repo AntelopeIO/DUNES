@@ -46,6 +46,8 @@ mkdir -p tmp
 
 if [[ ${VARIANT} == "deb" ]]; then
    . "$DIR"/generate_deb.sh "${OS}"
+elif [[ ${VARIANT} == "rpm" ]]; then
+   . "$DIR"/generate_rpm.sh
 else
    echo "Error, unknown package type. Use either ['brew', 'deb']."
    exit 2
