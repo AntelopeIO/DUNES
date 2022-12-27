@@ -44,7 +44,9 @@ export EMAIL
 
 mkdir -p tmp
 
-if [[ ${VARIANT} == "deb" ]]; then
+if [[ ${VARIANT} == "brew" ]]; then
+   . "$DIR"/generate_bottle.sh
+elif [[ ${VARIANT} == "deb" ]]; then
    . "$DIR"/generate_deb.sh "${OS}"
 else
    echo "Error, unknown package type. Use either ['brew', 'deb']."
