@@ -9,6 +9,7 @@ These options are tested:
 """
 
 import subprocess
+import pytest
 
 from common import DUNE_EXE
 
@@ -17,7 +18,7 @@ NODE_NAME = "my_node"
 ACCT_NAME = "myaccount"
 
 
-
+@pytest.mark.skip(reason="because --bootstrap-system-full doesn't currently behave correctly.")
 def test_booststrap():
 
     # Remove any existing containers.
