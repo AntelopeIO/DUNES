@@ -1,6 +1,6 @@
+#!/usr/bin/python3 -u
 # special thanks to github.com/phusion
 # https://github.com/phusion/baseimage-docker/blob/rel-0.9.16/image/bin/my_init
-#!/usr/bin/python3 -u
 import os, os.path, sys, stat, signal, errno, argparse, time, json, re
 
 KILL_PROCESS_TIMEOUT = 5
@@ -80,7 +80,9 @@ def export_envvars(to_dir = True):
 		if name in ['HOME', 'USER', 'GROUP', 'UID', 'GID', 'SHELL']:
 			continue
 		if to_dir:
-			with open("/etc/container_environment/" + name, "w") as f:
+			current_filename = "/etc/container_environment/" + name
+			os.makedirs(os.path.dirname(current_filename), exist_ok=True)
+			with open(current_filename, "w") as f:
 				f.write(value)
 		shell_dump += "export " + shquote(name) + "=" + shquote(value) + "\n"
 	with open("/etc/container_environment.sh", "w") as f:

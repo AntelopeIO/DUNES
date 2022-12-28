@@ -45,12 +45,13 @@ class arg_parser:
             description='''DUNE: Docker Utilities for Node Execution.
                         -- [COMMANDS] run any number of commands in the container.
                         Example: dune -- cleos --help''')
-        self._parser.add_argument('-s','--start', nargs=1, metavar=("NODE"),
-                                  help='start a new node with a given name' )
-        self._parser.add_argument('-c','--config', nargs=1, metavar=("CONFIG_DIR"),
+        self._parser.add_argument('-s', '--start', nargs=1, metavar=("NODE"),
+                                  help='start a new node with a given name')
+        self._parser.add_argument('-c', '--config', nargs=1, metavar=("CONFIG_DIR"),
                                   help='optionally used with --start, a path containing'
-                                  ' the config.ini file to use' )
-        self._parser.add_argument('--stop', metavar="NODE", help='stop a node with a given name')
+                                  ' the config.ini file to use')
+        self._parser.add_argument(
+            '--stop', metavar="NODE", help='stop a node with a given name')
         self._parser.add_argument('--remove', metavar="NODE",
                                   help='a node with a given name, will stop the node if running')
         self._parser.add_argument('--list', action='store_true',
@@ -135,10 +136,18 @@ class arg_parser:
                                   help='list available protocol feature code names')
         self._parser.add_argument('--version', action='store_true',
                                   help='display the current version of DUNE')
+        self._parser.add_argument('--version-all', action='store_true',
+                                  help='display the current version of DUNE, CDT and leap')
         self._parser.add_argument('--debug', action='store_true', help='print additional info '
                                                                        'useful for debugging, '
                                                                        'like running docker '
                                                                        'commands')
+        self._parser.add_argument(
+            '--upgrade', action='store_true', help='upgrades DUNE image to the latest version')
+        self._parser.add_argument(
+            '--leap', metavar="LEAP_VERSION", help='sets the version of leap')
+        self._parser.add_argument('--cdt', metavar="CDT_VERSION", help='sets the version of CDT (Contract '
+                                  'Development Toolkit)')
         # used to store arguments to individual programs, starting with --
         self._parser.add_argument('remainder',
                                   nargs=argparse.REMAINDER)

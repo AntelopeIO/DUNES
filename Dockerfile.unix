@@ -15,10 +15,7 @@ RUN npm install -D webpack-dev-server
 WORKDIR /app
 
 COPY ./scripts/ .
-RUN chmod +x bootstrap_env.sh
-RUN chmod +x start_node.sh
-RUN chmod +x setup_system.sh
-RUN chmod +x write_context.sh
+RUN chmod +x *.sh
 RUN mv my_init /sbin
 
 RUN ./bootstrap_env.sh

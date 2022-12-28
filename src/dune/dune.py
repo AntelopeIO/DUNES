@@ -445,6 +445,9 @@ class dune:
     def execute_cmd(self, args):
         self._docker.execute_cmd2(args)
 
+    def execute_cmd_at(self, args, at_dir):
+        self._docker.execute_cmd_at(args, at_dir)
+
     def execute_interactive_cmd(self, args):
         self._docker.execute_interactive_cmd(args)
 
