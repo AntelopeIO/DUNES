@@ -20,6 +20,10 @@
 Docker Utilities for Node Execution (DUNE) is a tool to abstract over Leap programs, CDT and other services/tools related to Antelope blockchains.
     
     </description>
+    <dependencies>
+      <dependency id="python"/>
+      <dependency id="docker-desktop"/>
+    </dependencies>
   </metadata>
   <files>
     <!-- this section controls what actually gets packaged into the Chocolatey package -->
