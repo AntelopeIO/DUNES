@@ -126,7 +126,8 @@ Open cmd.exe and verify `python --version` returns current Python version.
 1. Install [Chocolatey](https://docs.chocolatey.org/en-us/choco/setup)
 2. From the [latest release](https://github.com/AntelopeIO/DUNE/releases/latest) page, download latest DUNE nupkg or visit the [release tags](https://github.com/AntelopeIO/DUNE/releases) page to download specific version of DUNE.
 3. Run Windows Console as an Administrator, go to the directory where `nupkg` file has been downloaded and run:
-`choco install antelopeio-dune.*.nupkg`
+`choco install antelopeio-dune.1.0.0.nupkg`
+where `antelopeio-dune.1.0.0.nupkg` should be your just downloaded package.
 4. DUNE is installed by default to `c:\programdata\chocolatey\lib\antelopeio-dune\tools` and it is added to PATH environment variable.
 5. Run new cmd.exe windows and verify `dune.bat --version` returns current DUNE version.
 
