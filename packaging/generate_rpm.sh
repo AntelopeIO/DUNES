@@ -45,7 +45,7 @@ URL: ${URL}
 Packager: ${VENDOR} <${EMAIL}>
 Summary: ${DESC}
 Release: ${RELEASE}
-Requires: python3, (docker or docker-desktop)
+Requires: python3, (docker or docker-ce-cli), curl, wget
 %description
 ${DESC}
 %files -f filenames.txt" &> "$PROJECT".spec
