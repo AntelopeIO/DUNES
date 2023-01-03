@@ -64,7 +64,7 @@ Depending on the distro you are using will determine which `python3` package to 
 
 ### DUNE installation on Linux <a name="dune-linux"></a>
 
-This is the fastest way to get started. From the [latest release](https://github.com/AntelopeIO/DUNE/releases/latest) page, download DUNE (mainly python scripts) or visit the [release tags](https://github.com/AntelopeIO/DUNE/releases) page to download specific version of DUNE.
+This is the fastest way to get started. From the [latest release](https://github.com/AntelopeIO/DUNE/releases/latest) page, download DUNE `*.deb` file or visit the [release tags](https://github.com/AntelopeIO/DUNE/releases) page to download specific version of DUNE deb package.
 
 Once you have a `*.deb` file downloaded, you can install it as follows:
 ```bash
@@ -72,6 +72,18 @@ sudo apt-get update
 sudo apt-get install -y ~/Downloads/antelopeio-dune*.deb
 ```
 Your download path may vary.
+
+#### Alternative: DUNE installation using RPM package
+
+From the [latest release](https://github.com/AntelopeIO/DUNE/releases/latest) page, download DUNE `*.rpm` file.
+
+Once you have a `*.rpm` file downloaded, you can install it as follows:
+```bash
+sudo rpm -i ~/Downloads/antelopeio-dune*.rpm
+```
+Your download path may vary.
+
+#### DUNE installation - verification
 
 Finally, verify DUNE was installed correctly in `/usr/opt/DUNE/`. First [add DUNE to Path](#add-dune-to-path) and check:
 ```bash
@@ -100,7 +112,7 @@ If you want to rebuild the DUNE image pick your preferred terminal application a
 
 ### Windows 10 & 11
 
-You might need to turn on hardware virtualization in the BIOS of your computer.  Docker should give an error stating this failure.
+In some cases (i.e. running Docker from VirtualBox) you might need to turn on hardware virtualization in the BIOS of your computer.  Docker should give an error stating this failure.
 Because of the variance of motherboards and BIOS implementations we can't give a clear description as to how to turn this on,
 but a quick google search with your PC make and model should find the information you would need.
 
@@ -114,12 +126,12 @@ You should see the following:
 
 Installing Python 3 on Windows is pretty straightforward.
 
-Visit the download page for [Python 3](https://python.org/downloads). You should see the link for Python 3.10.4:
+Visit the download page for [Python 3](https://python.org/downloads). You should see the link to the latest Python 3:
 
 ![win-python](docs/images/win-python.png)
 
-Directory containing python.exe should be added to environment variable PATH.
-Open cmd.exe and verify `python --version` returns current Python version.
+Make sure you mark "Add Python to PATH" during installation.
+After installation open `cmd.exe` and verify `python --version` returns current Python version.
 
 #### DUNE installation on Windows <a name="dune-windows"></a>
 
