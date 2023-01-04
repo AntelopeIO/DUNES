@@ -13,7 +13,7 @@ if [[ -z $RELEASE ]]; then
   RELEASE="1"
 fi
 
-PACKAGE_NAME=$(echo "$PROJECT_PREFIX-$PROJECT" | tr '[:upper:]' '[:lower:]')
+PACKAGE_NAME=$(echo "$PROJECT_PREFIX-$PROJECT")
 NAME="${PACKAGE_NAME}_${VERSION_NO_SUFFIX}-${RELEASE}_all"
 
 mkdir -p "$PROJECT"/DEBIAN
