@@ -137,9 +137,9 @@ After installation open `cmd.exe` and verify `python --version` returns current 
 
 1. Install [Chocolatey](https://docs.chocolatey.org/en-us/choco/setup).
 2. In PowerShell run as administrator following command:
-`choco install antelopeio-dune`
-3. Restart your computer (this is because %PATH% has to be reloaded. In cmd.exe it is enough to run command refreshenv).
-4. Open PowerShell / cmd.exe and try that following command works: dune.bat --version.
+`choco install antelopeio-dune --version=1.0.0`
+3. Restart your computer (this is because %PATH% has to be reloaded. In cmd.exe it is enough to run command `refreshenv`).
+4. Open PowerShell / cmd.exe and try that following command works: `dune.bat --version`.
 
 **NOTE**: Chocolatey does not detect python / docker-dekstop installed via other means, so it is possible some dependencies will be installed twice. Usually it is not an issue, but if it is you can follow [this solution](https://stackoverflow.com/a/71605170).
 
