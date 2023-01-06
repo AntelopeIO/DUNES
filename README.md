@@ -14,16 +14,11 @@ First we must install [Docker](https://docs.docker.com/get-docker/).
 
 Once you select the Docker Desktop for your operating system the installation process is very straight forward.
 
-### Linux
+### Linux - docker setup
 
-They have both .DEB and .RPM packages available.
-If you can't get these to work for some reason most repos have packages available for the engine and auxillary components.
+Start your Docker Desktop, visit its settings and add the root directory of the host system to shared directories.
 
-When finished installing. 
-
-Start your Docker Desktop, visit to its settings and add the root directory of the host system to shared directories.  
-
-![Docker Desctop settings](docs/images/linux_docker_settings_shares.png)
+![Docker Desktop settings](docs/images/linux_docker_settings_shares.png)
 
 Check the installation with the command
 
@@ -51,8 +46,7 @@ Docker Desktop has a built-in daemon which works in parallel with the `dockerd` 
 
 Therefore, to successfully work with DUNE you should:
 
->+ Clone the latest DUNE repository.
->+ Rebuild the image by calling ./bootstrap.sh.
+>+ Download the latest DUNE release on [Windows](#dune-windows) or on [Linux](#dune-linux "Linux")
 >+ Add a root directory of the host system to the list of shared directories in Docker Desktop settings.
 >+ Keep Docker Desktop running all the time when you work with DUNE.
 
@@ -68,9 +62,9 @@ Depending on the distro you are using will determine which `python3` package to 
 | Centos | python3                                                   |
 | Arch   | python                                                    |
 
-### Binary Installation on Linux
+### DUNE installation on Linux <a name="dune-linux"></a>
 
-This is the fastest way to get started. From the [latest release](https://github.com/AntelopeIO/DUNE/releases/latest) page, download DUNE (mainly python scripts) or visit the [release tags](https://github.com/AntelopeIO/DUNE/releases) page to download specific version of DUNE.
+This is the fastest way to get started. From the [latest release](https://github.com/AntelopeIO/DUNE/releases/latest) page, download DUNE `*.deb` file or visit the [release tags](https://github.com/AntelopeIO/DUNE/releases) page to download specific version of DUNE deb package.
 
 Once you have a `*.deb` file downloaded, you can install it as follows:
 ```bash
@@ -78,6 +72,18 @@ sudo apt-get update
 sudo apt-get install -y ~/Downloads/antelopeio-dune*.deb
 ```
 Your download path may vary.
+
+#### Alternative: DUNE installation using RPM package
+
+From the [latest release](https://github.com/AntelopeIO/DUNE/releases/latest) page, download DUNE `*.rpm` file.
+
+Once you have a `*.rpm` file downloaded, you can install it as follows:
+```bash
+sudo rpm -i ~/Downloads/antelopeio-dune*.rpm
+```
+Your download path may vary.
+
+#### DUNE installation - verification
 
 Finally, verify DUNE was installed correctly in `/usr/opt/DUNE/`. First [add DUNE to Path](#add-dune-to-path) and check:
 ```bash
@@ -96,9 +102,9 @@ To keep from having to install files to the user's system, the preferred method 
 ```console
 $ echo "PATH=<LocationOfDUNE>:$PATH" >> .bashrc
 ```
-### Build the DUNE image
+### Rebuild the DUNE image
 
-If you want to build the DUNE image pick your preferred terminal application and input the following command:
+If you want to rebuild the DUNE image pick your preferred terminal application and input the following command:
 
 ```console
 <PathToDUNE>/DUNE$ ./bootstrap.sh
@@ -106,8 +112,8 @@ If you want to build the DUNE image pick your preferred terminal application and
 
 ### Windows 10 & 11
 
-You might need to turn on hardware virtualization in the BIOS of your computer.  Docker should give an error stating this failure. 
-Because of the variance of motherboards and BIOS implementations we can't give a clear description as to how to turn this on, 
+In some cases (i.e. running Docker from VirtualBox) you might need to turn on hardware virtualization in the BIOS of your computer.  Docker should give an error stating this failure.
+Because of the variance of motherboards and BIOS implementations we can't give a clear description as to how to turn this on,
 but a quick google search with your PC make and model should find the information you would need.
 
 You can then start the program `Docker Desktop`.
@@ -118,38 +124,24 @@ You should see the following:
 
 #### Python 3
 
-To install Python 3 on Windows is pretty straightforward.
+Installing Python 3 on Windows is pretty straightforward.
 
-Visit the download page for [Python 3](https://python.org/downloads). You should see the link for Python 3.10.4:
+Visit the download page for [Python 3](https://python.org/downloads). You should see the link to the latest Python 3:
 
 ![win-python](docs/images/win-python.png)
 
-#### Add DUNE to Path
+Make sure you mark "Add Python to PATH" during installation.
+After installation open `cmd.exe` and verify `python --version` returns current Python version.
 
-To keep from having to install files to the user's system, the preferred method of usage is to add this directory to your `Path`. 
-Go to Start Search and type `edit the system` and choose `Edit the system environment variables`.
+#### DUNE installation on Windows <a name="dune-windows"></a>
 
-<img src="docs/images/win-edit-sys.png" alt="win-edit-sys" width="200">
-
-From here you should click on the button marked `Environment Variables`.
-
-<img src="docs/images/win-sys-props.png" alt="win-sys-props" width="250">
-
-From here select the line with `Path` and select `Edit...`
-
-<img src="docs/images/env-vars-1.png" alt="env-vars-1" width="300">
-
-From here add a new line with the location of the downloaded DUNE project:
-
-<img src="docs/images/env-vars-2.png" alt="env-vars-2" width="300">
-
-### Bootstrap DUNE
-
-Pick your preferred command line application and input the following command:
-
-```console:
-C:\<PathToDUNE>\DUNE$ .\bootstrap.bat
-```
+1. Install [Chocolatey](https://docs.chocolatey.org/en-us/choco/setup)
+2. From the [latest release](https://github.com/AntelopeIO/DUNE/releases/latest) page, download latest DUNE nupkg or visit the [release tags](https://github.com/AntelopeIO/DUNE/releases) page to download specific version of DUNE.
+3. Run Windows Console as an Administrator, go to the directory where `nupkg` file has been downloaded and run:
+`choco install antelopeio-dune.1.0.0.nupkg`
+where `antelopeio-dune.1.0.0.nupkg` should be your just downloaded package.
+4. DUNE is installed by default to `c:\programdata\chocolatey\lib\antelopeio-dune\tools` and it is added to PATH environment variable.
+5. Run new cmd.exe windows and verify `dune.bat --version` returns current DUNE version.
 
 ### Mac OS
 
@@ -167,14 +159,6 @@ To keep from having to install files to the user's system, the preferred method 
 
 ```console
 $ echo "PATH=<LocationOfDUNE>:$PATH" >> .bashrc
-```
-
-### Bootstrap DUNE
-
-Pick your preferred terminal application and input the following command:
-
-```console
-<PathToDUNE>/DUNE$ ./bootstrap.sh
 ```
 
 ## DUNE commands
