@@ -135,13 +135,13 @@ After installation open `cmd.exe` and verify `python --version` returns current 
 
 #### DUNE installation on Windows <a name="dune-windows"></a>
 
-1. Install [Chocolatey](https://docs.chocolatey.org/en-us/choco/setup)
-2. From the [latest release](https://github.com/AntelopeIO/DUNE/releases/latest) page, download latest DUNE nupkg or visit the [release tags](https://github.com/AntelopeIO/DUNE/releases) page to download specific version of DUNE.
-3. Run Windows Console as an Administrator, go to the directory where `nupkg` file has been downloaded and run:
-`choco install antelopeio-dune.1.0.0.nupkg`
-where `antelopeio-dune.1.0.0.nupkg` should be your just downloaded package.
-4. DUNE is installed by default to `c:\programdata\chocolatey\lib\antelopeio-dune\tools` and it is added to PATH environment variable.
-5. Run new cmd.exe windows and verify `dune.bat --version` returns current DUNE version.
+1. Install [Chocolatey](https://docs.chocolatey.org/en-us/choco/setup).
+2. In PowerShell run as administrator following command:
+`choco install antelopeio-dune --version=1.0.0`
+3. Restart your computer (this is because %PATH% has to be reloaded. In cmd.exe it is enough to run command `refreshenv`).
+4. Open PowerShell / cmd.exe and try that following command works: `dune.bat --version`.
+
+**NOTE**: Chocolatey does not detect python / docker-dekstop installed via other means, so it is possible some dependencies will be installed twice. Usually it is not an issue, but if it is you can follow [this solution](https://stackoverflow.com/a/71605170).
 
 ### Mac OS
 
