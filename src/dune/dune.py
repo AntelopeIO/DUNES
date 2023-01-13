@@ -529,7 +529,7 @@ class dune:
 
     @staticmethod
     def features():
-        return ["KV_DATABASE",
+        return [
                 "ACTION_RETURN_VALUE",
                 "CONFIGURABLE_WASM_LIMITS2",
                 "BLOCKCHAIN_PARAMETERS",
@@ -552,14 +552,7 @@ class dune:
             self.deploy_contract(
                 '/app/reference-contracts/build/contracts/eosio.boot', 'eosio')
 
-        if code_name == "KV_DATABASE":
-            self.send_action(
-                'activate',
-                'eosio',
-                '["825ee6288fb1373eab1b5187ec2f04f6ea'
-                'cb39cb3a97f356a07c91622dd61d16"]',
-                'eosio@active')
-        elif code_name == "ACTION_RETURN_VALUE":
+        if code_name == "ACTION_RETURN_VALUE":
             self.send_action('activate', 'eosio',
                              '["c3a6138c5061cf291310887c0b5c71'
                              'fcaffeab90d5deb50d3b9e687cead45071"]',
