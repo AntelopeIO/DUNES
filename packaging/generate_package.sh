@@ -25,8 +25,8 @@ cd $DIR
 BUILD_DIR="$DIR/../"
 
 VENDOR="EOSNetworkFoundation"
-PROJECT_PREFIX="ANTELOPEIO"
-PROJECT="DUNE"
+PROJECT_PREFIX="antelopeio"
+PROJECT="dune"
 DESC="Docker Utilities for Node Execution (DUNE) is a tool to abstract over Leap programs, CDT and other services/tools related to Antelope blockchains."
 URL="https://github.com/AntelopeIO/DUNE"
 EMAIL="support@eosnetwork.com"
@@ -46,8 +46,10 @@ mkdir -p tmp
 
 if [[ ${VARIANT} == "deb" ]]; then
    . "$DIR"/generate_deb.sh "${OS}"
+elif [[ ${VARIANT} == "rpm" ]]; then
+   . "$DIR"/generate_rpm.sh
 else
-   echo "Error, unknown package type. Use either ['brew', 'deb']."
+   echo "Error, unknown package type. Use either ['brew', 'deb', 'rpm']."
    exit 2
 fi
 
