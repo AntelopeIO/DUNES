@@ -1,5 +1,6 @@
 import os   # path
 import sys  # sys.exit()
+import importlib.util
 
 from args import arg_parser
 from args import parse_optional
@@ -18,15 +19,62 @@ def handle_simple_args():
         handle_version()
         sys.exit(0)
 
+def load_module(absolute_path):
+    module_name, _ = os.path.splitext(os.path.split(absolute_path)[-1])
+    module_root = os.path.dirname(absolute_path)
+
+    sys.path.append(module_root)
+    spec = importlib.util.spec_from_file_location(module_name, absolute_path)
+    py_mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(py_mod)
+    return py_mod
+
+def load_all_modules_from_dir(plugin_dir):
+    loaded_modules = []
+
+    if not os.path.exists(plugin_dir):
+        return loaded_modules
+
+    for subdir in os.listdir(plugin_dir):
+        subdir_path = os.path.join(plugin_dir, subdir)
+        main_py = os.path.join(subdir_path, 'main.py')
+        if not os.path.exists(main_py):
+            print(f'main.py not found in {subdir_path}')
+            continue
+
+        loaded_module = load_module(main_py)
+        if not hasattr(loaded_module, 'handle_args'):
+            print('Plugin ' + main_py + ' does not have handle_args() method')
+            continue
+        if not hasattr(loaded_module, 'add_parsing'):
+            print('Plugin ' + main_py + ' does not have add_parsing() method')
+            continue
+
+        loaded_modules.append(loaded_module)
+
+    return loaded_modules
+
 if __name__ == '__main__':
 
     parser = arg_parser()
+
+    current_script_path = os.path.abspath(__file__)
+    current_script_dir = os.path.dirname(current_script_path)
+
+    modules = load_all_modules_from_dir(current_script_dir + '/../plugin/')
+
+    for module in modules:
+        module.add_parsing(parser.get_parser())
 
     args = parser.parse()
 
     handle_simple_args()
 
     dune_sys = dune(args)
+
+    for module in modules:
+        if hasattr(module, 'set_dune'):
+            module.set_dune(dune_sys)
 
     if parser.is_forwarding():
         dune_sys.execute_interactive_cmd(parser.get_forwarded_args())
@@ -197,6 +245,10 @@ if __name__ == '__main__':
                 handle_version()
                 dune_sys.execute_interactive_cmd(['apt','list','leap'])
                 dune_sys.execute_interactive_cmd(['apt','list','cdt'])
+
+            else:
+                for module in modules:
+                    module.handle_args(args)
 
         except KeyboardInterrupt:
             pass
