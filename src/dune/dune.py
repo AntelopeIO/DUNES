@@ -529,7 +529,9 @@ class dune:
 
     @staticmethod
     def features():
-        return [
+        return ["GET_CODE_HASH",
+                "CRYPTO_PRIMITIVES",
+                "GET_BLOCK_NUM",
                 "ACTION_RETURN_VALUE",
                 "CONFIGURABLE_WASM_LIMITS2",
                 "BLOCKCHAIN_PARAMETERS",
@@ -556,6 +558,18 @@ class dune:
             self.send_action('activate', 'eosio',
                              '["c3a6138c5061cf291310887c0b5c71'
                              'fcaffeab90d5deb50d3b9e687cead45071"]',
+                             'eosio@active')
+        elif code_name == "GET_CODE_HASH":
+            self.send_action('activate', 'eosio',
+                             '["bcd2a26394b36614fd4894241d3c451ab0f6fd110958c3423073621a70826e99"]',
+                             'eosio@active')
+        elif code_name == "GET_BLOCK_NUM":
+            self.send_action('activate', 'eosio',
+                             '["35c2186cc36f7bb4aeaf4487b36e57039ccf45a9136aa856a5d569ecca55ef2b"]',
+                             'eosio@active')
+        elif code_name == "CRYPTO_PRIMITIVES":
+            self.send_action('activate', 'eosio',
+                             '["6bcb40a24e49c26d0a60513b6aeb8551d264e4717f306b81a37a5afb3b47cedc"]',
                              'eosio@active')
         elif code_name == "CONFIGURABLE_WASM_LIMITS2":
             self.send_action('activate', 'eosio',
