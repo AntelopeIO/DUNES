@@ -69,6 +69,10 @@ if __name__ == '__main__':
 
     dune_sys = dune(args)
 
+    for module in modules:
+        if hasattr(module, 'set_dune'):
+            module.set_dune(dune_sys)
+
     if parser.is_forwarding():
         dune_sys.execute_interactive_cmd(parser.get_forwarded_args())
     else:
