@@ -492,10 +492,22 @@ class dune:
         print(url)
 
     def deploy_contract(self, directory, acnt):
-        self.cleos_cmd(
-            ['set', 'account', 'permission', acnt, 'active', '--add-code'])
-        stdout, stderr, exit_code = self.cleos_cmd(
-            ['set', 'contract', acnt, directory])
+        stdout = ""
+        stderr = ""
+        exit_code = 0
+        count = 10
+        while count > 0:
+            self.cleos_cmd(
+                ['set', 'account', 'permission', acnt, 'active', '--add-code'])
+
+            stdout, stderr, exit_code = self.cleos_cmd(
+                ['set', 'contract', acnt, directory])
+
+            if exit_code:
+                count = count - 1
+                print('*** Retry')
+            else:
+                break
 
         if exit_code == 0:
             print(stdout)
