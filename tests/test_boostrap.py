@@ -6,6 +6,7 @@ These options are tested:
   --create-key
   --import-dev-key
   --bootstrap-system-full
+  --get-table
 """
 
 import subprocess
@@ -18,17 +19,16 @@ NODE_NAME = "my_node"
 ACCT_NAME = "myaccount"
 
 
-@pytest.mark.skip(reason="because --bootstrap-system-full doesn't currently behave correctly.")
 def test_booststrap():
 
     # Remove any existing containers.
-    subprocess.run([DUNE_EXE,"--destroy-container"], check=True)
+    subprocess.run([DUNE_EXE, "--destroy-container"], check=True)
 
     # Start the new node.
-    subprocess.run([DUNE_EXE,"--start",NODE_NAME], check=True)
+    subprocess.run([DUNE_EXE, "--start",NODE_NAME], check=True)
 
     # Create an account.
-    subprocess.run([DUNE_EXE,"--create-account",ACCT_NAME], check=True)
+    subprocess.run([DUNE_EXE, "--create-account",ACCT_NAME], check=True)
 
     # Create a key. Get it to a var as well.
     public_key = None
@@ -48,8 +48,10 @@ def test_booststrap():
     assert private_key is not None
 
     # Import the key.
-    subprocess.run([DUNE_EXE,"--import-dev-key",private_key], check=True)
+    subprocess.run([DUNE_EXE, "--import-dev-key",private_key], check=True)
 
     # Bootstrap the system.
     subprocess.run([DUNE_EXE, "--bootstrap-system-full"], check=True)
-    assert False # Asserting because --bootstrap-system-full doesn't currently behave correctly.
+
+    results = subprocess.run([DUNE_EXE, "--get-table", "eosio.token", "eosio", "accounts"], check=True, stdout=subprocess.PIPE)
+    assert b'"rows"' in results.stdout

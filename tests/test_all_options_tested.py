@@ -11,7 +11,7 @@ import pytest
 
 from common import TEST_PATH
 
-@pytest.mark.skip(reason="Missing option: --bootstrap-system,Missing option: --get-table,Missing option: --activate-feature")
+@pytest.mark.skip(reason="Not implemented options make this test failed")
 def test_all_options_tested():
     """Test that all the options from the output of `--help` are in the various test files."""
 

@@ -18,23 +18,24 @@ def test_list_features():
 
     # List of expected output lines from `dune --list-features`.
     expect_list = \
-        [
-            b'KV_DATABASE',
-            b'ACTION_RETURN_VALUE',
-            b'BLOCKCHAIN_PARAMETERS',
-            b'GET_SENDER',
-            b'FORWARD_SETCODE',
-            b'ONLY_BILL_FIRST_AUTHORIZER',
-            b'RESTRICT_ACTION_TO_SELF',
-            b'DISALLOW_EMPTY_PRODUCER_SCHEDULE',
-            b'FIX_LINKAUTH_RESTRICTION',
-            b'REPLACE_DEFERRED',
-            b'NO_DUPLICATE_DEFERRED_ID',
-            b'ONLY_LINK_TO_EXISTING_PERMISSION',
-            b'RAM_RESTRICTIONS',
-            b'WEBAUTHN_KEY',
-            b'WTMSIG_BLOCK_SIGNATURES',
-        ]
+	[b"GET_CODE_HASH",
+        b"CRYPTO_PRIMITIVES",
+        b"GET_BLOCK_NUM",
+        b"ACTION_RETURN_VALUE",
+        b"CONFIGURABLE_WASM_LIMITS2",
+        b"BLOCKCHAIN_PARAMETERS",
+        b"GET_SENDER",
+        b"FORWARD_SETCODE",
+        b"ONLY_BILL_FIRST_AUTHORIZER",
+        b"RESTRICT_ACTION_TO_SELF",
+        b"DISALLOW_EMPTY_PRODUCER_SCHEDULE",
+        b"FIX_LINKAUTH_RESTRICTION",
+        b"REPLACE_DEFERRED",
+        b"NO_DUPLICATE_DEFERRED_ID",
+        b"ONLY_LINK_TO_EXISTING_PERMISSION",
+        b"RAM_RESTRICTIONS",
+        b"WEBAUTHN_KEY",
+        b"WTMSIG_BLOCK_SIGNATURES"]
 
     # Convert the list to a useful comparison value.
     expect = b''

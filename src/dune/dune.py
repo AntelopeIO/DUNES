@@ -492,10 +492,22 @@ class dune:
         print(url)
 
     def deploy_contract(self, directory, acnt):
-        self.cleos_cmd(
-            ['set', 'account', 'permission', acnt, 'active', '--add-code'])
-        stdout, stderr, exit_code = self.cleos_cmd(
-            ['set', 'contract', acnt, directory])
+        stdout = ""
+        stderr = ""
+        exit_code = 0
+        count = 10
+        while count > 0:
+            self.cleos_cmd(
+                ['set', 'account', 'permission', acnt, 'active', '--add-code'])
+
+            stdout, stderr, exit_code = self.cleos_cmd(
+                ['set', 'contract', acnt, directory])
+
+            if exit_code:
+                count = count - 1
+                print('*** Retry')
+            else:
+                break
 
         if exit_code == 0:
             print(stdout)
@@ -529,8 +541,11 @@ class dune:
 
     @staticmethod
     def features():
-        return ["KV_DATABASE",
+        return ["GET_CODE_HASH",
+                "CRYPTO_PRIMITIVES",
+                "GET_BLOCK_NUM",
                 "ACTION_RETURN_VALUE",
+                "CONFIGURABLE_WASM_LIMITS2",
                 "BLOCKCHAIN_PARAMETERS",
                 "GET_SENDER",
                 "FORWARD_SETCODE",
@@ -551,17 +566,27 @@ class dune:
             self.deploy_contract(
                 '/app/reference-contracts/build/contracts/eosio.boot', 'eosio')
 
-        if code_name == "KV_DATABASE":
-            self.send_action(
-                'activate',
-                'eosio',
-                '["825ee6288fb1373eab1b5187ec2f04f6ea'
-                'cb39cb3a97f356a07c91622dd61d16"]',
-                'eosio@active')
-        elif code_name == "ACTION_RETURN_VALUE":
+        if code_name == "ACTION_RETURN_VALUE":
             self.send_action('activate', 'eosio',
                              '["c3a6138c5061cf291310887c0b5c71'
                              'fcaffeab90d5deb50d3b9e687cead45071"]',
+                             'eosio@active')
+        elif code_name == "GET_CODE_HASH":
+            self.send_action('activate', 'eosio',
+                             '["bcd2a26394b36614fd4894241d3c451ab0f6fd110958c3423073621a70826e99"]',
+                             'eosio@active')
+        elif code_name == "GET_BLOCK_NUM":
+            self.send_action('activate', 'eosio',
+                             '["35c2186cc36f7bb4aeaf4487b36e57039ccf45a9136aa856a5d569ecca55ef2b"]',
+                             'eosio@active')
+        elif code_name == "CRYPTO_PRIMITIVES":
+            self.send_action('activate', 'eosio',
+                             '["6bcb40a24e49c26d0a60513b6aeb8551d264e4717f306b81a37a5afb3b47cedc"]',
+                             'eosio@active')
+        elif code_name == "CONFIGURABLE_WASM_LIMITS2":
+            self.send_action('activate', 'eosio',
+                             '["d528b9f6e9693f45ed277af93474fd47'
+                             '3ce7d831dae2180cca35d907bd10cb40"]',
                              'eosio@active')
         elif code_name == "BLOCKCHAIN_PARAMETERS":
             self.send_action('activate', 'eosio',
