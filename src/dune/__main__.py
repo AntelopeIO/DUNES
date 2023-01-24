@@ -37,6 +37,9 @@ def load_all_modules_from_dir(plugin_dir):
 
     for subdir in os.listdir(plugin_dir):
         subdir_path = os.path.join(plugin_dir, subdir)
+        if not os.path.isdir(subdir_path):
+            continue
+
         main_py = os.path.join(subdir_path, 'main.py')
         if not os.path.exists(main_py):
             print(f'main.py not found in {subdir_path}')

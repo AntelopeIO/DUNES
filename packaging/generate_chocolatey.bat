@@ -19,6 +19,13 @@ mkdir %target-dir%\src\dune
 copy "%script-path%"\..\src\dune\* %target-dir%\src\dune
 mkdir %target-dir%\scripts\
 copy "%script-path%"\..\scripts\* %target-dir%\scripts\
+mkdir %target-dir%\tests\
+copy "%script-path%"\..\tests\* %target-dir%\tests\
+mkdir %target-dir%\plugin_example\
+copy "%script-path%"\..\plugin_example\* %target-dir%\plugin_example\
+mkdir %target-dir%\docs\
+copy "%script-path%"\..\docs\* %target-dir%\docs\
+copy "%script-path%"\..\README* %target-dir%
 
 cd %script-path%\antelopeio-dune
 

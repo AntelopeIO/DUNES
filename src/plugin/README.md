@@ -1,0 +1,1 @@
+[README for plugins can be found in docs/PLUGIN.md](../../docs/PLUGIN.md)
