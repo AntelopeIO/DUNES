@@ -11,7 +11,7 @@ def version_major():
 
 
 def version_minor():
-    return 0
+    return 1
 
 
 def version_patch():
