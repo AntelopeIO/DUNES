@@ -10,7 +10,6 @@ These options are tested:
 """
 
 import subprocess
-import pytest
 
 from common import DUNE_EXE
 

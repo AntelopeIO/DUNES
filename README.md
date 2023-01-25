@@ -620,6 +620,10 @@ $ dune --start-container
 As mentioned above all commands that use the container will automatically create a new container if one does not exist 
 and automatically start the container if is stopped.
 
+# DUNE plugins
+
+DUNE can be extended with custom functionality using plugins: [Documentation of DUNE plugins](docs/PLUGIN.md)
+
 # Preparing DUNE release
 
 [Steps for preparing a new DUNE release](docs/RELEASE.md)

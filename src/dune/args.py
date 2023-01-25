@@ -166,6 +166,9 @@ class arg_parser:
     def parse(self):
         return self._parser.parse_args()
 
+    def get_parser(self):
+        return self._parser
+
     def exit_with_help_message(self, *args, return_value=1):
         self._parser.print_help(sys.stderr)
         print("\nError: ", *args, file=sys.stderr)

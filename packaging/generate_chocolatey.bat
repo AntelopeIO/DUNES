@@ -15,10 +15,19 @@ copy %script-path%\..\LICENSE %target-dir%
 copy "%script-path%"\..\dune* %target-dir%
 copy "%script-path%"\..\Dockerfile* %target-dir%
 copy "%script-path%"\..\bootstrap* %target-dir%
-mkdir %target-dir%\src\dune
-copy "%script-path%"\..\src\dune\* %target-dir%\src\dune
+copy "%script-path%"\..\README* %target-dir%
+
+mkdir %target-dir%\src\
+xcopy "%script-path%"\..\src\* %target-dir%\src /e /k /h /i
 mkdir %target-dir%\scripts\
-copy "%script-path%"\..\scripts\* %target-dir%\scripts\
+xcopy "%script-path%"\..\scripts\* %target-dir%\scripts\ /e /k /h /i
+mkdir %target-dir%\tests\
+xcopy "%script-path%"\..\tests\* %target-dir%\tests\ /e /k /h /i
+mkdir %target-dir%\plugin_example\
+xcopy "%script-path%"\..\plugin_example\* %target-dir%\plugin_example\ /e /k /h /i
+mkdir %target-dir%\docs\
+xcopy "%script-path%"\..\docs\* %target-dir%\docs\ /e /k /h /i
+
 
 cd %script-path%\antelopeio-dune
 
