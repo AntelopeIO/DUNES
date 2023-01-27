@@ -23,6 +23,7 @@ mkdir %target-dir%\scripts\
 xcopy "%script-path%"\..\scripts\* %target-dir%\scripts\ /e /k /h /i
 mkdir %target-dir%\tests\
 xcopy "%script-path%"\..\tests\* %target-dir%\tests\ /e /k /h /i
+del /f %target-dir%\tests\.gitignore
 mkdir %target-dir%\plugin_example\
 xcopy "%script-path%"\..\plugin_example\* %target-dir%\plugin_example\ /e /k /h /i
 mkdir %target-dir%\docs\
