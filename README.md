@@ -313,7 +313,7 @@ This will install the boot contract to the `eosio` account and activate all prot
 It will also create all the accounts needed by the core, token, and multisig contracts from [reference-contracts](https://github.com/AntelopeIO/reference-contracts) and deploy those three contracts to their corresponding accounts. Note that the core contract will replace the boot contract on the `eosio` account.
 
 ---
-**--send-acton** 
+**--send-action** 
 This will send an action to an account. 
 This command takes a valid Antelope account name, a valid Antelope action name, the data payload needed and the permission.
 
