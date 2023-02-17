@@ -126,7 +126,8 @@ class arg_parser:
                                        'needed for core contract and deploys core, token, '
                                        'and multisig contracts')
         self._parser.add_argument('--send-action', nargs=4, action=fix_action_data,
-                                  metavar=["ACCOUNT", "ACTION", "DATA", "PERMISSION"],
+                                  metavar=["ACCOUNT", "ACTION",
+                                           "DATA", "PERMISSION"],
                                   help='send action to account with data given and permission')
         self._parser.add_argument('--get-table', nargs=3, metavar=["ACCOUNT", "SCOPE", "TABLE"],
                                   help='get the data from the given table')
@@ -145,9 +146,11 @@ class arg_parser:
         self._parser.add_argument(
             '--upgrade', action='store_true', help='upgrades DUNE image to the latest version')
         self._parser.add_argument(
-            '--leap', metavar="LEAP_VERSION", help='sets the version of leap')
-        self._parser.add_argument('--cdt', metavar="CDT_VERSION", help='sets the version of CDT (Contract '
-                                  'Development Toolkit)')
+            '--leap', nargs='?', const='-1', metavar="LEAP_VERSION", help='sets the version of leap. '
+            'If no version is provided then available leap versions are displayed.')
+        self._parser.add_argument(
+            '--cdt', nargs='?', const='-1', metavar="CDT_VERSION", help='sets the version of CDT (Contract '
+            'Development Toolkit). If no version is provided then available CDT versions are displayed')
         # used to store arguments to individual programs, starting with --
         self._parser.add_argument('remainder',
                                   nargs=argparse.REMAINDER)

@@ -4,6 +4,7 @@ import importlib.util
 
 from args import arg_parser
 from args import parse_optional
+import version_selector
 from dune import dune
 from dune import dune_error
 from dune import dune_node_not_found
@@ -239,9 +240,13 @@ if __name__ == '__main__':
                 dune_sys.docker.upgrade()
 
             elif args.leap:
+                if args.leap == '-1':
+                    args.leap = version_selector.get_version("Leap")
                 dune_sys.execute_cmd(['sh', 'bootstrap_leap.sh', args.leap])
 
             elif args.cdt:
+                if args.cdt == '-1':
+                    args.cdt = version_selector.get_version("CDT")
                 dune_sys.execute_cmd(['sh', 'bootstrap_cdt.sh', args.cdt])
 
             elif args.version_all:

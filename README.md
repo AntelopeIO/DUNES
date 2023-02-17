@@ -336,12 +336,12 @@ This will list the available protocol feature code names.
 ---
 
 **--leap** 
-Sets specific version of leap
+Sets specific version of leap. If no version is provided then a list of available Leap versions will be displayed.
 
 ---
 
 **--cdt** 
-Sets specific version of CDT (Contract Development Toolkit)
+Sets specific version of CDT (Contract Development Toolkit). If no version is provided then a list of available CDT versions will be displayed.
 
 ---
 **--version-all** 
