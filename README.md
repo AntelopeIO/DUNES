@@ -630,6 +630,23 @@ and automatically start the container if is stopped.
 
 DUNE can be extended with custom functionality using plugins: [Documentation of DUNE plugins](docs/PLUGIN.md)
 
+# DUNE autocompletion
+
+DUNE supports autocompletion using `argcomplete`.
+For one time activation of argcomplete in `bash` run:
+`eval "$(register-python-argcomplete dune)"`
+Above can be added to `.bashrc`.
+
+Example of autocompletion:
+```
+user@localhost:~/$ dune --set-
+--set-active          --set-bios-contract   --set-core-contract   --set-token-contract  
+```
+
+For more information about how to install autocompletion globally or in zsh:
+[https://github.com/kislyuk/argcomplete#global-completion]()
+
+
 # Preparing DUNE release
 
 [Steps for preparing a new DUNE release](docs/RELEASE.md)

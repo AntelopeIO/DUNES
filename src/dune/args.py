@@ -1,6 +1,6 @@
 import argparse
 import sys
-
+import argcomplete
 
 class fix_action_data(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
@@ -34,8 +34,8 @@ def fix_args(args):
 
 def parse_optional(cmd):
     if cmd is not None:
-        return cmd[1:]  # remove leading --
-    return cmd  # empty list
+        return cmd[1:], True  # remove leading --
+    return cmd, True  # empty list
 
 
 class arg_parser:
@@ -167,6 +167,11 @@ class arg_parser:
         return sys.argv[2:]
 
     def parse(self):
+        try:
+            argcomplete.autocomplete(self._parser)
+        except ImportError:
+            print('Cannot load argcomplete. DUNE will work without autocompletion.')
+
         return self._parser.parse_args()
 
     def get_parser(self):

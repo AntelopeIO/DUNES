@@ -83,6 +83,7 @@ if __name__ == '__main__':
     if parser.is_forwarding():
         dune_sys.execute_interactive_cmd(parser.get_forwarded_args())
     else:
+        WAS_REMAINDER_ARGS_USED = False
 
         try:
             if args.start is not None:
@@ -185,15 +186,16 @@ if __name__ == '__main__':
                                       False)
 
             elif args.cmake_build is not None:
-                dune_sys.build_cmake_proj(args.cmake_build[0],
-                                          parse_optional(args.remainder))
+                commands, WAS_REMAINDER_ARGS_USED = parse_optional(args.remainder)
+                dune_sys.build_cmake_proj(args.cmake_build[0], commands)
 
             elif args.ctest is not None:
-                dune_sys.ctest_runner(args.ctest[0],
-                                      parse_optional(args.remainder))
+                commands, WAS_REMAINDER_ARGS_USED = parse_optional(args.remainder)
+                dune_sys.ctest_runner(args.ctest[0], commands)
 
             elif args.gdb is not None:
-                dune_sys.gdb(args.gdb[0], parse_optional(args.remainder))
+                commands, WAS_REMAINDER_ARGS_USED = parse_optional(args.remainder)
+                dune_sys.gdb(args.gdb[0], commands)
 
             elif args.deploy is not None:
                 dune_sys.deploy_contract(
@@ -257,6 +259,9 @@ if __name__ == '__main__':
             else:
                 for module in modules:
                     module.handle_args(args)
+
+            if args.remainder and WAS_REMAINDER_ARGS_USED is False:
+                print('Warning: following arguments were possibly unused: ' + str(args.remainder))
 
         except KeyboardInterrupt:
             pass
