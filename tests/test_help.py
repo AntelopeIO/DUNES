@@ -41,7 +41,6 @@ def test_help():
         [
             b'usage: dune',
             b'DUNE: Docker Utilities for Node Execution',
-            b'optional arguments:',
             b'-h, --help',
             b'--monitor',
             b'--start',
