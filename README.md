@@ -644,7 +644,7 @@ user@localhost:~/$ dune --set-
 ```
 
 For more information about how to install autocompletion globally or in zsh:
-[https://github.com/kislyuk/argcomplete#global-completion]()
+[https://github.com/kislyuk/argcomplete#global-completion](https://github.com/kislyuk/argcomplete#global-completion)
 
 
 # Preparing DUNE release
