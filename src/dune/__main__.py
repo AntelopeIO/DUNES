@@ -174,6 +174,26 @@ if __name__ == '__main__':
                 else:
                     dune_sys.create_account(args.create_account[0])
 
+            elif args.system_newaccount is not None:
+                commands, WAS_REMAINDER_ARGS_USED = parse_optional(args.remainder)
+
+                if len(args.system_newaccount) > 3 and WAS_REMAINDER_ARGS_USED:
+                    dune_sys.system_newaccount(args.system_newaccount[0],
+                                            args.system_newaccount[1],
+                                            args.system_newaccount[2],
+                                            args.system_newaccount[3],
+                                            commands)
+                elif len(args.system_newaccount) > 3:
+                    dune_sys.system_newaccount(args.system_newaccount[0],
+                                            args.system_newaccount[1],
+                                            args.system_newaccount[2],
+                                            args.system_newaccount[3])
+                elif len(args.system_newaccount) > 1:
+                    dune_sys.system_newaccount(args.system_newaccount[0],
+                                            args.system_newaccount[1])
+                else:
+                    dune_sys.system_newaccount(args.system_newaccount[0])
+
             elif args.create_cmake_app is not None:
                 dune_sys.init_project(args.create_cmake_app[0],
                                       dune_sys.docker.abs_host_path(

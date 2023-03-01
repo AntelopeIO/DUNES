@@ -442,6 +442,32 @@ class dune:
         self.import_key(private)
         print(stderr)
 
+    #pylint: disable=too-many-arguments
+    def system_newaccount(self, name, creator=None, pub=None, private=None, additional_args=None):
+        if private is None:
+            keys = self.create_key()
+            private = keys.splitlines()[0].split(':')[1][1:]
+            pub = keys.splitlines()[1].split(':')[1][1:]
+            print(
+                "Creating account [" + name + "] with key pair [Private: " +
+                private + ", Public: " + pub + "]")
+
+        additional_args_and_creator = []
+
+        if additional_args is not None:
+            additional_args_and_creator += additional_args
+
+        if creator is None:
+            additional_args_and_creator += ['eosio']
+        else:
+            additional_args_and_creator += [creator]
+
+        stdout, stderr, exit_code = self.cleos_cmd(
+            ['system', 'newaccount'] + additional_args_and_creator + [name, pub])
+
+        self.import_key(private)
+        print(stderr)
+
     def execute_cmd(self, args):
         self._docker.execute_cmd2(args)
 
@@ -657,6 +683,14 @@ class dune:
             print("Feature Not Found")
             raise dune_error()
 
+    def setup_token(self):
+        #Create the SYS currency with a maximum value of 10 billion tokens.
+        self.send_action('create', 'eosio.token',  '[ "eosio", "10000000000.0000 SYS" ]', 'eosio.token@active')
+        #Issue one billion tokens (Remaining tokens not in circulation can be considered to be held in reserve.)
+        self.send_action('issue', 'eosio.token', '[ "eosio", "1000000000.0000 SYS", "memo" ]')
+        #Initialize the system account with code zero (needed at initialization time) and SYS token with precision 4
+        self.send_action('init', 'eosio', '["0", "4,SYS"]')
+
     def bootstrap_system(self, full):
         self.preactivate_feature()
         if full:
@@ -691,6 +725,7 @@ class dune:
             self.deploy_contract(
                 '/app/reference-contracts/build/contracts/eosio.system',
                 'eosio')
+            self.setup_token()
 
     def start_webapp(self, directory):
         # pylint: disable=fixme

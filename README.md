@@ -256,6 +256,11 @@ This command takes a compatible name for the new Antelope account and an optiona
 
 ---
 
+**--system-newaccount** 
+This will create a new account on the blockchain with initial resources using command `cleos system newaccount`
+
+---
+
 **--create-cmake-app** 
 This will produce a new smart contract project that utilizes CMake as its build system. This command takes a project name and a directory.
 
