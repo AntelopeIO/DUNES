@@ -240,7 +240,7 @@ if __name__ == '__main__':
             elif args.bootstrap_system:
                 dune_sys.bootstrap_system(False)
 
-            elif hasattr(args.bootstrap_system_full, "__len__"):
+            elif args.bootstrap_system_full is not None:
                 if len(args.bootstrap_system_full) > 2:
                     dune_sys.bootstrap_system(True,
                                             args.bootstrap_system_full[0],
