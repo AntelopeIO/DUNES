@@ -127,10 +127,14 @@ class arg_parser:
         self._parser.add_argument('--bootstrap-system', action='store_true',
                                   help='install boot contract to eosio and activate all protocol '
                                        'features')
-        self._parser.add_argument('--bootstrap-system-full', action='store_true',
+        self._parser.add_argument('--bootstrap-system-full',
+                                  nargs='*',  metavar=["CURRENCY (Optional)", "MAX_VALUE (Optional)",
+                                                       "INITIAL_VALUE (Optional)"],
                                   help='same as `--bootstrap-system` but also creates accounts '
                                        'needed for core contract and deploys core, token, '
-                                       'and multisig contracts')
+                                       'and multisig contracts. If optional arguments are provided '
+                                       'it creates specific CURRENCY (default "SYS") with maximum amount of '
+                                       'MAX_VALUE and initial value of INITIAL_VALUE')
         self._parser.add_argument('--send-action', nargs=4, action=fix_action_data,
                                   metavar=["ACCOUNT", "ACTION",
                                            "DATA", "PERMISSION"],

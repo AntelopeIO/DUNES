@@ -240,8 +240,21 @@ if __name__ == '__main__':
             elif args.bootstrap_system:
                 dune_sys.bootstrap_system(False)
 
-            elif args.bootstrap_system_full:
-                dune_sys.bootstrap_system(True)
+            elif hasattr(args.bootstrap_system_full, "__len__"):
+                if len(args.bootstrap_system_full) > 2:
+                    dune_sys.bootstrap_system(True,
+                                            args.bootstrap_system_full[0],
+                                            args.bootstrap_system_full[1],
+                                            args.bootstrap_system_full[2])
+                elif len(args.bootstrap_system_full) > 1:
+                    dune_sys.bootstrap_system(True,
+                                            args.bootstrap_system_full[0],
+                                            args.bootstrap_system_full[1])
+                elif len(args.bootstrap_system_full) > 0:
+                    dune_sys.bootstrap_system(True,
+                                            args.bootstrap_system_full[0])
+                else:
+                    dune_sys.bootstrap_system(True)
 
             elif args.activate_feature is not None:
                 dune_sys.activate_feature(args.activate_feature, True)

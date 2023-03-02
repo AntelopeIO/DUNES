@@ -683,15 +683,15 @@ class dune:
             print("Feature Not Found")
             raise dune_error()
 
-    def setup_token(self):
-        #Create the SYS currency with a maximum value of 10 billion tokens.
-        self.send_action('create', 'eosio.token',  '[ "eosio", "10000000000.0000 SYS" ]', 'eosio.token@active')
-        #Issue one billion tokens (Remaining tokens not in circulation can be considered to be held in reserve.)
-        self.send_action('issue', 'eosio.token', '[ "eosio", "1000000000.0000 SYS", "memo" ]')
-        #Initialize the system account with code zero (needed at initialization time) and SYS token with precision 4
-        self.send_action('init', 'eosio', '["0", "4,SYS"]')
+    def setup_token(self, currency, max_value, initial_value):
+        #Create the currency with a maximum value of max_value tokens.
+        self.send_action('create', 'eosio.token',  '[ "eosio", "' + max_value + " " +  currency + '" ]', 'eosio.token@active')
+        #Issue initial_value tokens (Remaining tokens not in circulation can be considered to be held in reserve.)
+        self.send_action('issue', 'eosio.token', '[ "eosio", "' + initial_value + " " + currency + '", "memo" ]')
+        #Initialize the system account with code zero (needed at initialization time) and currency / token with precision 4
+        self.send_action('init', 'eosio', '["0", "4,' + currency + '"]')
 
-    def bootstrap_system(self, full):
+    def bootstrap_system(self, full, currency = 'SYS', max_value = '10000000000.0000', initial_value = '1000000000.0000'):
         self.preactivate_feature()
         if full:
             # create account for multisig contract
@@ -725,7 +725,7 @@ class dune:
             self.deploy_contract(
                 '/app/reference-contracts/build/contracts/eosio.system',
                 'eosio')
-            self.setup_token()
+            self.setup_token(currency, max_value, initial_value)
 
     def start_webapp(self, directory):
         # pylint: disable=fixme
