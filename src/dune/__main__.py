@@ -177,22 +177,14 @@ if __name__ == '__main__':
             elif args.system_newaccount is not None:
                 commands, WAS_REMAINDER_ARGS_USED = parse_optional(args.remainder)
 
-                if len(args.system_newaccount) > 3 and WAS_REMAINDER_ARGS_USED:
-                    dune_sys.system_newaccount(args.system_newaccount[0],
-                                            args.system_newaccount[1],
-                                            args.system_newaccount[2],
-                                            args.system_newaccount[3],
-                                            commands)
-                elif len(args.system_newaccount) > 3:
-                    dune_sys.system_newaccount(args.system_newaccount[0],
-                                            args.system_newaccount[1],
-                                            args.system_newaccount[2],
-                                            args.system_newaccount[3])
-                elif len(args.system_newaccount) > 1:
-                    dune_sys.system_newaccount(args.system_newaccount[0],
-                                            args.system_newaccount[1])
+                if (len(args.system_newaccount) > 4
+                    or (WAS_REMAINDER_ARGS_USED and len(args.system_newaccount) < 4)):
+                    sys.stderr.write("--system-newaccount has invalid arguments\n")
+                    sys.exit(1)
+                if WAS_REMAINDER_ARGS_USED:
+                    dune_sys.system_newaccount(*args.system_newaccount, commands)
                 else:
-                    dune_sys.system_newaccount(args.system_newaccount[0])
+                    dune_sys.system_newaccount(*args.system_newaccount)
 
             elif args.create_cmake_app is not None:
                 dune_sys.init_project(args.create_cmake_app[0],
@@ -241,20 +233,10 @@ if __name__ == '__main__':
                 dune_sys.bootstrap_system(False)
 
             elif args.bootstrap_system_full is not None:
-                if len(args.bootstrap_system_full) > 2:
-                    dune_sys.bootstrap_system(True,
-                                            args.bootstrap_system_full[0],
-                                            args.bootstrap_system_full[1],
-                                            args.bootstrap_system_full[2])
-                elif len(args.bootstrap_system_full) > 1:
-                    dune_sys.bootstrap_system(True,
-                                            args.bootstrap_system_full[0],
-                                            args.bootstrap_system_full[1])
-                elif len(args.bootstrap_system_full) > 0:
-                    dune_sys.bootstrap_system(True,
-                                            args.bootstrap_system_full[0])
+                if len(args.bootstrap_system_full) > 3:
+                    sys.stderr.write("Error: --bootstrap-system-full should have at most 3 arguments\n")
                 else:
-                    dune_sys.bootstrap_system(True)
+                    dune_sys.bootstrap_system(True, *args.bootstrap_system_full)
 
             elif args.activate_feature is not None:
                 dune_sys.activate_feature(args.activate_feature, True)

@@ -34,8 +34,8 @@ def fix_args(args):
 
 def parse_optional(cmd):
     if cmd is not None:
-        return cmd[1:], True  # remove leading --
-    return cmd, True  # empty list
+        return cmd[1:], cmd != []  # remove leading --
+    return cmd, cmd != []  # empty list
 
 
 class arg_parser:
