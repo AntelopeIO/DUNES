@@ -179,8 +179,7 @@ if __name__ == '__main__':
 
                 if (len(args.system_newaccount) > 4
                     or (WAS_REMAINDER_ARGS_USED and len(args.system_newaccount) < 4)):
-                    sys.stderr.write("--system-newaccount has invalid arguments\n")
-                    sys.exit(1)
+                    parser.exit_with_help_message("--system-newaccount has invalid arguments\n")
                 if WAS_REMAINDER_ARGS_USED:
                     dune_sys.system_newaccount(*args.system_newaccount, commands)
                 else:
@@ -234,7 +233,7 @@ if __name__ == '__main__':
 
             elif args.bootstrap_system_full is not None:
                 if len(args.bootstrap_system_full) > 3:
-                    sys.stderr.write("Error: --bootstrap-system-full should have at most 3 arguments\n")
+                    parser.exit_with_help_message("--bootstrap-system-full should have at most 3 arguments\n")
                 else:
                     dune_sys.bootstrap_system(True, *args.bootstrap_system_full)
 

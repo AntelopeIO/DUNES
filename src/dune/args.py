@@ -87,9 +87,9 @@ class arg_parser:
         self._parser.add_argument('--system-newaccount', nargs='+',
                                   metavar=["NAME", "CREATOR (Optional)", "PUB_KEY (Optional)",
                                            "PRIV_KEY (Optional)", "-- FLAGS (Optional)"],
-                                  help='create an EOSIO account with initial resources using'
+                                  help='create an EOSIO account with initial resources using '
                                        '"cleos system newaccount" command. '
-                                       'Optional flags are of the form -- --buy-ram-bytes 3000')
+                                       'Optional flags are of the form: "-- --buy-ram-bytes 3000"')
         self._parser.add_argument('--create-cmake-app', nargs=2, metavar=["PROJ_NAME", "DIR"],
                                   help='create a smart contract project at from a specific host '
                                        'location')
