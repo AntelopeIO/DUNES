@@ -108,7 +108,7 @@ class dune:
             print("Node [" + nod.name() + "] is already running.")
             return
 
-        cmd = ['sh', 'start_node.sh', nod.data_dir(), nod.config_dir()]
+        cmd = ['bash', 'start_node.sh', nod.data_dir(), nod.config_dir()]
 
         if snapshot is not None:
             cmd = cmd + ['--snapshot /app/nodes/' + nod.name() + '/snapshots/' + snapshot + ' -e']
@@ -144,14 +144,16 @@ class dune:
                 self.stop_node(node(ctx.active))
 
         stdout, stderr, exit_code = self._docker.execute_cmd(cmd + [nod.name()])
+        print(stdout)
+        print(stderr)
 
-        if exit_code == 0:
+        if exit_code == 0 and self.is_node_running(nod):
             self.set_active(nod)
             print("Active [" + nod.name() + "]")
-            print(stdout)
-            print(stderr)
         else:
-            print(stderr)
+            print("ERROR: " + nod.name() + " is not running!")
+
+        self._docker.execute_cmd2(['cat', '/app/' + nod.name() + '.out'])
 
     def cleos_cmd(self, cmd, quiet=True):
         self.unlock_wallet()
