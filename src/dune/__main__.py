@@ -174,6 +174,17 @@ if __name__ == '__main__':
                 else:
                     dune_sys.create_account(args.create_account[0])
 
+            elif args.system_newaccount is not None:
+                commands, WAS_REMAINDER_ARGS_USED = parse_optional(args.remainder)
+
+                if (len(args.system_newaccount) > 4
+                    or (WAS_REMAINDER_ARGS_USED and len(args.system_newaccount) < 4)):
+                    parser.exit_with_help_message("--system-newaccount has invalid arguments\n")
+                if WAS_REMAINDER_ARGS_USED:
+                    dune_sys.system_newaccount(*args.system_newaccount, commands)
+                else:
+                    dune_sys.system_newaccount(*args.system_newaccount)
+
             elif args.create_cmake_app is not None:
                 dune_sys.init_project(args.create_cmake_app[0],
                                       dune_sys.docker.abs_host_path(
@@ -220,8 +231,11 @@ if __name__ == '__main__':
             elif args.bootstrap_system:
                 dune_sys.bootstrap_system(False)
 
-            elif args.bootstrap_system_full:
-                dune_sys.bootstrap_system(True)
+            elif args.bootstrap_system_full is not None:
+                if len(args.bootstrap_system_full) > 3:
+                    parser.exit_with_help_message("--bootstrap-system-full should have at most 3 arguments\n")
+                else:
+                    dune_sys.bootstrap_system(True, *args.bootstrap_system_full)
 
             elif args.activate_feature is not None:
                 dune_sys.activate_feature(args.activate_feature, True)

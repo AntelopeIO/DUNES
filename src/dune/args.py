@@ -34,8 +34,8 @@ def fix_args(args):
 
 def parse_optional(cmd):
     if cmd is not None:
-        return cmd[1:], True  # remove leading --
-    return cmd, True  # empty list
+        return cmd[1:], cmd != []  # remove leading --
+    return cmd, cmd != []  # empty list
 
 
 class arg_parser:
@@ -84,6 +84,12 @@ class arg_parser:
                                            "PRIV_KEY (Optional)"],
                                   help='create an EOSIO account and an optional creator (the '
                                        'default is eosio)')
+        self._parser.add_argument('--system-newaccount', nargs='+',
+                                  metavar=["NAME", "CREATOR (Optional)", "PUB_KEY (Optional)",
+                                           "PRIV_KEY (Optional)", "-- FLAGS (Optional)"],
+                                  help='create an EOSIO account with initial resources using '
+                                       '"cleos system newaccount" command. '
+                                       'Optional flags are of the form: "-- --buy-ram-bytes 3000"')
         self._parser.add_argument('--create-cmake-app', nargs=2, metavar=["PROJ_NAME", "DIR"],
                                   help='create a smart contract project at from a specific host '
                                        'location')
@@ -121,10 +127,14 @@ class arg_parser:
         self._parser.add_argument('--bootstrap-system', action='store_true',
                                   help='install boot contract to eosio and activate all protocol '
                                        'features')
-        self._parser.add_argument('--bootstrap-system-full', action='store_true',
+        self._parser.add_argument('--bootstrap-system-full',
+                                  nargs='*',  metavar=["CURRENCY (Optional)", "MAX_VALUE (Optional)",
+                                                       "INITIAL_VALUE (Optional)"],
                                   help='same as `--bootstrap-system` but also creates accounts '
                                        'needed for core contract and deploys core, token, '
-                                       'and multisig contracts')
+                                       'and multisig contracts. If optional arguments are provided '
+                                       'it creates specific CURRENCY (default "SYS") with maximum amount of '
+                                       'MAX_VALUE and initial value of INITIAL_VALUE')
         self._parser.add_argument('--send-action', nargs=4, action=fix_action_data,
                                   metavar=["ACCOUNT", "ACTION",
                                            "DATA", "PERMISSION"],

@@ -256,6 +256,11 @@ This command takes a compatible name for the new Antelope account and an optiona
 
 ---
 
+**--system-newaccount** 
+This will create a new account on the blockchain with initial resources using command `cleos system newaccount`
+
+---
+
 **--create-cmake-app** 
 This will produce a new smart contract project that utilizes CMake as its build system. This command takes a project name and a directory.
 
@@ -311,6 +316,10 @@ This will install the boot contract to the `eosio` account and activate all prot
 **--bootstrap-system-full** 
 This will install the boot contract to the `eosio` account and activate all protocol features. 
 It will also create all the accounts needed by the core, token, and multisig contracts from [reference-contracts](https://github.com/AntelopeIO/reference-contracts) and deploy those three contracts to their corresponding accounts. Note that the core contract will replace the boot contract on the `eosio` account.
+Following optional arguments can be provided:
+- currency (default is "SYS")
+- maximum value (default is "10000000000.0000"). Maximum total value of issued currency. Precision of maximum value needs to be 4.
+- initial value (default is "1000000000.0000"). Initial value of issued currency to system account `eosio`. Precision of initial value needs to be 4.
 
 ---
 **--send-acton** 
