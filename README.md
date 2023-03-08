@@ -149,6 +149,8 @@ choco install .\antelopeio-dune.1.1.0.nupkg -y
 
 **NOTE**: Chocolatey does not detect python / docker-dekstop installed via other means, so it is possible some dependencies will be installed twice. Usually it is not an issue, but if it is you can follow [this solution](https://stackoverflow.com/a/71605170).
 
+Due to current Docker Desktop limitations DUNE supports only `C:/` disk drive, so all your DUNE projects or workspace needs to be on `C:/` drive.
+
 ### Mac OS
 
 When finished installing. Check the installation with the command. 
@@ -387,7 +389,7 @@ then simply run one of the wallet commands from DUNE first and it will unlock th
 If you deploy a smart contract to an account it will automatically add the `code` permission to that account for you.
 
 The drive/directory that your workspace is in is mapped into the container and prefixed with `/host`. 
-So on Windows this would be `/host/Users/<name>/<some path>`. 
+So on Windows this would be `/host/Users/<name>/<some path>` (NOTE: on Windows only `C:/` disk drive is supported).
 On Linux and Mac this would be something like `/host/home/<name>/<some path>`.
 
 ## Node management
