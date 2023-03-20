@@ -11,14 +11,17 @@ from dune import dune_node_not_found
 from dune import node
 from dune import version_full
 
+
 def handle_version():
     print("DUNE " + version_full())
+
 
 def handle_simple_args():
     # Handle args that do not require docker started up
     if args.version is True:
         handle_version()
         sys.exit(0)
+
 
 def load_module(absolute_path):
     module_name, _ = os.path.splitext(os.path.split(absolute_path)[-1])
@@ -29,6 +32,7 @@ def load_module(absolute_path):
     py_mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(py_mod)
     return py_mod
+
 
 def load_all_modules_from_dir(plugin_dir):
     loaded_modules = []
@@ -57,6 +61,7 @@ def load_all_modules_from_dir(plugin_dir):
         loaded_modules.append(loaded_module)
 
     return loaded_modules
+
 
 if __name__ == '__main__':
 
@@ -267,8 +272,148 @@ if __name__ == '__main__':
 
             elif args.version_all:
                 handle_version()
-                dune_sys.execute_interactive_cmd(['apt','list','leap'])
-                dune_sys.execute_interactive_cmd(['apt','list','cdt'])
+                dune_sys.execute_interactive_cmd(['apt', 'list', 'leap'])
+                dune_sys.execute_interactive_cmd(['apt', 'list', 'cdt'])
+
+# Integration with antler-proj begin ----------------------------------------------------------------------
+
+            elif args.create_project:
+                dune_sys.create_project(args.create_project[1], args.create_project[0])
+
+            elif args.add_app:
+                if len(args.add_app) >= 5:
+                    dune_sys.add_app(args.add_app[0],  # path
+                                     args.add_app[1],  # app name
+                                     args.add_app[2],  # lang
+                                     args.add_app[3],  # compiler opts
+                                     args.add_app[4])  # linker opts
+                elif len(args.add_app) >= 4:
+                    dune_sys.add_app(args.add_app[0],  # path
+                                     args.add_app[1],  # app name
+                                     args.add_app[2],  # lang
+                                     args.add_app[3])  # compiler opts
+                elif len(args.add_app) >= 3:
+                    dune_sys.add_app(args.add_app[0],  # path
+                                     args.add_app[1],  # app name
+                                     args.add_app[2])  # lang
+            elif args.add_lib:
+                if len(args.add_lib) >= 5:
+                    dune_sys.add_lib(args.add_lib[0],  # path
+                                     args.add_lib[1],  # lib name
+                                     args.add_lib[2],  # lang
+                                     args.add_lib[3],  # compiler opts
+                                     args.add_lib[4])  # linker opts
+                elif len(args.add_lib) >= 4:
+                    dune_sys.add_lib(args.add_lib[0],  # path
+                                     args.add_lib[1],  # lib name
+                                     args.add_lib[2],  # lang
+                                     args.add_lib[3])  # compiler opts
+                elif len(args.add_lib) >= 3:
+                    dune_sys.add_lib(args.add_lib[0],  # path
+                                     args.add_lib[1],  # lib name
+                                     args.add_lib[2])  # lang
+            elif args.add_dep:
+                if len(args.add_dep) >= 6:
+                    dune_sys.add_dep(args.add_dep[0],  # project path
+                                     args.add_dep[1],  # object name (app/lib)
+                                     args.add_dep[2],  # dependency name
+                                     args.add_dep[3],  # location of dep
+                                     args.add_dep[4],  # tag/release number
+                                     args.add_dep[5])  # hash
+                if len(args.add_dep) >= 5:
+                    dune_sys.add_dep(args.add_dep[0],  # project path
+                                     args.add_dep[1],  # object name (app/lib)
+                                     args.add_dep[2],  # dependency name
+                                     args.add_dep[3],  # location of dep
+                                     args.add_dep[4])  # tag/release number
+                if len(args.add_dep) >= 4:
+                    dune_sys.add_dep(args.add_dep[0],  # project path
+                                     args.add_dep[1],  # object name (app/lib)
+                                     args.add_dep[2],  # dependency name
+                                     args.add_dep[3])  # location of dep
+                if len(args.add_dep) >= 3:
+                    dune_sys.add_dep(args.add_dep[0],  # project path
+                                     args.add_dep[1],  # object name (app/lib)
+                                     args.add_dep[2])  # dependency name
+            elif args.update_app:
+                if len(args.update_app) >= 5:
+                    dune_sys.update_app(args.update_app[0],  # path
+                                        args.update_app[1],  # app name
+                                        args.update_app[2],  # lang
+                                        args.update_app[3],  # compiler opts
+                                        args.update_app[4])  # linker opts
+                elif len(args.update_app) >= 4:
+                    dune_sys.update_app(args.update_app[0],  # path
+                                        args.update_app[1],  # app name
+                                        args.update_app[2],  # lang
+                                        args.update_app[3])  # compiler opts
+                elif len(args.update_app) >= 3:
+                    dune_sys.update_app(args.update_app[0],  # path
+                                        args.update_app[1],  # app name
+                                        args.update_app[2])  # lang
+
+            elif args.update_lib:
+                if len(args.update_lib) >= 5:
+                    dune_sys.update_lib(args.update_lib[0],  # path
+                                        args.update_lib[1],  # lib name
+                                        args.update_lib[2],  # lang
+                                        args.update_lib[3],  # compiler opts
+                                        args.update_lib[4])  # linker opts
+                elif len(args.update_lib) >= 4:
+                    dune_sys.update_lib(args.update_lib[0],  # path
+                                        args.update_lib[1],  # lib name
+                                        args.update_lib[2],  # lang
+                                        args.update_lib[3])  # compiler opts
+                elif len(args.update_lib) >= 3:
+                    dune_sys.update_lib(args.update_lib[0],  # path
+                                        args.update_lib[1],  # lib name
+                                        args.update_lib[2])  # lang
+            elif args.update_dep:
+                if len(args.update_dep) >= 6:
+                    dune_sys.update_dep(args.update_dep[0],  # project path
+                                        args.update_dep[1],  # object name (app/lib)
+                                        args.update_dep[2],  # dependency name
+                                        args.update_dep[3],  # location of dep
+                                        args.update_dep[4],  # tag/release number
+                                        args.update_dep[5])  # hash
+                if len(args.update_dep) >= 5:
+                    dune_sys.update_dep(args.update_dep[0],  # project path
+                                        args.update_dep[1],  # object name (app/lib)
+                                        args.update_dep[2],  # dependency name
+                                        args.update_dep[3],  # location of dep
+                                        args.update_dep[4])  # tag/release number
+                if len(args.update_dep) >= 4:
+                    dune_sys.update_dep(args.update_dep[0],  # project path
+                                        args.update_dep[1],  # object name (app/lib)
+                                        args.update_dep[2],  # dependency name
+                                        args.update_dep[3])  # location of dep
+                if len(args.update_dep) >= 3:
+                    dune_sys.update_dep(args.update_dep[0],  # project path
+                                        args.update_dep[1],  # object name (app/lib)
+                                        args.update_dep[2])  # dependency name
+
+            elif args.remove_app:
+                dune_sys.remove_app(args.remove_app[0], args.remove_app[1])
+
+            elif args.remove_lib:
+                dune_sys.remove_lib(args.remove_lib[0], args.remove_lib[1])
+
+            elif args.remove_dep:
+                dune_sys.remove_dep(args.remove_dep[0], args.remove_dep[1], args.remove_dep[2])
+
+            elif args.build_project:
+                dune_sys.build_project(args.build_project[0])
+
+            elif args.clean_build_project:
+                dune_sys.build_project(args.clean_build_project[0], True)
+
+            elif args.validate:
+                dune_sys.validate_project(args.validate[0])
+
+            elif args.populate:
+                dune_sys.populate_project(args.populate[0])
+
+# Integration with antler-proj end ----------------------------------------------------------------------
 
             else:
                 for module in modules:
