@@ -19,5 +19,5 @@ On Linux in Bash it is enough to just simply use command from step 3 (with the d
 <a name="wallets"></a>
 ## How to retrieve a list of opened and closed wallets?
 
-By default command `cleos wallet list` lists only opened wallets. To find out the list of all the wallets you can try following command:
+By default the command `cleos wallet list` lists only opened wallets. To find the list of all wallets you can try the following command:
 `dune -- ls /root/eosio-wallet/`
