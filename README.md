@@ -661,3 +661,7 @@ For more information about how to install autocompletion globally or in zsh:
 # Preparing DUNE release
 
 [Steps for preparing a new DUNE release](docs/RELEASE.md)
+
+# Troubleshooting DUNE / FAQ
+
+[Troubleshooting common DUNE problems](docs/FAQ.md)
