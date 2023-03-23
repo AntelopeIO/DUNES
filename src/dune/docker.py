@@ -3,6 +3,10 @@ import platform
 import subprocess
 
 
+class docker_error(Exception):
+    pass
+
+
 class docker:
 
     _container = ""
@@ -78,7 +82,12 @@ class docker:
         print(stderr)
         print('========================================')
 
-    def execute_docker_cmd(self, cmd):
+    def execute_docker_cmd(self, cmd, *, check_status=True):
+        """Execute the given docker command in the active container.
+
+        :param check_status: if command has a return code != 0 then raise an exception
+        :return: (stdout, stderr, status_code)
+        """
         with subprocess.Popen(['docker'] + cmd,
                               stdout=subprocess.PIPE, stderr=subprocess.PIPE) as proc:
             stdout, stderr = proc.communicate()
@@ -86,17 +95,23 @@ class docker:
             stderr = stderr.decode('UTF-8')
             status = proc.returncode
 
-            if self._cl_args.debug:
-                print('docker '+' '.join(cmd))
-                self.print_streams(stdout, stderr)
+        if check_status and status != 0:
+            # some error happened, log it and fail
+            print(f'ERROR: docker {cmd}  -- returned: {status}')
+            self.print_streams(stdout, stderr)
+            raise docker_error
+
+        if self._cl_args.debug:
+            print('docker '+' '.join(cmd))
+            self.print_streams(stdout, stderr)
 
         return (stdout, stderr, status)
 
     def file_exists(self, file_name):
-        return self.execute_cmd(['test', '-f', file_name])[2] == 0
+        return self.execute_cmd(['test', '-f', file_name], check_status=False)[2] == 0
 
     def dir_exists(self, directory):
-        return self.execute_cmd(['test', '-d', directory])[2] == 0
+        return self.execute_cmd(['test', '-d', directory], check_status=False)[2] == 0
 
     def tar_dir(self, file_name, directory):
         return self.execute_cmd(['tar', 'cvzf', file_name + '.tgz', directory])
@@ -146,9 +161,9 @@ class docker:
                                self._container] + cmd) as proc:
             proc.communicate()
 
-    def execute_cmd(self, cmd):
+    def execute_cmd(self, cmd, **kwargs):
         return self.execute_docker_cmd(
-            ['container', 'exec', self._container] + cmd)
+            ['container', 'exec', self._container] + cmd, **kwargs)
 
     def execute_interactive_cmd(self, cmd):
         with subprocess.Popen(['docker', 'container',

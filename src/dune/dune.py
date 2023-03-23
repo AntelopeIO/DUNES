@@ -397,7 +397,8 @@ class dune:
 
     def unlock_wallet(self):
         stdout, stderr, exit_code = self._docker.execute_cmd(
-            ['cleos', 'wallet', 'unlock', '--password', self.get_wallet_pw()])
+            ['cleos', 'wallet', 'unlock', '--password', self.get_wallet_pw()],
+            check_status=False)
 
     def import_key(self, key):
         self.unlock_wallet()
