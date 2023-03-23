@@ -82,18 +82,28 @@ class docker:
         print(stderr)
         print('========================================')
 
-    def execute_docker_cmd(self, cmd, *, check_status=True):
+    def execute_docker_cmd(self, cmd, *, check_status=True, capture_output=True):
         """Execute the given docker command in the active container.
 
         :param check_status: if command has a return code != 0 then raise an exception
-        :return: (stdout, stderr, status_code)
+        :param capture_output: whether to capture stdout and stderr and return them or to
+                               print the streams normally
+        :return: (stdout, stderr, status_code) if captured, (None, None, status_code) otherwise
         """
-        with subprocess.Popen(['docker'] + cmd,
-                              stdout=subprocess.PIPE, stderr=subprocess.PIPE) as proc:
-            stdout, stderr = proc.communicate()
-            stdout = stdout.decode('UTF-8')
-            stderr = stderr.decode('UTF-8')
-            status = proc.returncode
+        if capture_output:
+            with subprocess.Popen(['docker'] + cmd,
+                                  stdout=subprocess.PIPE, stderr=subprocess.PIPE) as proc:
+                stdout, stderr = proc.communicate()
+                stdout = stdout.decode('UTF-8')
+                stderr = stderr.decode('UTF-8')
+                status = proc.returncode
+
+        else:
+            with subprocess.Popen(['docker'] + cmd) as proc:
+                proc.communicate()
+                stdout = None
+                stderr = None
+                status = proc.returncode
 
         if check_status and status != 0:
             # some error happened, log it and fail
