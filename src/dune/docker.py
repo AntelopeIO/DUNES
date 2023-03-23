@@ -171,9 +171,14 @@ class docker:
                                self._container] + cmd) as proc:
             proc.communicate()
 
-    def execute_cmd(self, cmd, **kwargs):
-        return self.execute_docker_cmd(
-            ['container', 'exec', self._container] + cmd, **kwargs)
+    def execute_cmd(self, cmd, *, interactive=False, colors=False, **kwargs):
+        docker_cmd = ['container', 'exec']
+        if interactive:
+            docker_cmd += ['-i']
+        if colors:
+            docker_cmd += ['-t', '-e', 'TERM=xterm-256color']
+        docker_cmd += [self._container]
+        return self.execute_docker_cmd(docker_cmd + cmd, **kwargs)
 
     def execute_interactive_cmd(self, cmd):
         with subprocess.Popen(['docker', 'container',
