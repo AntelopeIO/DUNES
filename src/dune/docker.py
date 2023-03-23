@@ -66,15 +66,31 @@ class docker:
     def get_image(self):
         return self._image
 
+    @staticmethod
+    def print_streams(stdout, stderr):
+        if stdout is None and stderr is None:
+            print('!! No stdout/stderr info captured...')
+            return
+
+        print('================ STDOUT ================')
+        print(stdout)
+        print('================ STDERR ================')
+        print(stderr)
+        print('========================================')
+
     def execute_docker_cmd(self, cmd):
         with subprocess.Popen(['docker'] + cmd,
                               stdout=subprocess.PIPE, stderr=subprocess.PIPE) as proc:
             stdout, stderr = proc.communicate()
+            stdout = stdout.decode('UTF-8')
+            stderr = stderr.decode('UTF-8')
+            status = proc.returncode
+
             if self._cl_args.debug:
                 print('docker '+' '.join(cmd))
-                print(stdout.decode('UTF-8'))
-                print(stderr.decode('UTF-8'))
-        return [stdout.decode('UTF-8'), stderr.decode('UTF-8'), proc.poll()]
+                self.print_streams(stdout, stderr)
+
+        return (stdout, stderr, status)
 
     def file_exists(self, file_name):
         return self.execute_cmd(['test', '-f', file_name])[2] == 0
