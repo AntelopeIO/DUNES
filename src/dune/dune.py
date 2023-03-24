@@ -153,7 +153,7 @@ class dune:
         else:
             print("ERROR: " + nod.name() + " is not running!")
 
-        self._docker.execute_cmd2(['cat', '/app/' + nod.name() + '.out'])
+        self.execute_cmd(['cat', '/app/' + nod.name() + '.out'])
 
     def cleos_cmd(self, cmd, quiet=True):
         self.unlock_wallet()
@@ -161,7 +161,7 @@ class dune:
         if quiet:
             return self._docker.execute_cmd(
                 ['cleos', '--verbose', '-u', 'http://' + ctx.http_port] + cmd)
-        return self._docker.execute_cmd2(
+        return self.execute_cmd(
             ['cleos', '--verbose', '-u', 'http://' + ctx.http_port] + cmd)
 
     def monitor(self):
@@ -471,11 +471,8 @@ class dune:
         self.import_key(private)
         print(stderr)
 
-    def execute_cmd(self, args):
-        self._docker.execute_cmd2(args)
-
-    def execute_cmd_at(self, args, at_dir):
-        self._docker.execute_cmd_at(args, at_dir)
+    def execute_cmd(self, args, **kwargs):
+        self._docker.execute_cmd(args, capture_output=False, **kwargs)
 
     def execute_interactive_cmd(self, args):
         self._docker.execute_interactive_cmd(args)
@@ -485,20 +482,23 @@ class dune:
         build_dir = container_dir + '/build'
         if not self._docker.dir_exists(build_dir):
             self._docker.execute_cmd(['mkdir', '-p', build_dir])
-        self._docker.execute_cmd2(
-            ['cmake', '-S', container_dir, '-B', build_dir] + flags)
-        self._docker.execute_cmd2(['cmake', '--build', build_dir])
+        self.execute_cmd(
+            ['cmake', '-S', container_dir, '-B', build_dir] + flags,
+            colors=True)
+        self.execute_cmd(['cmake', '--build', build_dir], colors=True)
 
     def ctest_runner(self, directory, flags):
         container_dir = self._docker.abs_host_path(directory)
-        self._docker.execute_cmd_at(container_dir, ['ctest'] + flags)
+        self.execute_cmd(['ctest'] + flags,
+                         chdir=container_dir,
+                         colors=True)
 
     def gdb(self, executable, flags):
         container_exec = self._docker.abs_host_path(executable)
         self._docker.execute_interactive_cmd(['gdb', container_exec] + flags)
 
     def build_other_proj(self, cmd):
-        self._docker.execute_cmd2([cmd])
+        self.execute_cmd([cmd])
 
     def init_project(self, name, directory, cmake=True):
         if cmake:

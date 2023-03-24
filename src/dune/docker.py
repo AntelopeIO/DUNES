@@ -166,29 +166,20 @@ class docker:
         self.execute_docker_cmd(['container', 'stop', self._container])
         self.execute_docker_cmd(['container', 'rm', self._container])
 
-    def execute_cmd_at(self, directory, cmd):
-        with subprocess.Popen(['docker', 'container', 'exec', '-w', directory,
-                               self._container] + cmd) as proc:
-            proc.communicate()
-
-    def execute_cmd(self, cmd, *, interactive=False, colors=False, **kwargs):
+    def execute_cmd(self, cmd, *, interactive=False, colors=False, chdir=None, **kwargs):
         docker_cmd = ['container', 'exec']
         if interactive:
             docker_cmd += ['-i']
         if colors:
             docker_cmd += ['-t', '-e', 'TERM=xterm-256color']
+        if chdir is not None:
+            docker_cmd += ['-w', chdir]
         docker_cmd += [self._container]
         return self.execute_docker_cmd(docker_cmd + cmd, **kwargs)
 
-    def execute_interactive_cmd(self, cmd):
-        with subprocess.Popen(['docker', 'container',
-                               'exec', '-i', self._container] + cmd) as proc:
-            proc.communicate()
-
-    def execute_cmd2(self, cmd):
-        with subprocess.Popen(['docker', 'container',
-                               'exec', self._container] + cmd) as proc:
-            proc.communicate()
+    def execute_interactive_cmd(self, cmd, **kwargs):
+        self.execute_cmd(cmd, interactive=True,
+                         capture_output=False, **kwargs)
 
     def execute_bg_cmd(self, cmd):
         return self.execute_cmd(cmd + ['&'])

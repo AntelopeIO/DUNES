@@ -267,8 +267,8 @@ if __name__ == '__main__':
 
             elif args.version_all:
                 handle_version()
-                dune_sys.execute_interactive_cmd(['apt','list','leap'])
-                dune_sys.execute_interactive_cmd(['apt','list','cdt'])
+                dune_sys.execute_cmd(['apt','list','leap'], colors=True)
+                dune_sys.execute_cmd(['apt','list','cdt'], colors=True)
 
             else:
                 for module in modules:
