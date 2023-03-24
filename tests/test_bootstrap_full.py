@@ -57,9 +57,9 @@ def test_booststrap():
     subprocess.run([DUNE_EXE, "--bootstrap-system-full"], check=True)
 
     # Create a second account should fail because of not enough RAM
-    subprocess.run([DUNE_EXE, "--create-account",ACCT_NAME2], check=True)
+    subprocess.run([DUNE_EXE, "--create-account",ACCT_NAME2], check=False)
 
-    second_account_results = subprocess.run([DUNE_EXE, "--", "cleos", "get", "account",ACCT_NAME2], check=True, stdout=subprocess.PIPE)
+    second_account_results = subprocess.run([DUNE_EXE, "--", "cleos", "get", "account",ACCT_NAME2], check=False, stdout=subprocess.PIPE)
     assert b'created:' not in second_account_results.stdout
 
     # Create an example account with RAM

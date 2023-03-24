@@ -119,10 +119,9 @@ def test_cmake_and_ctest():
     with subprocess.Popen(
             [DUNE_EXE, "--debug", "--ctest", TEST_APP_DIR, "--", "--no-tests=ignore"],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding="utf-8") as proc:
-        _, stderr = proc.communicate()
+        stdout, _ = proc.communicate()
 
-        assert "No tests were found!!!" in stderr
-
+        assert "No tests were found!!!" in stdout
 
     shutil.rmtree(TEST_APP_DIR)
 
