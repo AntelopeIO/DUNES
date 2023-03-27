@@ -22,6 +22,7 @@ import glob
 import os
 import shutil
 import subprocess
+import pytest
 
 from common import DUNE_EXE, TEST_PATH
 
@@ -37,6 +38,8 @@ def remove_existing():
         shutil.rmtree(TEST_PROJECT_DIR)
 
 
+@pytest.mark.skip(reason="Skeeped until the release of antler-proj. "
+                         "See details in https://github.com/AntelopeIO/DUNE/issues/134")
 def test_antler():
 
     remove_existing()
