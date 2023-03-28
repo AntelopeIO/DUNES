@@ -482,6 +482,153 @@ class dune:
         self.import_key(private)
         print(stderr)
 
+# Integration with antler-proj begin ----------------------------------------------------------------------
+
+    def create_project(self, path: str, name: str, ver: str = None):
+
+        container_dir = self._docker.abs_host_path(path)
+        if not self._docker.dir_exists(container_dir):
+            self._docker.execute_cmd(['mkdir', '-p', container_dir])
+
+        opts: list = []
+        if ver:
+            opts.append(ver)
+
+        self._docker.execute_cmd(["antler-proj", "init", container_dir, name] + opts)
+
+    def add_app(self, path: str, dependency_name: str, lang: str,
+                cmplr_opts: str = None, link_opts: str = None):
+
+        opts: list = []
+        if cmplr_opts:
+            opts.append(cmplr_opts)
+        if link_opts:
+            opts.append(link_opts)
+
+        container_dir = self._docker.abs_host_path(path)
+
+        self._docker.execute_cmd(["antler-proj", "add", container_dir, "app",
+                                  dependency_name, lang] + opts)
+
+    def add_lib(self, path: str, dependency_name: str, lang: str,
+                cmplr_opts: str = None, link_opts: str = None):
+
+        opts: list = []
+        if cmplr_opts:
+            opts.append(cmplr_opts)
+        if link_opts:
+            opts.append(link_opts)
+
+        container_dir = self._docker.abs_host_path(path)
+
+        self._docker.execute_cmd(["antler-proj", "add", container_dir, "lib",
+                                  dependency_name, lang] + opts)
+
+    def add_dep(self, path: str,        # project path
+                object_name: str,       # object name (app/lib)
+                dependency_name: str,   # dependency name
+                location: str = None,   # location of dep
+                tag_rel: str = None,    # tag/release number
+                hash_str: str = None):  # hash
+
+        opts: list = []
+        if location:
+            opts.append(location)
+        if tag_rel:
+            opts.append(tag_rel)
+        if hash_str:
+            opts.append(hash_str)
+
+        container_dir = self._docker.abs_host_path(path)
+
+        self._docker.execute_cmd(["antler-proj", "add", container_dir, "dep",
+                                  object_name, dependency_name] + opts)
+
+    def update_app(self, path: str, dependency_name: str, lang: str,
+                   cmplr_opts: str = None, link_opts: str = None):
+
+        opts: list = []
+        if cmplr_opts:
+            opts.append(cmplr_opts)
+        if link_opts:
+            opts.append(link_opts)
+
+        container_dir = self._docker.abs_host_path(path)
+
+        self._docker.execute_cmd(["antler-proj", "update", container_dir, "app",
+                                  dependency_name, lang])
+
+    def update_lib(self, path: str, dependency_name: str, lang: str,
+                   cmplr_opts: str = None, link_opts: str = None):
+
+        opts: list = []
+        if cmplr_opts:
+            opts.append(cmplr_opts)
+        if link_opts:
+            opts.append(link_opts)
+
+        container_dir = self._docker.abs_host_path(path)
+
+        self._docker.execute_cmd(["antler-proj", "update", container_dir, "lib",
+                                  dependency_name, lang] + opts)
+
+    def update_dep(self, path: str,        # project path
+                   object_name: str,       # object name (app/lib)
+                   dependency_name: str,   # dependency name
+                   location: str = None,   # location of dep
+                   tag_rel: str = None,    # tag/release number
+                   hash_str: str = None):  # hash
+
+        opts: list = []
+        if location:
+            opts.append(location)
+        if tag_rel:
+            opts.append(tag_rel)
+        if hash_str:
+            opts.append(hash_str)
+
+        container_dir = self._docker.abs_host_path(path)
+
+        self._docker.execute_cmd(["antler-proj", "update", container_dir, "dep",
+                                  object_name, dependency_name] + opts)
+
+    def remove_dep(self, path: str,        # project path
+                   object_name: str,       # object name (app/lib)
+                   dependency_name: str):   # dependency name
+
+        container_dir = self._docker.abs_host_path(path)
+        self._docker.execute_cmd(["antler-proj", "remove", container_dir, "dep",
+                                  object_name, dependency_name])
+
+    def remove_app(self, path: str,        # project path
+                   app_name: str):       # app name
+
+        container_dir = self._docker.abs_host_path(path)
+        self._docker.execute_cmd(["antler-proj", "remove", container_dir, "app", app_name])
+
+    def remove_lib(self, path: str,        # project path
+                   lib_name: str):       # lib name
+
+        container_dir = self._docker.abs_host_path(path)
+        self._docker.execute_cmd(["antler-proj", "remove", container_dir, "lib", lib_name])
+
+    def build_project(self, path, clean_build: bool = False):
+        container_dir = self._docker.abs_host_path(path)
+        if clean_build:
+            self._docker.execute_cmd(["antler-proj", "build", container_dir, "--clean"])
+        else:
+            self._docker.execute_cmd(["antler-proj", "build", container_dir])
+
+    def validate_project(self, path):
+        container_dir = self._docker.abs_host_path(path)
+        self._docker.execute_cmd(["antler-proj", "validate", container_dir])
+
+    def populate_project(self, path):
+        container_dir = self._docker.abs_host_path(path)
+        self._docker.execute_cmd(["antler-proj", "populate", container_dir])
+
+# Integration with antler-proj end ----------------------------------------------------------------------
+
     def execute_cmd(self, args, **kwargs):
         self._docker.execute_cmd(args, capture_output=False, **kwargs)
 

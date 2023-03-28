@@ -48,8 +48,8 @@ class docker:
                     host_dir = 'C:/'
 
                 stdout, stderr, exit_code = self.execute_docker_cmd(
-                    ['run', '-p', '8888:8888', '-p', '9876:9876', '-p',
-                     '8080:8080', '-p', '3000:3000', '-p', '8000:8000', '-v',
+                    ['run', '-p', '127.0.0.1:8888:8888/tcp', '-p', '127.0.0.1:9876:9876/tcp', '-p',
+                     '127.0.0.1:8080:8080/tcp', '-p', '127.0.0.1:3000:3000/tcp', '-p', '127.0.0.1:8000:8000/tcp', '-v',
                      host_dir + ':/host', '-d', '--name=' + self._container,
                      self._image, 'tail', '-f', '/dev/null'])
 

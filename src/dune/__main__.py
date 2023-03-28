@@ -12,14 +12,17 @@ from dune import dune_node_not_found
 from dune import node
 from dune import version_full
 
+
 def handle_version():
     print("DUNE " + version_full())
+
 
 def handle_simple_args():
     # Handle args that do not require docker started up
     if args.version is True:
         handle_version()
         sys.exit(0)
+
 
 def load_module(absolute_path):
     module_name, _ = os.path.splitext(os.path.split(absolute_path)[-1])
@@ -30,6 +33,7 @@ def load_module(absolute_path):
     py_mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(py_mod)
     return py_mod
+
 
 def load_all_modules_from_dir(plugin_dir):
     loaded_modules = []
@@ -58,6 +62,7 @@ def load_all_modules_from_dir(plugin_dir):
         loaded_modules.append(loaded_module)
 
     return loaded_modules
+
 
 if __name__ == '__main__':
 
@@ -270,6 +275,65 @@ if __name__ == '__main__':
                 handle_version()
                 dune_sys.execute_cmd(['apt','list','leap'], colors=True)
                 dune_sys.execute_cmd(['apt','list','cdt'], colors=True)
+
+# Integration with antler-proj begin ----------------------------------------------------------------------
+
+            elif args.create_project:
+                dune_sys.create_project(args.create_project[1],
+                                        args.create_project[0], args.create_project[2])
+
+            elif args.add_app:
+                if len(args.add_app) < 3 or len(args.add_app) > 5:
+                    parser.exit_with_help_message("--add-app: invalid number of arguments")
+                else:
+                    dune_sys.add_app(*args.add_app)
+            elif args.add_lib:
+                if len(args.add_lib) < 3 or len(args.add_lib) > 5:
+                    parser.exit_with_help_message("--add-lib: invalid number of arguments")
+                else:
+                    dune_sys.add_lib(*args.add_lib)
+            elif args.add_dep:
+                if len(args.add_dep) < 3 or len(args.add_dep) > 6:
+                    parser.exit_with_help_message("--add-dep: invalid number of arguments")
+                else:
+                    dune_sys.add_dep(*args.add_dep)
+            elif args.update_app:
+                if len(args.update_app) < 3 or len(args.update_app) > 5:
+                    parser.exit_with_help_message("--update-app: invalid number of arguments")
+                else:
+                    dune_sys.update_app(*args.update_app)
+            elif args.update_lib:
+                if len(args.update_lib) < 3 or len(args.update_lib) > 5:
+                    parser.exit_with_help_message("--update-lib: invalid number of arguments")
+                else:
+                    dune_sys.update_lib(*args.update_lib)
+            elif args.update_dep:
+                if len(args.update_dep) < 3 or len(args.update_dep) > 5:
+                    parser.exit_with_help_message("--update-dep: invalid number of arguments")
+                else:
+                    dune_sys.update_dep(*args.update_dep)
+            elif args.remove_app:
+                dune_sys.remove_app(*args.remove_app)
+
+            elif args.remove_lib:
+                dune_sys.remove_lib(*args.remove_lib)
+
+            elif args.remove_dep:
+                dune_sys.remove_dep(*args.remove_dep)
+
+            elif args.build_project:
+                dune_sys.build_project(args.build_project[0])
+
+            elif args.clean_build_project:
+                dune_sys.build_project(args.clean_build_project[0], True)
+
+            elif args.validate:
+                dune_sys.validate_project(args.validate[0])
+
+            elif args.populate:
+                dune_sys.populate_project(args.populate[0])
+
+# Integration with antler-proj end ----------------------------------------------------------------------
 
             else:
                 for module in modules:

@@ -2,6 +2,7 @@ import argparse
 import sys
 import argcomplete
 
+
 class fix_action_data(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
         fixed_list = [values[0], values[1], values[2].strip(), values[3]]
@@ -161,6 +162,57 @@ class arg_parser:
         self._parser.add_argument(
             '--cdt', nargs='?', const='-1', metavar="CDT_VERSION", help='sets the version of CDT (Contract '
             'Development Toolkit). If no version is provided then available CDT versions are displayed')
+
+# Integration with antler-proj begin ----------------------------------------------------------------------
+
+        self._parser.add_argument('--create-project', nargs="+",
+                                  metavar=["PROJ_NAME", "DIR", "VERSION (Optional)"],
+                                  help='create a smart contract project at the given location')
+
+        self._parser.add_argument('--add-app', nargs="+",
+                                  metavar=["PROJ_DIR", "APP_NAME", "LANG",
+                                           "CMPLR_OPTS (Optional)", "LINK_OPTS (Optional)"],
+                                  help='Add an application to the given smart contract project')
+        self._parser.add_argument('--add-lib', nargs="+",
+                                  metavar=["PROJ_DIR", "LIB_NAME", "LANG",
+                                           "CMPLR_OPTS (Optional)", "LINK_OPTS (Optional)"],
+                                  help='Add a library to the given smart contract project')
+        self._parser.add_argument('--add-dep', nargs="+",
+                                  metavar=["PROJ_DIR", "OBJ_NAME", "DEP_NAME", "LOCATION (Optional)",
+                                           "TAG/RELEASE (Optional)", "HASH (Optional)"],
+                                  help='Add a dependency to the given smart contract project')
+
+        self._parser.add_argument('--remove-app', nargs=2, metavar=["PROJ_DIR", "APP_NAME"],
+                                  help='Remove an application from the given smart contract project')
+        self._parser.add_argument('--remove-lib', nargs=2, metavar=["PROJ_DIR", "LIB_NAME"],
+                                  help='Remove a library from the given smart contract project')
+        self._parser.add_argument('--remove-dep', nargs=3, metavar=["PROJ_DIR", "OBJ_NAME", "DEP_NAME"],
+                                  help='Remove a dependency from the given smart contract project')
+
+        self._parser.add_argument('--update-app', nargs="+",
+                                  metavar=["PROJ_DIR", "APP_NAME", "LANG",
+                                           "CMPLR_OPTS (Optional)", "LINK_OPTS (Optional)"],
+                                  help='Update an application in the given smart contract project')
+        self._parser.add_argument('--update-lib', nargs="+",
+                                  metavar=["PROJ_DIR", "LIB_NAME", "LANG",
+                                           "CMPLR_OPTS (Optional)", "LINK_OPTS (Optional)"],
+                                  help='Update a library in the given smart contract project')
+        self._parser.add_argument('--update-dep', nargs="+",
+                                  metavar=["PROJ_DIR", "OBJ_NAME", "DEP_NAME", "LOCATION (Optional)",
+                                           "TAG/RELEASE (Optional)", "HASH (Optional)"],
+                                  help='Update a dependency in the given smart contract project')
+
+        self._parser.add_argument('--build-project', nargs=1, metavar=["PROJ_DIR"],
+                                  help='Build the given smart contract project')
+        self._parser.add_argument('--clean-build-project', nargs=1, metavar=["PROJ_DIR"],
+                                  help='Clean the given project and rebuild it from scratch')
+        self._parser.add_argument('--validate', nargs=1, metavar=["PROJ_DIR"],
+                                  help='Validate the given smart contract project')
+        self._parser.add_argument('--populate', nargs=1, metavar=["PROJ_DIR"],
+                                  help='Populate the given smart contract project')
+
+# Integration with antler-proj end ----------------------------------------------------------------------
+
         # used to store arguments to individual programs, starting with --
         self._parser.add_argument('remainder',
                                   nargs=argparse.REMAINDER)
