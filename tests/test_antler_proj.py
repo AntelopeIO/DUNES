@@ -18,7 +18,6 @@ This script tests following keys:
 
 """
 
-import glob
 import os
 import shutil
 import subprocess
@@ -51,13 +50,13 @@ def test_antler():
     subprocess.run([DUNE_EXE, "--add-app", TEST_PROJECT_DIR, "test_app",  "c++",
                     "compiler_opts", "linker_opts"], check=True)
     res = subprocess.run([DUNE_EXE, "--debug", "--add-app", TEST_PROJECT_DIR, "test_app",  "c++",
-                          "compiler_opts", "linker_opts"], stdout=subprocess.PIPE)
+                          "compiler_opts", "linker_opts"], stdout=subprocess.PIPE, check=True)
     assert b'already exists in project' in res.stdout
 
     subprocess.run([DUNE_EXE, "--add-lib", TEST_PROJECT_DIR, "test_lib",  "c++",
                     "compiler_opts", "linker_opts"], check=True)
     res = subprocess.run([DUNE_EXE, "--debug", "--add-lib", TEST_PROJECT_DIR, "test_lib",  "c++",
-                          "compiler_opts", "linker_opts"], stdout=subprocess.PIPE)
+                          "compiler_opts", "linker_opts"], stdout=subprocess.PIPE, check=True)
     assert b'already exists in project' in res.stdout
 
     # this test is commented because adding of dependencies doesn't work
@@ -73,12 +72,12 @@ def test_antler():
 
     subprocess.run([DUNE_EXE, "--remove-app", TEST_PROJECT_DIR, "test_app"], check=True)
     res = subprocess.run([DUNE_EXE, "--debug", "--add-app", TEST_PROJECT_DIR, "test_app",  "c++",
-                          "compiler_opts", "linker_opts"], stdout=subprocess.PIPE)
+                          "compiler_opts", "linker_opts"], stdout=subprocess.PIPE, check=True)
     assert b'already exists in project' not in res.stdout
 
     subprocess.run([DUNE_EXE, "--remove-lib", TEST_PROJECT_DIR, "test_lib"], check=True)
     res = subprocess.run([DUNE_EXE, "--debug", "--add-lib", TEST_PROJECT_DIR, "test_lib",  "c++",
-                          "compiler_opts", "linker_opts"], stdout=subprocess.PIPE)
+                          "compiler_opts", "linker_opts"], stdout=subprocess.PIPE, check=True)
     assert b'already exists in project' not in res.stdout
 
     remove_existing()
