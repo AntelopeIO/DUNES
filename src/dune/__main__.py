@@ -5,6 +5,7 @@ import importlib.util
 from args import arg_parser
 from args import parse_optional
 import version_selector
+from docker import docker_error
 from dune import dune
 from dune import dune_error
 from dune import dune_node_not_found
@@ -80,12 +81,12 @@ if __name__ == '__main__':
         if hasattr(module, 'set_dune'):
             module.set_dune(dune_sys)
 
-    if parser.is_forwarding():
-        dune_sys.execute_interactive_cmd(parser.get_forwarded_args())
-    else:
-        WAS_REMAINDER_ARGS_USED = False
+    try:
+        if parser.is_forwarding():
+            dune_sys.execute_interactive_cmd(parser.get_forwarded_args())
+        else:
+            WAS_REMAINDER_ARGS_USED = False
 
-        try:
             if args.start is not None:
                 n: object
                 if args.config is None:
@@ -277,11 +278,14 @@ if __name__ == '__main__':
             if args.remainder and WAS_REMAINDER_ARGS_USED is False:
                 print('Warning: following arguments were possibly unused: ' + str(args.remainder))
 
-        except KeyboardInterrupt:
-            pass
-        except dune_node_not_found as err:
-            print('Node not found [' + err.name() + ']', file=sys.stderr)
-            sys.exit(1)
-        except dune_error as err:
-            print("Internal Error", file=sys.stderr)
-            sys.exit(1)
+    except KeyboardInterrupt:
+        pass
+    except dune_node_not_found as err:
+        print('Node not found [' + err.name() + ']', file=sys.stderr)
+        sys.exit(1)
+    except dune_error as err:
+        print("Internal Error", file=sys.stderr)
+        sys.exit(1)
+    except docker_error as err:
+        print("Docker Error", file=sys.stderr)
+        sys.exit(1)
