@@ -38,7 +38,7 @@ def remove_existing():
         shutil.rmtree(TEST_PROJECT_DIR)
 
 
-@pytest.mark.skip(reason="Skeeped until the release of antler-proj. "
+@pytest.mark.skip(reason="Skipped until the release of antler-proj. "
                          "See details in https://github.com/AntelopeIO/DUNE/issues/134")
 def test_antler():
 

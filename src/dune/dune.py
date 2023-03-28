@@ -472,12 +472,17 @@ class dune:
 
 # Integration with antler-proj begin ----------------------------------------------------------------------
 
-    def create_project(self, path, name):
+    def create_project(self, path: str, name: str, ver: str = None):
 
         container_dir = self._docker.abs_host_path(path)
         if not self._docker.dir_exists(container_dir):
             self._docker.execute_cmd(['mkdir', '-p', container_dir])
-        self._docker.execute_cmd(["antler-proj", "init", container_dir, name, "0.0.1"])
+
+        opts: list = []
+        if ver:
+            opts.append(ver)
+
+        self._docker.execute_cmd(["antler-proj", "init", container_dir, name] + opts)
 
     def add_app(self, path: str, dependency_name: str, lang: str,
                 cmplr_opts: str = None, link_opts: str = None):
@@ -491,7 +496,7 @@ class dune:
         container_dir = self._docker.abs_host_path(path)
 
         self._docker.execute_cmd(["antler-proj", "add", container_dir, "app",
-                                  dependency_name, lang])
+                                  dependency_name, lang] + opts)
 
     def add_lib(self, path: str, dependency_name: str, lang: str,
                 cmplr_opts: str = None, link_opts: str = None):

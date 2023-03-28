@@ -165,7 +165,8 @@ class arg_parser:
 
 # Integration with antler-proj begin ----------------------------------------------------------------------
 
-        self._parser.add_argument('--create-project', nargs=2, metavar=["PROJ_NAME", "DIR"],
+        self._parser.add_argument('--create-project', nargs="+",
+                                  metavar=["PROJ_NAME", "DIR", "VERSION (Optional)"],
                                   help='create a smart contract project at the given location')
 
         self._parser.add_argument('--add-app', nargs="+",
