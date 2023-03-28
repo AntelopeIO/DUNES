@@ -407,8 +407,8 @@ class dune:
             if stderr and 'Already unlocked' in stderr:
                 # we don't want to fail here
                 return
-            else:
-                raise dune_error(stderr.splitlines()[0])
+            stderr = stderr or '\n'  # do not fail on next line if stderr is None
+            raise dune_error(stderr.splitlines()[0])
 
 
     def import_key(self, key):
