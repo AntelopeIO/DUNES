@@ -396,9 +396,20 @@ class dune:
         return stdout
 
     def unlock_wallet(self):
+        # do not check status code here because unlocking an already unlocked
+        # wallet will raise an exception otherwise, which we do not want
         stdout, stderr, exit_code = self._docker.execute_cmd(
             ['cleos', 'wallet', 'unlock', '--password', self.get_wallet_pw()],
             check_status=False)
+
+        # still check for other errors to make sure we're not missing anything
+        if exit_code != 0:
+            if stderr and 'Already unlocked' in stderr:
+                # we don't want to fail here
+                return
+            else:
+                raise dune_error(stderr.splitlines()[0])
+
 
     def import_key(self, key):
         self.unlock_wallet()

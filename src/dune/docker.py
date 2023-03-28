@@ -70,10 +70,10 @@ class docker:
     def get_image(self):
         return self._image
 
-    @staticmethod
-    def print_streams(stdout, stderr):
+    def print_streams(self, stdout, stderr):
         if stdout is None and stderr is None:
-            print('!! No stdout/stderr info captured...')
+            if self._cl_args.debug:
+                print('No stdout/stderr info captured...')
             return
 
         print('================ STDOUT ================')
@@ -118,9 +118,13 @@ class docker:
         return (stdout, stderr, status)
 
     def file_exists(self, file_name):
+        # not checking status code here because a non-zero status is a normal
+        # occurrence, it just means that the file does not exist
         return self.execute_cmd(['test', '-f', file_name], check_status=False)[2] == 0
 
     def dir_exists(self, directory):
+        # not checking status code here because a non-zero status is a normal
+        # occurrence, it just means that the directory does not exist
         return self.execute_cmd(['test', '-d', directory], check_status=False)[2] == 0
 
     def tar_dir(self, file_name, directory):
