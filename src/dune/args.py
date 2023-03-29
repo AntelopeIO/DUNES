@@ -81,12 +81,12 @@ class arg_parser:
         self._parser.add_argument('--import-wallet', metavar="<DIR>",
                                   help='import a development wallet')
         self._parser.add_argument('--create-account', nargs='+',
-                                  metavar='\b',
+                                  metavar='',
                                   help='<NAME> [CREATOR] [PUB_KEY] [PRIV_KEY] [-- FLAGS] '
                                        'create an EOSIO account and an optional creator (the '
                                        'default is eosio)')
         self._parser.add_argument('--system-newaccount', nargs='+',
-                                  metavar='\b',
+                                  metavar='',
                                   help='<NAME> [CREATOR] [PUB_KEY] [PRIV_KEY] [-- FLAGS] '
                                        'create an EOSIO account with initial resources using '
                                        '"cleos system newaccount" command. '
@@ -129,7 +129,7 @@ class arg_parser:
                                   help='install boot contract to eosio and activate all protocol '
                                        'features')
         self._parser.add_argument('--bootstrap-system-full',
-                                  nargs='*',  metavar='\b',
+                                  nargs='*',  metavar='',
                                   help='[CURRENCY] [MAX_VALUE] [INITIAL_VALUE] '
                                        'The same as `--bootstrap-system` but also creates accounts '
                                        'needed for core contract and deploys core, token, '
@@ -168,15 +168,15 @@ class arg_parser:
                                   help='create a smart contract project at the given location')
 
         self._parser.add_argument('--add-app', nargs="+",
-                                  metavar='\b',
+                                  metavar='',
                                   help="<PROJ_DIR> <APP_NAME> <LANG> [CMPLR_OPTS] [LINK_OPTS] "
                                   "Add an application to the given smart contract project")
         self._parser.add_argument('--add-lib', nargs="+",
-                                  metavar='\b',
+                                  metavar='',
                                   help="<PROJ_DIR> <LIB_NAME> <LANG> [CMPLR_OPTS] [LINK_OPTS] "
                                   "Add a library to the given smart contract project")
         self._parser.add_argument('--add-dep', nargs="+",
-                                  metavar='\b',
+                                  metavar='',
                                   help="<PROJ_DIR> <OBJ_NAME> <DEP_NAME> [LOCATION] [TAG/RELEASE] [HASH] "
                                   "Add a dependency to the given smart contract project")
 
@@ -188,15 +188,15 @@ class arg_parser:
                                   help='Remove a dependency from the given smart contract project')
 
         self._parser.add_argument('--update-app', nargs="+",
-                                  metavar='\b',
+                                  metavar='',
                                   help='<PROJ_DIR> <APP_NAME> <LANG> [CMPLR_OPTS] [LINK_OPTS] '
                                        'Update an application in the given smart contract project')
         self._parser.add_argument('--update-lib', nargs="+",
-                                  metavar='\b',
+                                  metavar='',
                                   help='<PROJ_DIR> <LIB_NAME> <LANG> [CMPLR_OPTS] [LINK_OPTS] '
                                        'Update a library in the given smart contract project')
         self._parser.add_argument('--update-dep', nargs="+",
-                                  metavar='\b',
+                                  metavar='',
                                   help="<PROJ_DIR> <OBJ_NAME> <DEP_NAME> [LOCATION] [TAG/RELEASE] [HASH]"
                                        " Update a dependency in the given smart contract project")
 
