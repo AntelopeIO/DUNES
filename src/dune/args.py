@@ -73,7 +73,7 @@ class arg_parser:
         self._parser.add_argument('--monitor', action='store_true',
                                   help='monitor the currently active node')
         self._parser.add_argument('--import-dev-key', metavar="KEY",
-                                  help='import a private key into developement wallet')
+                                  help='import a private key into development wallet')
         self._parser.add_argument('--create-key', action='store_true',
                                   help='create an public key private key pair')
         self._parser.add_argument('--export-wallet', action='store_true',
@@ -163,8 +163,16 @@ class arg_parser:
             '--cdt', nargs='?', const='-1', metavar="CDT_VERSION", help='sets the version of CDT (Contract '
             'Development Toolkit). If no version is provided then available CDT versions are displayed')
 
-# Integration with antler-proj begin ----------------------------------------------------------------------
+        self.add_antler_arguments()
 
+        # used to store arguments to individual programs, starting with --
+        self._parser.add_argument('remainder',
+                                  nargs=argparse.REMAINDER)
+        # pylint: disable=fixme
+        # TODO readdress after the launch
+        # self._parser.add_argument('--start-webapp', metavar=["DIR"], help='start a webapp with ')
+
+    def add_antler_arguments(self):
         self._parser.add_argument('--create-project', nargs="+",
                                   metavar=["PROJ_NAME", "DIR", "VERSION (Optional)"],
                                   help='create a smart contract project at the given location')
@@ -210,15 +218,6 @@ class arg_parser:
                                   help='Validate the given smart contract project')
         self._parser.add_argument('--populate', nargs=1, metavar=["PROJ_DIR"],
                                   help='Populate the given smart contract project')
-
-# Integration with antler-proj end ----------------------------------------------------------------------
-
-        # used to store arguments to individual programs, starting with --
-        self._parser.add_argument('remainder',
-                                  nargs=argparse.REMAINDER)
-        # pylint: disable=fixme
-        # TODO readdress after the launch
-        # self._parser.add_argument('--start-webapp', metavar=["DIR"], help='start a webapp with ')
 
     @staticmethod
     def is_forwarding():
