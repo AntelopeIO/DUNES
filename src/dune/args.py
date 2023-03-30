@@ -162,23 +162,31 @@ class arg_parser:
             '--cdt', nargs='?', const='-1', metavar="CDT_VERSION", help='sets the version of CDT (Contract '
             'Development Toolkit). If no version is provided then available CDT versions are displayed')
 
-# Integration with antler-proj begin ----------------------------------------------------------------------
+        self.add_antler_arguments()
 
+        # used to store arguments to individual programs, starting with --
+        self._parser.add_argument('remainder',
+                                  nargs=argparse.REMAINDER)
+        # pylint: disable=fixme
+        # TODO readdress after the launch
+        # self._parser.add_argument('--start-webapp', metavar=["DIR"], help='start a webapp with ')
+
+    def add_antler_arguments(self):
         self._parser.add_argument('--create-project', nargs=2, metavar=("<PROJ_NAME>", "<DIR>"),
                                   help='create a smart contract project at the given location')
 
         self._parser.add_argument('--add-app', nargs="+",
                                   metavar='',
                                   help="<PROJ_DIR> <APP_NAME> <LANG> [CMPLR_OPTS] [LINK_OPTS] "
-                                  "Add an application to the given smart contract project")
+                                       "Add an application to the given smart contract project")
         self._parser.add_argument('--add-lib', nargs="+",
                                   metavar='',
                                   help="<PROJ_DIR> <LIB_NAME> <LANG> [CMPLR_OPTS] [LINK_OPTS] "
-                                  "Add a library to the given smart contract project")
+                                       "Add a library to the given smart contract project")
         self._parser.add_argument('--add-dep', nargs="+",
                                   metavar='',
                                   help="<PROJ_DIR> <OBJ_NAME> <DEP_NAME> [LOCATION] [TAG/RELEASE] [HASH] "
-                                  "Add a dependency to the given smart contract project")
+                                       "Add a dependency to the given smart contract project")
 
         self._parser.add_argument('--remove-app', nargs=2, metavar=("<PROJ_DIR>", "<APP_NAME>"),
                                   help='Remove an application from the given smart contract project')
@@ -208,15 +216,6 @@ class arg_parser:
                                   help='Validate the given smart contract project')
         self._parser.add_argument('--populate', nargs=1, metavar="<PROJ_DIR>",
                                   help='Populate the given smart contract project')
-
-# Integration with antler-proj end ----------------------------------------------------------------------
-
-        # used to store arguments to individual programs, starting with --
-        self._parser.add_argument('remainder',
-                                  nargs=argparse.REMAINDER)
-        # pylint: disable=fixme
-        # TODO readdress after the launch
-        # self._parser.add_argument('--start-webapp', metavar=["DIR"], help='start a webapp with ')
 
     @staticmethod
     def is_forwarding():
