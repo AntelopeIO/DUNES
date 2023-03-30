@@ -44,105 +44,104 @@ class arg_parser:
     def __init__(self):
         self._parser = argparse.ArgumentParser(
             description='''DUNE: Docker Utilities for Node Execution.
-                        -- [COMMANDS] run any number of commands in the container.
-                        Example: dune -- cleos --help''')
-        self._parser.add_argument('-s', '--start', nargs=1, metavar=("NODE"),
+                    dune [ARGUMENTS] -- <COMMANDS> runs any number of commandline commands in the container.
+                    Example: dune -- cleos --help''')
+        self._parser.add_argument('-s', '--start', nargs=1, metavar="<NODE>",
                                   help='start a new node with a given name')
-        self._parser.add_argument('-c', '--config', nargs=1, metavar=("CONFIG_DIR"),
+        self._parser.add_argument('-c', '--config', nargs=1, metavar="<CONFIG_DIR>",
                                   help='optionally used with --start, a path containing'
                                   ' the config.ini file to use')
         self._parser.add_argument(
             '--stop', metavar="NODE", help='stop a node with a given name')
-        self._parser.add_argument('--remove', metavar="NODE",
+        self._parser.add_argument('--remove', metavar="<NODE>",
                                   help='a node with a given name, will stop the node if running')
         self._parser.add_argument('--list', action='store_true',
                                   help='list all nodes available and their statuses')
         self._parser.add_argument('--simple-list', action='store_true',
                                   help='list all nodes available and their statuses without '
                                        'formatting and unicode')
-        self._parser.add_argument('--set-active', metavar="NODE",
+        self._parser.add_argument('--set-active', metavar="<NODE>",
                                   help='set a node to active status')
         self._parser.add_argument('--get-active', action='store_true',
                                   help='get the name of the node that is currently active')
-        self._parser.add_argument('--export-node', metavar=("NODE", "PATH"), nargs=2,
+        self._parser.add_argument('--export-node', metavar=("<NODE>", "<PATH>"), nargs=2,
                                   help='export state and blocks log for the given node. '
                                   'PATH may be a directory or a filename with `.tgz` extension.')
-        self._parser.add_argument('--import-node', metavar=("NODE", "PATH"), nargs=2,
+        self._parser.add_argument('--import-node', metavar=("<NODE>", "<PATH>"), nargs=2,
                                   help='import state and blocks log to a given node'
                                   'PATH *must* be a previously exported node ending in `.tgz`.')
         self._parser.add_argument('--monitor', action='store_true',
                                   help='monitor the currently active node')
-        self._parser.add_argument('--import-dev-key', metavar="KEY",
-                                  help='import a private key into development wallet')
+        self._parser.add_argument('--import-dev-key', metavar="<KEY>",
+                                  help='import a private key into developement wallet')
         self._parser.add_argument('--create-key', action='store_true',
                                   help='create an public key private key pair')
         self._parser.add_argument('--export-wallet', action='store_true',
                                   help='export the internal development wallet')
-        self._parser.add_argument('--import-wallet', metavar="DIR",
+        self._parser.add_argument('--import-wallet', metavar="<DIR>",
                                   help='import a development wallet')
         self._parser.add_argument('--create-account', nargs='+',
-                                  metavar=["NAME", "CREATOR (Optional)", "PUB_KEY (Optional)",
-                                           "PRIV_KEY (Optional)"],
-                                  help='create an EOSIO account and an optional creator (the '
+                                  metavar='',
+                                  help='<NAME> [CREATOR] [PUB_KEY] [PRIV_KEY] [-- FLAGS] '
+                                       'create an EOSIO account and an optional creator (the '
                                        'default is eosio)')
         self._parser.add_argument('--system-newaccount', nargs='+',
-                                  metavar=["NAME", "CREATOR (Optional)", "PUB_KEY (Optional)",
-                                           "PRIV_KEY (Optional)", "-- FLAGS (Optional)"],
-                                  help='create an EOSIO account with initial resources using '
+                                  metavar='',
+                                  help='<NAME> [CREATOR] [PUB_KEY] [PRIV_KEY] [-- FLAGS] '
+                                       'create an EOSIO account with initial resources using '
                                        '"cleos system newaccount" command. '
                                        'Optional flags are of the form: "-- --buy-ram-bytes 3000"')
-        self._parser.add_argument('--create-cmake-app', nargs=2, metavar=["PROJ_NAME", "DIR"],
+        self._parser.add_argument('--create-cmake-app', nargs=2, metavar=("<PROJ_NAME>", "<DIR>"),
                                   help='create a smart contract project at from a specific host '
                                        'location')
-        self._parser.add_argument('--create-bare-app', nargs=2, metavar=["PROJ_NAME", "DIR"],
+        self._parser.add_argument('--create-bare-app', nargs=2, metavar=("<PROJ_NAME>", "<DIR>"),
                                   help='create a smart contract project at from a specific host '
                                        'location')
-        self._parser.add_argument('--cmake-build', nargs=1, metavar=["DIR", "-- FLAGS (Optional)"],
-                                  help='build a smart contract project at the directory given '
+        self._parser.add_argument('--cmake-build', nargs=1, metavar="<DIR>",
+                                  help='[-- FLAGS] build a smart contract project at the directory given '
                                        'optional flags are of the form -- -DFLAG1=On '
                                        '-DFLAG2=Off]')
-        self._parser.add_argument('--ctest', nargs=1, metavar=["DIR", "-- FLAGS (Optional)"],
-                                  help='run the ctest tests for a smart contract project at the '
+        self._parser.add_argument('--ctest', nargs=1, metavar="<DIR>",
+                                  help='[-- FLAGS] run the ctest tests for a smart contract project at the '
                                        'directory given. Optional flags are of the form -- -VV')
-        self._parser.add_argument('--gdb', nargs=1, metavar=["PROGRAM", "-- FLAGS (Optional)"],
-                                  help='start gdb into the container with given executive binary'
+        self._parser.add_argument('--gdb', nargs=1, metavar="<PROGRAM>",
+                                  help='[-- FLAGS] start gdb into the container with given executive binary'
                                        'Optional flags are of the form -- -VV')
-        self._parser.add_argument('--deploy', nargs=2, metavar=["DIR", "ACCOUNT"],
+        self._parser.add_argument('--deploy', nargs=2, metavar=("<DIR>", "<ACCOUNT>"),
                                   help='deploy a smart contract and ABI to account given')
         self._parser.add_argument('--destroy-container', action='store_true',
-                                  help='destroy context container <Warning, this will destroy '
-                                       'your state and block log>')
+                                  help='destroy context container. Warning! This will destroy '
+                                       'your state and block log')
         self._parser.add_argument('--stop-container', action='store_true',
                                   help='stop the context container')
         self._parser.add_argument('--start-container', action='store_true',
                                   help='start the context container')
-        self._parser.add_argument('--set-core-contract', metavar="ACCOUNT",
+        self._parser.add_argument('--set-core-contract', metavar="<ACCOUNT>",
                                   help='set the core contract to an account given (default '
                                        'normally is `eosio`)')
-        self._parser.add_argument('--set-bios-contract', metavar="ACCOUNT",
+        self._parser.add_argument('--set-bios-contract', metavar="<ACCOUNT>",
                                   help='set the bios contract to an account given (default '
                                        'normally is `eosio`)')
-        self._parser.add_argument('--set-token-contract', metavar="ACCOUNT",
+        self._parser.add_argument('--set-token-contract', metavar="<ACCOUNT>",
                                   help='set the token contract to an account given (default '
                                        'normally is`eosio.token`)')
         self._parser.add_argument('--bootstrap-system', action='store_true',
                                   help='install boot contract to eosio and activate all protocol '
                                        'features')
         self._parser.add_argument('--bootstrap-system-full',
-                                  nargs='*',  metavar=["CURRENCY (Optional)", "MAX_VALUE (Optional)",
-                                                       "INITIAL_VALUE (Optional)"],
-                                  help='same as `--bootstrap-system` but also creates accounts '
+                                  nargs='*',  metavar='',
+                                  help='[CURRENCY] [MAX_VALUE] [INITIAL_VALUE] '
+                                       'The same as `--bootstrap-system` but also creates accounts '
                                        'needed for core contract and deploys core, token, '
                                        'and multisig contracts. If optional arguments are provided '
                                        'it creates specific CURRENCY (default "SYS") with maximum amount of '
                                        'MAX_VALUE and initial value of INITIAL_VALUE')
         self._parser.add_argument('--send-action', nargs=4, action=fix_action_data,
-                                  metavar=["ACCOUNT", "ACTION",
-                                           "DATA", "PERMISSION"],
+                                  metavar=("<ACCOUNT>", "<ACTION>", "<DATA>", "<PERMISSION>"),
                                   help='send action to account with data given and permission')
-        self._parser.add_argument('--get-table', nargs=3, metavar=["ACCOUNT", "SCOPE", "TABLE"],
+        self._parser.add_argument('--get-table', nargs=3, metavar=("<ACCOUNT>", "<SCOPE>", "<TABLE>"),
                                   help='get the data from the given table')
-        self._parser.add_argument('--activate-feature', metavar="CODENAME",
+        self._parser.add_argument('--activate-feature', nargs=1, metavar="<CODENAME>",
                                   help='active protocol feature')
         self._parser.add_argument('--list-features', action='store_true',
                                   help='list available protocol feature code names')
@@ -173,50 +172,49 @@ class arg_parser:
         # self._parser.add_argument('--start-webapp', metavar=["DIR"], help='start a webapp with ')
 
     def add_antler_arguments(self):
-        self._parser.add_argument('--create-project', nargs="+",
-                                  metavar=["PROJ_NAME", "DIR", "VERSION (Optional)"],
+        self._parser.add_argument('--create-project', nargs=2, metavar=("<PROJ_NAME>", "<DIR>"),
                                   help='create a smart contract project at the given location')
 
         self._parser.add_argument('--add-app', nargs="+",
-                                  metavar=["PROJ_DIR", "APP_NAME", "LANG",
-                                           "CMPLR_OPTS (Optional)", "LINK_OPTS (Optional)"],
-                                  help='Add an application to the given smart contract project')
+                                  metavar='',
+                                  help="<PROJ_DIR> <APP_NAME> <LANG> [CMPLR_OPTS] [LINK_OPTS] "
+                                       "Add an application to the given smart contract project")
         self._parser.add_argument('--add-lib', nargs="+",
-                                  metavar=["PROJ_DIR", "LIB_NAME", "LANG",
-                                           "CMPLR_OPTS (Optional)", "LINK_OPTS (Optional)"],
-                                  help='Add a library to the given smart contract project')
+                                  metavar='',
+                                  help="<PROJ_DIR> <LIB_NAME> <LANG> [CMPLR_OPTS] [LINK_OPTS] "
+                                       "Add a library to the given smart contract project")
         self._parser.add_argument('--add-dep', nargs="+",
-                                  metavar=["PROJ_DIR", "OBJ_NAME", "DEP_NAME", "LOCATION (Optional)",
-                                           "TAG/RELEASE (Optional)", "HASH (Optional)"],
-                                  help='Add a dependency to the given smart contract project')
+                                  metavar='',
+                                  help="<PROJ_DIR> <OBJ_NAME> <DEP_NAME> [LOCATION] [TAG/RELEASE] [HASH] "
+                                       "Add a dependency to the given smart contract project")
 
-        self._parser.add_argument('--remove-app', nargs=2, metavar=["PROJ_DIR", "APP_NAME"],
+        self._parser.add_argument('--remove-app', nargs=2, metavar=("<PROJ_DIR>", "<APP_NAME>"),
                                   help='Remove an application from the given smart contract project')
-        self._parser.add_argument('--remove-lib', nargs=2, metavar=["PROJ_DIR", "LIB_NAME"],
+        self._parser.add_argument('--remove-lib', nargs=2, metavar=("<PROJ_DIR>", "<LIB_NAME>"),
                                   help='Remove a library from the given smart contract project')
-        self._parser.add_argument('--remove-dep', nargs=3, metavar=["PROJ_DIR", "OBJ_NAME", "DEP_NAME"],
+        self._parser.add_argument('--remove-dep', nargs=3, metavar=("<PROJ_DIR>", "<OBJ_NAME>", "<DEP_NAME>"),
                                   help='Remove a dependency from the given smart contract project')
 
         self._parser.add_argument('--update-app', nargs="+",
-                                  metavar=["PROJ_DIR", "APP_NAME", "LANG",
-                                           "CMPLR_OPTS (Optional)", "LINK_OPTS (Optional)"],
-                                  help='Update an application in the given smart contract project')
+                                  metavar='',
+                                  help='<PROJ_DIR> <APP_NAME> <LANG> [CMPLR_OPTS] [LINK_OPTS] '
+                                       'Update an application in the given smart contract project')
         self._parser.add_argument('--update-lib', nargs="+",
-                                  metavar=["PROJ_DIR", "LIB_NAME", "LANG",
-                                           "CMPLR_OPTS (Optional)", "LINK_OPTS (Optional)"],
-                                  help='Update a library in the given smart contract project')
+                                  metavar='',
+                                  help='<PROJ_DIR> <LIB_NAME> <LANG> [CMPLR_OPTS] [LINK_OPTS] '
+                                       'Update a library in the given smart contract project')
         self._parser.add_argument('--update-dep', nargs="+",
-                                  metavar=["PROJ_DIR", "OBJ_NAME", "DEP_NAME", "LOCATION (Optional)",
-                                           "TAG/RELEASE (Optional)", "HASH (Optional)"],
-                                  help='Update a dependency in the given smart contract project')
+                                  metavar='',
+                                  help="<PROJ_DIR> <OBJ_NAME> <DEP_NAME> [LOCATION] [TAG/RELEASE] [HASH]"
+                                       " Update a dependency in the given smart contract project")
 
-        self._parser.add_argument('--build-project', nargs=1, metavar=["PROJ_DIR"],
+        self._parser.add_argument('--build-project', nargs=1, metavar="<PROJ_DIR>",
                                   help='Build the given smart contract project')
-        self._parser.add_argument('--clean-build-project', nargs=1, metavar=["PROJ_DIR"],
+        self._parser.add_argument('--clean-build-project', nargs=1, metavar="<PROJ_DIR>",
                                   help='Clean the given project and rebuild it from scratch')
-        self._parser.add_argument('--validate', nargs=1, metavar=["PROJ_DIR"],
+        self._parser.add_argument('--validate', nargs=1, metavar="<PROJ_DIR>",
                                   help='Validate the given smart contract project')
-        self._parser.add_argument('--populate', nargs=1, metavar=["PROJ_DIR"],
+        self._parser.add_argument('--populate', nargs=1, metavar="<PROJ_DIR>",
                                   help='Populate the given smart contract project')
 
     @staticmethod
