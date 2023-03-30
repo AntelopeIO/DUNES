@@ -22,6 +22,8 @@ Docker Utilities for Node Execution (DUNE) is a tool to abstract over Leap progr
     <dependencies>
       <dependency id="python"/>
       <dependency id="docker-desktop"/>
+	  <!-- Below was added as a workaround for Chocolatey CI Package Verifier which tried to install netfx-4.8.1 not compatible with Windows Server 2019  -->
+      <dependency id="netfx-4.8"/>
     </dependencies>
   </metadata>
   <files>
