@@ -141,7 +141,7 @@ After installation open `cmd.exe` and verify `python --version` returns current 
 4. Run following commands:
 ```
 choco uninstall antelopeio-dune -y
-choco install python docker-desktop -y
+choco install netfx-4.8 python docker-desktop -y
 choco install .\antelopeio-dune.1.1.0.nupkg -y
 ```
 5. Restart your computer (this is because %PATH% has to be reloaded. In cmd.exe it is enough to run command `refreshenv`).
