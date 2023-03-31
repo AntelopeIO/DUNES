@@ -16,6 +16,7 @@ copy "%script-path%"\..\dune* %target-dir%
 copy "%script-path%"\..\Dockerfile* %target-dir%
 copy "%script-path%"\..\bootstrap* %target-dir%
 copy "%script-path%"\..\README* %target-dir%
+copy "%script-path%"\..\requirements.txt %target-dir%
 
 mkdir %target-dir%\src\
 xcopy "%script-path%"\..\src\* %target-dir%\src /e /k /h /i
