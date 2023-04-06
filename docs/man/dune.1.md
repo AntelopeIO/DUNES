@@ -1,12 +1,12 @@
 ---
-title: DUNE
+title: dune
 section: 1
 header: User Manual
-footer: DUNE 0.0.1
+footer: dune 1.1.0
 date: April 04, 2023
 ---
 # NAME
-DUNE - Docker Utilities for Node Execution.
+dune - Docker Utilities for Node Execution.
 
 # SYNOPSIS
 
@@ -14,10 +14,9 @@ DUNE - Docker Utilities for Node Execution.
 
 # DESCRIPTION
 
-**DUNE** is a utility to interact with the EOS blockchain system installed in a Docker container. 
-The main purpose of this utility is to provide all features needed for management of EOS in one
-program and make this process simple for non experienced users. DUNE offers functionality to manage
-smart contract development, deployment, and interaction with the blockchain. 
+**dune** is a tool to abstract over Leap programs, CDT, and other services and tools to perform the functions 
+of node management, compiling smart contracts, running tests, and other tasks required to develop smart 
+contracts on Antelope blockchains. 
 
 # OPTIONS
 
@@ -73,7 +72,7 @@ smart contract development, deployment, and interaction with the blockchain.
 **`--import-node <NODE> <PATH>`**
 
     Import state and blocks log to a given node. PATH *must* be a path to a file which contains previously exported 
-    node with `.tgz` extention.
+    node with `.tgz` extension.
     
     Example: dune --import-node node ~/storage/node.tgz`
 
@@ -136,7 +135,7 @@ smart contract development, deployment, and interaction with the blockchain.
 **`--gdb <PROGRAM> [-- OPTIONS]`**
 
     Start gdb into the container with given executive binary
-    Additional gdp options can be added to the call as OPTIONS               
+    Additional gdb options can be added to the call as OPTIONS               
 
 **`--deploy <DIR> <ACCOUNT>`**
 
@@ -169,7 +168,7 @@ smart contract development, deployment, and interaction with the blockchain.
 
 **`--bootstrap-system`**
 
-    Do setup of typical configration settings to prepare EOS system for work
+    Do setup of typical configuration settings to prepare EOS system for work
     Install boot contracts to eosio and activate all protocol features.
 
 **`--bootstrap-system-full [CURRENCY] [MAX_VALUE] [INITIAL_VALUE]`**
@@ -275,17 +274,12 @@ smart contract development, deployment, and interaction with the blockchain.
 
     Populate the given smart contract project.
 
-
-# EXAMPLES
-
-# AUTHORS
-
 # BUGS
 
-Please submit bug reports online at: <https://github.com/AntelopeIO/DUNE/issues>
+Please submit bug reports online at https://github.com/AntelopeIO/DUNE/issues
 
 # SEE ALSO
 
-Full documentation and sources at: <https://github.com/AntelopeIO/DUNE>
+For more details consult the full documentation and sources https://github.com/AntelopeIO/DUNE
 
 
