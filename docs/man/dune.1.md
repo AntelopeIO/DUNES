@@ -1,12 +1,12 @@
 ---
-title: dune
+title: DUNE
 section: 1
-header: User Manual
-footer: dune 1.1.0
+header: Docker Utilities for Node Execution
+footer: AntelopeIO
 date: April 04, 2023
 ---
 # NAME
-dune - Docker Utilities for Node Execution.
+DUNE - Docker Utilities for Node Execution.
 
 # SYNOPSIS
 
@@ -14,7 +14,7 @@ dune - Docker Utilities for Node Execution.
 
 # DESCRIPTION
 
-**dune** is a tool to abstract over Leap programs, CDT, and other services and tools to perform the functions 
+**DUNE** is a tool to abstract over Leap programs, CDT, and other services and tools to perform the functions 
 of node management, compiling smart contracts, running tests, and other tasks required to develop smart 
 contracts on Antelope blockchains. 
 
@@ -134,7 +134,7 @@ contracts on Antelope blockchains.
 
 **`--gdb <PROGRAM> [-- OPTIONS]`**
 
-    Start gdb into the container with given executive binary
+    Start gdb in the container with given executive binary
     Additional gdb options can be added to the call as OPTIONS               
 
 **`--deploy <DIR> <ACCOUNT>`**
@@ -274,12 +274,20 @@ contracts on Antelope blockchains.
 
     Populate the given smart contract project.
 
-# BUGS
+# EXIT STATUS
+
+**0** Success
+
+**non-zero** Fail
+
+# REPORTING BUGS
 
 Please submit bug reports online at https://github.com/AntelopeIO/DUNE/issues
 
 # SEE ALSO
 
+**cdt**(1), **leap**(1)
+  
+#  COLOPHON
+
 For more details consult the full documentation and sources https://github.com/AntelopeIO/DUNE
-
-
