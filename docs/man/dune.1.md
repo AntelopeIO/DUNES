@@ -218,7 +218,7 @@ contracts on Antelope blockchains.
 
     Set the version of CDT (Contract Development Toolkit). If no version is provided, display available CDT versions.
 
-**`--create-project <PROJ_NAME> <DIR>`**
+**`--create-project <PROJ_NAME> <DIR> [VER]`**
 
     Create a smart contract project at the specified location.
 

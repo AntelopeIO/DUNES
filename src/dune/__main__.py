@@ -279,8 +279,7 @@ if __name__ == '__main__':
 # Integration with antler-proj begin ----------------------------------------------------------------------
 
             elif args.create_project:
-                dune_sys.create_project(args.create_project[1],
-                                        args.create_project[0], args.create_project[2])
+                dune_sys.create_project(*args.create_project)
 
             elif args.add_app:
                 if len(args.add_app) < 3 or len(args.add_app) > 5:
