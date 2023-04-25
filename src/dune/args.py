@@ -172,8 +172,9 @@ class arg_parser:
         # self._parser.add_argument('--start-webapp', metavar=["DIR"], help='start a webapp with ')
 
     def add_antler_arguments(self):
-        self._parser.add_argument('--create-project', nargs=2, metavar=("<PROJ_NAME>", "<DIR>"),
-                                  help='create a smart contract project at the given location')
+        self._parser.add_argument('--create-project', nargs="+", metavar='',
+                                  help="<PROJ_NAME> <DIR> [VER] "
+                                       "create a smart contract project at the given location")
 
         self._parser.add_argument('--add-app', nargs="+",
                                   metavar='',

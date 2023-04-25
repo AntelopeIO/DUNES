@@ -279,9 +279,10 @@ if __name__ == '__main__':
 # Integration with antler-proj begin ----------------------------------------------------------------------
 
             elif args.create_project:
-                dune_sys.create_project(args.create_project[1],
-                                        args.create_project[0], args.create_project[2])
-
+                if len(args.create_project) < 2 or len(args.create_project) > 3:
+                    parser.exit_with_help_message("--create_project: invalid number of arguments")
+                else:
+                    dune_sys.create_project(*args.create_project)
             elif args.add_app:
                 if len(args.add_app) < 3 or len(args.add_app) > 5:
                     parser.exit_with_help_message("--add-app: invalid number of arguments")
