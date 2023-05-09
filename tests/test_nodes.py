@@ -300,7 +300,9 @@ def test_nodes():
     # Test --export-node using standard filename.
     subprocess.run([DUNE_EXE,"--export-node", NODE_ALPHA, EXPORT_DIR], check=True)
     assert os.path.exists(EXPORT_DIR + "/" + NODE_ALPHA + ".tgz")
-    
+
+    # Below check documents current behavior: node_bravo is active, however before exporting node_charlie was active.
+    # Fix this in issue https://github.com/AntelopeIO/DUNE/issues/159
     validate_node_list([[NODE_ALPHA, False, False, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
                         [NODE_BRAVO, True, True, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
                         [NODE_CHARLIE, False, True, DEFAULT_HTTP_ADDR, DEFAULT_P2P_ADDR, DEFAULT_SHIP_ADDR]])
