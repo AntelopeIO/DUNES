@@ -39,7 +39,6 @@ ALT_HTTP_ADDR="0.0.0.0:9991"
 ALT_P2P_ADDR="0.0.0.0:9992"
 ALT_SHIP_ADDR="0.0.0.0:9993"
 
-
 def remove_all():
     """ Remove any existing nodes. """
 
@@ -267,11 +266,15 @@ def test_nodes():
     #   pylint: disable=subprocess-run-check
     completed_process = subprocess.run([DUNE_EXE,"--start", NODE_ALPHA, "--config", "unknown_config"], check=False)
     assert completed_process.returncode != 0
+    validate_node_list([[NODE_ALPHA, False, False, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
+                        [NODE_BRAVO, True, True, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR]])
 
     # Test `--config` alone.
     #   pylint: disable=subprocess-run-check
     completed_process = subprocess.run([DUNE_EXE,"--config", "unknown_config"], check=False)
     assert completed_process.returncode != 0
+    validate_node_list([[NODE_ALPHA, False, False, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
+                        [NODE_BRAVO, True, True, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR]])
 
     #
     # Testing the import and export of nodes may not be sophisticated
@@ -287,7 +290,9 @@ def test_nodes():
 
     # Just add an additional node for export.
     subprocess.run([DUNE_EXE,"--start", NODE_CHARLIE], check=True)
-
+    validate_node_list([[NODE_ALPHA, False, False, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
+                        [NODE_BRAVO, False, True, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
+                        [NODE_CHARLIE, True, True, DEFAULT_HTTP_ADDR, DEFAULT_P2P_ADDR, DEFAULT_SHIP_ADDR]])
 
     # things we need to test:
     #  export to TEST_PATH, TEST_PATH/my_file.tgz, TEST_PATH/does_not_exist_yet/my_file.tgz
@@ -295,15 +300,26 @@ def test_nodes():
     # Test --export-node using standard filename.
     subprocess.run([DUNE_EXE,"--export-node", NODE_ALPHA, EXPORT_DIR], check=True)
     assert os.path.exists(EXPORT_DIR + "/" + NODE_ALPHA + ".tgz")
+    
+    validate_node_list([[NODE_ALPHA, False, False, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
+                        [NODE_BRAVO, True, True, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
+                        [NODE_CHARLIE, False, True, DEFAULT_HTTP_ADDR, DEFAULT_P2P_ADDR, DEFAULT_SHIP_ADDR]])
 
     # Test --export-node using provided filename.
     subprocess.run([DUNE_EXE,"--export-node", NODE_BRAVO, EXPORT_DIR + "/bravo_export.tgz"], check=True)
     assert os.path.exists(EXPORT_DIR + "/bravo_export.tgz")
 
+    validate_node_list([[NODE_ALPHA, False, False, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
+                        [NODE_BRAVO, True, True, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
+                        [NODE_CHARLIE, False, True, DEFAULT_HTTP_ADDR, DEFAULT_P2P_ADDR, DEFAULT_SHIP_ADDR]])
+
     # Test --export-node using non-existing path.
     subprocess.run([DUNE_EXE,"--export-node", NODE_CHARLIE, EXPORT_DIR + "/new_path/charlie_export.tgz"], check=True)
     assert os.path.exists(EXPORT_DIR + "/new_path/charlie_export.tgz")
 
+    validate_node_list([[NODE_ALPHA, False, False, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
+                        [NODE_BRAVO, False, True, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
+                        [NODE_CHARLIE, True, True, DEFAULT_HTTP_ADDR, DEFAULT_P2P_ADDR, DEFAULT_SHIP_ADDR]])
 
     # Clean up before import.
     remove_all()
