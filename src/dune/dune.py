@@ -278,11 +278,10 @@ class dune:
                         print("\t", state.name, "was stopped due to address collision.")
 
         # Get this node ready for export.
-        if not is_active:
-            self.set_active(nod)
         if not is_running:
             self.start_node(nod)
-
+        if not is_active:
+            self.set_active(nod)
 
         # Paths:
         directory=path
