@@ -129,19 +129,7 @@ class dune:
             self._docker.execute_cmd(['cp', nod.config(), nod.config_dir()])
             print("Using Configuration [" + nod.config() + "]")
 
-        ctx = self._context.get_ctx()
-        cfg_args = self._context.get_config_args(nod)
-
-        if self.node_exists(node(ctx.active)):
-            if cfg_args[0] == ctx.http_port:
-                print("Currently active node [" + ctx.active + "] http port is the same as this nodes [" + nod.name() + "]")
-                self.stop_node(node(ctx.active))
-            elif cfg_args[1] == ctx.p2p_port:
-                print("Currently active node [" + ctx.active + "] p2p port is the same as this nodes [" + nod.name() + "]")
-                self.stop_node(node(ctx.active))
-            elif cfg_args[2] == ctx.ship_port:
-                print("Currently active node [" + ctx.active + "] ship port is the same as this nodes [" + nod.name() + "]")
-                self.stop_node(node(ctx.active))
+        self.stop_conflicting_nodes(nod)
 
         stdout, stderr, exit_code = self._docker.execute_cmd(cmd + [nod.name()])
         print(stdout)
@@ -242,6 +230,27 @@ class dune:
         for state in states:
             print( state.string(sep=sep, simple=simple, name_width=name_width) )
 
+    def stop_conflicting_nodes(self, nod):
+        my_addrs=self._context.get_config_args(nod)
+        was_running=[]
+        was_active=None
+
+        # For each state, make decisions based on it's
+        for state in self.state_list():
+            # Don't operate on our node.
+            if state.name == nod.name():
+                continue
+            if state.is_active:
+                was_active = state.name
+            if state.is_running:
+                # We only need to stop a running node if there are address collisions.
+                if state.http in my_addrs or state.p2p in my_addrs or state.ship in my_addrs:
+                    was_running.append(state.name)
+                    self.stop_node(node(state.name))
+                    print("\t", state.name, "was stopped due to address collision.")
+
+        return (was_active, was_running)
+
     # pylint: disable=too-many-locals,too-many-statements
     def export_node(self, nod, path):
         # Sanity check
@@ -252,7 +261,6 @@ class dune:
 
         is_active=nod.name() == ctx.active
         is_running=self.is_node_running(nod)
-        my_addrs=self._context.get_config_args(nod)
 
         was_running=[]
         was_active=None
@@ -260,22 +268,7 @@ class dune:
         initial_states=[]
 
         if not is_active or not is_running:
-            # Get the current states.
-            initial_states=self.state_list()
-
-            # For each state, make decisions based on it's
-            for state in initial_states:
-                # Don't operate on our node.
-                if state.name == nod.name():
-                    continue
-                if state.is_active:
-                    was_active = state.name
-                if state.is_running:
-                    # We only need to stop a running node if there are address collisions.
-                    if state.http in my_addrs or state.p2p in my_addrs or state.ship in my_addrs:
-                        was_running.append(state.name)
-                        self.stop_node(node(state.name))
-                        print("\t", state.name, "was stopped due to address collision.")
+            (was_active, was_running) = self.stop_conflicting_nodes(nod)
 
         # Get this node ready for export.
         if not is_running:

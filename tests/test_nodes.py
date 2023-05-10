@@ -107,7 +107,7 @@ def validate_node_list( node_list ):
         where node name is required, but other values have reasonable defaults.
     """
 
-    # Test algorith:
+    # Test algorithm:
     #   Build the list of expected results.
     #   Get the actual results.
     #   For each entry in the actual results,
@@ -339,6 +339,55 @@ def test_nodes():
     validate_node_list([[NODE_ALPHA, False, False, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
                         [NODE_BRAVO, False, True, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
                         [NODE_CHARLIE, True, True, DEFAULT_HTTP_ADDR, DEFAULT_P2P_ADDR, DEFAULT_SHIP_ADDR]])
+
+    # Finally, clean everything up before final return.
+    remove_all()
+
+def test_start_active_node():
+    """start_active_node"""
+
+    # Remove any container that already exists and create a fresh one.
+    cntr = container('dune_container', 'dune:latest')
+    if cntr.exists():
+        subprocess.run([DUNE_EXE, "--destroy-container"], check=True)
+    subprocess.run([DUNE_EXE, "--start-container"], check=True)
+
+    # Ensure there are no existing nodes.
+    #   Tests `--simple-list` and `--list`
+    remove_all()
+    validate_node_list([])
+    expect_empty_verbose_list()
+
+    # Create a node and test its state.
+    #   Tests `--start` when the node needs to be created.
+    subprocess.run([DUNE_EXE,"--start", NODE_ALPHA], check=True)
+    validate_node_state(NODE_ALPHA, True, True)
+
+
+    # Create a 2nd node and test the state of both nodes.
+    subprocess.run([DUNE_EXE,"--start", NODE_BRAVO], check=True)
+    validate_node_state(NODE_BRAVO, True, True)
+    validate_node_list([[NODE_ALPHA, False, False], [NODE_BRAVO, True, True]])
+
+    # Create a 3rd node
+    subprocess.run([DUNE_EXE,"--start", NODE_CHARLIE], check=True)
+    validate_node_state(NODE_CHARLIE, True, True)
+    validate_node_list([[NODE_ALPHA, False, False], [NODE_BRAVO, False, False], [NODE_CHARLIE, True, True]])
+
+    # Test --get-active shows NODE_BRAVO
+    #   Tests `--get-active`.
+    assert subprocess.run([DUNE_EXE,"--get-active"], check=True, stdout=subprocess.PIPE).stdout.decode() == (NODE_CHARLIE + "\n")
+
+    # Test --set-active works to switch to NODE_ALPHA and --get active returns the correct value.
+    #   Tests `--set-active` switch active node while run state is left unchanged.
+    subprocess.run([DUNE_EXE,"--set-active", NODE_ALPHA], check=True)
+    validate_node_list([[NODE_ALPHA, True, False], [NODE_BRAVO, False, False], [NODE_CHARLIE, False, True]]) # Note this is TF,FT
+    assert subprocess.run([DUNE_EXE,"--get-active"], check=True, stdout=subprocess.PIPE).stdout.decode() == (NODE_ALPHA + "\n")
+
+    # Make sure you can start active node
+    subprocess.run([DUNE_EXE,"--start", NODE_ALPHA], check=True)
+    validate_node_state(NODE_ALPHA, True, True)
+    validate_node_list([[NODE_ALPHA, True, True], [NODE_BRAVO, False, False], [NODE_CHARLIE, False, False]])
 
     # Finally, clean everything up before final return.
     remove_all()
