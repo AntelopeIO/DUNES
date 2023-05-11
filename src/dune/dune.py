@@ -166,7 +166,8 @@ class dune:
                 pid = self._docker.find_pid('/app/nodes/' + nod.name() + ' ')
                 self._docker.execute_cmd(['kill', pid])
                 max_wait_time_secs = 30
-                print("Waiting for node [" + nod.name() + "] to shutdown, PID: " + pid)
+                print("Waiting for node [" + nod.name() + "] to shutdown, PID: "
+                      + pid + " (max waiting time: " + str(max_wait_time_secs) + " secs)")
 
                 while True:
                     time.sleep(1)
