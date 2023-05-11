@@ -12,7 +12,7 @@ mkdir -p "$DUNE_PREFIX"/docs
 #echo ""$PREFIX" ** "$SUBPREFIX" ** "$DUNE_PREFIX""
 
 # install
-cp -R "$BUILD_DIR"/dune* "$DUNE_PREFIX"
+cp -R "$BUILD_DIR"/dunes* "$DUNE_PREFIX"
 cp -R "$BUILD_DIR"/Dockerfile* "$DUNE_PREFIX"
 cp -R "$BUILD_DIR"/bootstrap* "$DUNE_PREFIX"
 cp -R "$BUILD_DIR"/src/* "$DUNE_PREFIX"/src
@@ -24,7 +24,7 @@ cp -R "$BUILD_DIR"/docs/* "$DUNE_PREFIX"/docs
 cp -R "$BUILD_DIR"/README* "$DUNE_PREFIX"
 # Add symbolic link
 mkdir ./usr/bin
-ln -s /"$DUNE_PREFIX/dune" ./usr/bin/antelopeio-dune
+ln -s /"$DUNE_PREFIX/dunes" ./usr/bin/antelopeio-dune
 
 echo "Generating Tarball $NAME.tar.gz..."
 tar -cvzf "$NAME".tar.gz ./"$PREFIX"/*

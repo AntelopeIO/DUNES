@@ -11,12 +11,12 @@
     <copyright>EOS Network Foundation</copyright>
     <licenseUrl>https://github.com/AntelopeIO/DUNE/blob/main/LICENSE</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <tags>antelopeio-dune package</tags>
+    <tags>antelopeio-dunes package</tags>
     <projectSourceUrl>https://github.com/AntelopeIO/DUNE</projectSourceUrl>
     <bugTrackerUrl>https://github.com/AntelopeIO/DUNE/issues</bugTrackerUrl>
-    <summary>antelopeio-dune</summary>
-    <description>### antelopeio-dune eos cleos nodeos leap cdt antelope antelopeio
-Docker Utilities for Node Execution (DUNE) is a tool to abstract over Leap programs, CDT and other services/tools related to Antelope blockchains.
+    <summary>antelopeio-dunes</summary>
+    <description>### antelopeio-dunes eos cleos nodeos leap cdt antelope antelopeio
+Docker Utilities for Node Execution and Subsystems (DUNES) is a tool to abstract over Leap programs, CDT and other services/tools related to Antelope blockchains.
     
     </description>
     <dependencies>
