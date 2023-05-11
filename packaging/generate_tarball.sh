@@ -24,7 +24,7 @@ cp -R "$BUILD_DIR"/docs/* "$DUNE_PREFIX"/docs
 cp -R "$BUILD_DIR"/README* "$DUNE_PREFIX"
 # Add symbolic link
 mkdir ./usr/bin
-ln -s /"$DUNE_PREFIX/dunes" ./usr/bin/antelopeio-dune
+ln -s /"$DUNE_PREFIX/dunes" ./usr/bin/dunes
 
 echo "Generating Tarball $NAME.tar.gz..."
 tar -cvzf "$NAME".tar.gz ./"$PREFIX"/*
