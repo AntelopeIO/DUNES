@@ -1,20 +1,20 @@
 ---
-title: DUNES
+title: DUNE
 section: 1
-header: Docker Utilities for Node Execution and Subsystems
+header: Docker Utilities for Node Execution
 footer: AntelopeIO
 date: April 04, 2023
 ---
 # NAME
-DUNES - Docker Utilities for Node Execution.
+DUNE - Docker Utilities for Node Execution.
 
 # SYNOPSIS
 
-`dunes <option> [<arguments>] [-- <commands>]`
+`dune <option> [<arguments>] [-- <commands>]`
 
 # DESCRIPTION
 
-**DUNES** is a tool to abstract over Leap programs, CDT, and other services and tools to perform the functions 
+**DUNE** is a tool to abstract over Leap programs, CDT, and other services and tools to perform the functions 
 of node management, compiling smart contracts, running tests, and other tasks required to develop smart 
 contracts on Antelope blockchains. 
 
@@ -25,7 +25,7 @@ contracts on Antelope blockchains.
     Adding double dashes and space at the end of the command line appends trailing arguments to the current 
     command. If the current command is empty, trailing arguments are passed as though they are the command.
 
-    Example: dunes -- cleos --help
+    Example: dune -- cleos --help
 
 **`-h, --help`** 
 
@@ -67,14 +67,14 @@ contracts on Antelope blockchains.
 
     Export state and blocks log of the given node. PATH may be a directory or a filename with `.tgz` extension.
     
-    Example: dunes --export-node node ~/storage/ 
+    Example: dune --export-node node ~/storage/ 
 
 **`--import-node <NODE> <PATH>`**
 
     Import state and blocks log to a given node. PATH *must* be a path to a file which contains previously exported 
     node with `.tgz` extension.
     
-    Example: dunes --import-node node ~/storage/node.tgz`
+    Example: dune --import-node node ~/storage/node.tgz`
 
 **`--monitor`**
 
@@ -108,7 +108,7 @@ contracts on Antelope blockchains.
     This options calls cleos utility in the Docker container 
     so you may send additional cleos command line options to the call as OPTIONS
 
-    Example: dunes --system-newaccount myaccount -- --buy-ram-bytes 3000
+    Example: dune --system-newaccount myaccount -- --buy-ram-bytes 3000
     
 **`--create-cmake-app <PROJ_NAME> <DIR>`**
 
@@ -123,14 +123,14 @@ contracts on Antelope blockchains.
     Build a smart contract project at the given directory.
     Additional CMake options can be added to CMake call as OPTIONS 
      
-    Example: dunes --cmake-build ~/project -- -DFLAG1=On -DFLAG2=Off               
+    Example: dune --cmake-build ~/project -- -DFLAG1=On -DFLAG2=Off               
 
 **`--ctest <DIR> [-- OPTIONS]`**
 
     Run the ctest tests for a smart contract project at the directory given.
     Additional ctest options can be added to ctest call as OPTIONS
      
-    Example: dunes --ctest ~/project -- --progress -V
+    Example: dune --ctest ~/project -- --progress -V
 
 **`--gdb <PROGRAM> [-- OPTIONS]`**
 
@@ -196,11 +196,11 @@ contracts on Antelope blockchains.
 
 **`--version`**
 
-    Display the current version of DUNES.
+    Display the current version of DUNE.
 
 **`--version-all`**
 
-    Display the current versions of DUNES, CDT, and leap.
+    Display the current versions of DUNE, CDT, and leap.
 
 **`--debug`**
 
@@ -208,7 +208,7 @@ contracts on Antelope blockchains.
 
 **`--upgrade`**
 
-    Upgrade DUNES image to the latest version.
+    Upgrade DUNE image to the latest version.
 
 **`--leap [LEAP_VERSION]`**
 

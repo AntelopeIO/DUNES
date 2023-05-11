@@ -1,8 +1,8 @@
-# Docker Utilities for Node Execution and Subsystems (DUNES)
+# Docker Utilities for Node Execution (DUNE)
 
 ![Logo](docs/images/logo.png)
 
-Docker Utilities for Node Execution and Subsystems (DUNES) is a tool to abstract over [Leap](https://github.com/AntelopeIO/leap) programs, 
+Docker Utilities for Node Execution (DUNE) is a tool to abstract over [Leap](https://github.com/AntelopeIO/leap) programs, 
 [CDT](https://github.com/AntelopeIO/cdt), and other services/tools to perform the functions of node management, compiling smart contracts, 
 running tests, and several other common tasks required to develop smart contracts on [Antelope](https://github.com/AntelopeIO) blockchains.
 
@@ -44,11 +44,11 @@ Docker Desktop works with userns-remap turned on only. It is hardcoded and can't
   
 Docker Desktop has a built-in daemon which works in parallel with the `dockerd` daemon.   
 
-Therefore, to successfully work with DUNES you should:
+Therefore, to successfully work with DUNE you should:
 
->+ Download the latest DUNES release on [Windows](#dunes-windows) or on [Linux](#dunes-linux "Linux")
+>+ Download the latest DUNE release on [Windows](#dune-windows) or on [Linux](#dune-linux "Linux")
 >+ Add a root directory of the host system to the list of shared directories in Docker Desktop settings.
->+ Keep Docker Desktop running all the time when you work with DUNES.
+>+ Keep Docker Desktop running all the time when you work with DUNE.
 
 
 #### Python 3
@@ -62,52 +62,52 @@ Depending on the distro you are using will determine which `python3` package to 
 | Centos | python3                                                   |
 | Arch   | python                                                    |
 
-### DUNES installation on Linux <a name="dunes-linux"></a>
+### DUNE installation on Linux <a name="dune-linux"></a>
 
-This is the fastest way to get started. From the [latest release](https://github.com/AntelopeIO/DUNE/releases/latest) page, download DUNES `*.deb` file or visit the [release tags](https://github.com/AntelopeIO/DUNE/releases) page to download specific version of DUNES deb package.
+This is the fastest way to get started. From the [latest release](https://github.com/AntelopeIO/DUNE/releases/latest) page, download DUNE `*.deb` file or visit the [release tags](https://github.com/AntelopeIO/DUNE/releases) page to download specific version of DUNE deb package.
 
 Once you have a `*.deb` file downloaded, you can install it as follows:
 ```bash
 sudo apt-get update
-sudo apt-get install -y ~/Downloads/antelopeio-dunes*.deb
+sudo apt-get install -y ~/Downloads/antelopeio-dune*.deb
 ```
 Your download path may vary.
 
-#### Alternative: DUNES installation using RPM package
+#### Alternative: DUNE installation using RPM package
 
-From the [latest release](https://github.com/AntelopeIO/DUNE/releases/latest) page, download DUNES `*.rpm` file.
+From the [latest release](https://github.com/AntelopeIO/DUNE/releases/latest) page, download DUNE `*.rpm` file.
 
 Once you have a `*.rpm` file downloaded, you can install it as follows:
 ```bash
-sudo rpm -i ~/Downloads/antelopeio-dunes*.rpm
+sudo rpm -i ~/Downloads/antelopeio-dune*.rpm
 ```
 Your download path may vary.
 
-#### DUNES installation - verification
+#### DUNE installation - verification
 
-Finally, verify DUNES was installed correctly in `/usr/opt/DUNES/`. First [add DUNES to Path](#add-dunes-to-path) and check:
+Finally, verify DUNE was installed correctly in `/usr/opt/DUNE/`. First [add DUNE to Path](#add-dune-to-path) and check:
 ```bash
-dunes --version
+dune --version
 ```
-You should see a DUNES version number. For example:
+You should see a DUNE version number. For example:
 ```
 v1.0.0
 ```
 
-Latest DUNES docker image will be downloaded automatically when starting the DUNES as described in [Node management](#node-management).
-#### Add DUNES to PATH
+Latest DUNE docker image will be downloaded automatically when starting the DUNE as described in [Node management](#node-management).
+#### Add DUNE to PATH
 
 To keep from having to install files to the user's system, the preferred method of usage is to add this directory to your `PATH`.
 
 ```console
-$ echo "PATH=<LocationOfDUNES>:$PATH" >> .bashrc
+$ echo "PATH=<LocationOfDUNE>:$PATH" >> .bashrc
 ```
-### Rebuild the DUNES image
+### Rebuild the DUNE image
 
-If you want to rebuild the DUNES image pick your preferred terminal application and input the following command:
+If you want to rebuild the DUNE image pick your preferred terminal application and input the following command:
 
 ```console
-<PathToDUNE>/DUNES$ ./bootstrap.sh
+<PathToDUNE>/DUNE$ ./bootstrap.sh
 ```
 
 ### Windows 10 & 11
@@ -145,14 +145,14 @@ choco install netfx-4.8 python311 docker-desktop -y
 ```
 5. Now restart PowerShell as administrator again (so that `python` command could be executed) and run:
 ```
-choco install .\antelopeio-dunes.1.1.0.nupkg -y
+choco install .\antelopeio-dune.1.1.0.nupkg -y
 ```
 5. Restart your computer (this is because %PATH% has to be reloaded. In cmd.exe it is enough to run command `refreshenv`).
-6. Open PowerShell / cmd.exe and try that following command works: `dunes.bat --version`.
+6. Open PowerShell / cmd.exe and try that following command works: `dune.bat --version`.
 
 **NOTE**: Chocolatey does not detect python / docker-dekstop installed via other means, so it is possible some dependencies will be installed twice. Usually it is not an issue, but if it is you can follow [this solution](https://stackoverflow.com/a/71605170).
 
-Due to current Docker Desktop limitations DUNES supports only `C:/` disk drive, so all your DUNES projects or workspace needs to be on `C:/` drive.
+Due to current Docker Desktop limitations DUNE supports only `C:/` disk drive, so all your DUNE projects or workspace needs to be on `C:/` drive.
 
 ### Mac OS
 
@@ -164,15 +164,15 @@ $ docker --help
 
 Python 3 should already be installed.
 
-#### Add DUNES to PATH
+#### Add DUNE to PATH
 
 To keep from having to install files to the user's system, the preferred method of usage is to add this directory to your `PATH`.
 
 ```console
-$ echo "PATH=<LocationOfDUNES>:$PATH" >> .bashrc
+$ echo "PATH=<LocationOfDUNE>:$PATH" >> .bashrc
 ```
 
-## DUNES commands
+## DUNE commands
 
 ---
 
@@ -359,12 +359,12 @@ Sets specific version of CDT (Contract Development Toolkit). If no version is pr
 
 ---
 **--version-all** 
-Lists version of DUNES, leap and CDT
+Lists version of DUNE, leap and CDT
 
 ---
 
 **--upgrade** 
-Upgrades DUNES docker image to the latest version
+Upgrades DUNE docker image to the latest version
 
 ---
 
@@ -387,7 +387,7 @@ The command of `start-container` shouldn't necessarily be needed during normal o
 A developer wallet is automatically created for you and is always unlocked 
 and none of the commands will ever ask you to unlock the wallet. 
 If you need to run any `cleos` wallet commands or `keosd` commands via `--` and the wallet is locked, 
-then simply run one of the wallet commands from DUNES first and it will unlock the wallet.
+then simply run one of the wallet commands from DUNE first and it will unlock the wallet.
 
 If you deploy a smart contract to an account it will automatically add the `code` permission to that account for you.
 
@@ -402,21 +402,21 @@ For all of the deployment commands and most of the commands in general you have 
 Let's create a new node.
 
 ```console
-$ dunes --start test_node
+$ dune --start test_node
 ```
 
-If you run this for the first time DUNES docker image will be downloaded. It will create a new Leap node and start it up.
+If you run this for the first time DUNE docker image will be downloaded. It will create a new Leap node and start it up.
 
 If you have custom ports or options you need for the node, a config.ini file can be provided.
 
 ```console
-$ dunes --start test_node <path-to-config>/config.ini
+$ dune --start test_node <path-to-config>/config.ini
 ```
 
 Now let's say that we are done with that node for a while, then we can stop any node we want.
 
 ```console
-$ dunes --stop test_node
+$ dune --stop test_node
 ```
 
 From here we can also remove any node via `--remove <node name>`.
@@ -424,14 +424,14 @@ From here we can also remove any node via `--remove <node name>`.
 The command `--list` will provide a listing of nodes in the current container.
 
 ```console
-$ dunes --list
+$ dune --list
 ```
 
 <img src="docs/images/node-list.png" alt="node-list" width="600">
 
 This gives us information about the nodes, their particular ports, if the node is running and a new concept of is the node `active`.
 
-The way DUNES operates is state based, so you set the active node to which node you want and fire away at the commands 
+The way DUNE operates is state based, so you set the active node to which node you want and fire away at the commands 
 and any that are directed towards the nodes or are listening to nodes will set their URL information correctly and immediately. 
 This state persists after shutting down the software.
 
@@ -456,7 +456,7 @@ These types of topologies are out of the scope of this README but please look at
 Let's start by creating a new project in our workspace.
 
 ```console
-$ dunes --create-cmake-app hello ./
+$ dune --create-cmake-app hello ./
 ```
 
 This should produce a file structure like the picture below:
@@ -468,7 +468,7 @@ Modify the source code how you like.
 Then, let's compile the contract.
 
 ```console
-$ dunes --cmake-build ./
+$ dune --cmake-build ./
 ```
 
 <img src="docs/images/cmake-build.png" alt="cmake-build" width="400">
@@ -478,7 +478,7 @@ $ dunes --cmake-build ./
 Let's start by create a new bare project in our workspace.
 
 ```console
-$ dunes --create-bare-app hello ./
+$ dune --create-bare-app hello ./
 ```
 
 This should produce a file structure like the picture below:
@@ -490,7 +490,7 @@ Modify the source code how you like.
 Then, let's compile the contract.
 
 ```console
-$ dunes -- cdt-cpp /host/<path>/hello/hello.cpp -o /host/<path>/hello/hello.wasm
+$ dune -- cdt-cpp /host/<path>/hello/hello.cpp -o /host/<path>/hello/hello.wasm
 ```
 
 ### Creating accounts and deploying smart contracts
@@ -498,17 +498,17 @@ $ dunes -- cdt-cpp /host/<path>/hello/hello.cpp -o /host/<path>/hello/hello.wasm
 Let's start off by creating some accounts.
 
 ```console
-$ dunes --create-account bucky
-$ dunes --create-account test
-$ dunes --create-account areg
+$ dune --create-account bucky
+$ dune --create-account test
+$ dune --create-account areg
 ```
 
 From here we can deploy built smart contracts.
 
 ```console
-$ dunes --deploy ./hello bucky
-$ dunes --deploy ./example/talk/build/talk test
-$ dunes --deploy ./sudo/build/sudo areg
+$ dune --deploy ./hello bucky
+$ dune --deploy ./example/talk/build/talk test
+$ dune --deploy ./sudo/build/sudo areg
 ```
 
 ### Sending actions
@@ -516,9 +516,9 @@ $ dunes --deploy ./sudo/build/sudo areg
 Let's send some actions to the accounts.
 
 ```console
-$ dunes --send-action bucky hi '[bucky]' bucky@active
-$ dunes --send-action test post '[1, 0, bucky, "message"]' test
-$ dunes --send-action areg wrap ...
+$ dune --send-action bucky hi '[bucky]' bucky@active
+$ dune --send-action test post '[1, 0, bucky, "message"]' test
+$ dune --send-action areg wrap ...
 ```
 
 ### Table information
@@ -526,7 +526,7 @@ $ dunes --send-action areg wrap ...
 The only current command open is `--get-table` which is analogous to `cleos get table`.
 
 ```console
-$ dunes --get-table <ACCOUNT> <SCOPE> <TABLE NAME>
+$ dune --get-table <ACCOUNT> <SCOPE> <TABLE NAME>
 ```
 
 This will allow for all of the same utilities from cleos itself. 
@@ -544,7 +544,7 @@ Earlier we saw a simple way above to create accounts using `--create-account <AC
 But we also have the ability to supply the creator of the account and the public and private key optionally.
 
 ```console
-$ dunes --create-account bucky foo
+$ dune --create-account bucky foo
 ```
 
 The above command will use the existing `foo` account to create a new account account called `bucky` 
@@ -553,7 +553,7 @@ and it will automatically generate the public and private key pair for this acco
 Or, to explicitly specify the public and private key pair of the new account:
 
 ```console
-$ dunes --create-account bucky foo EOS7qPSKJhqygQTSNjMy8aH6TL6NtsYJnBJ7fxh7Y4SFLiXYdhjGD 5KNYGzaLo9aTjiXG7oeKGy5JWkQVkAha1Xi9DXNedvojovPhnLC
+$ dune --create-account bucky foo EOS7qPSKJhqygQTSNjMy8aH6TL6NtsYJnBJ7fxh7Y4SFLiXYdhjGD 5KNYGzaLo9aTjiXG7oeKGy5JWkQVkAha1Xi9DXNedvojovPhnLC
 ```
 
 Clearly you don't want to do this with real private keys or sensitive accounts.
@@ -562,7 +562,7 @@ Clearly you don't want to do this with real private keys or sensitive accounts.
 
 At some point you will want to activate protocol features for your chain.
 
-This can be achieved in a few ways with DUNES.
+This can be achieved in a few ways with DUNE.
 
 The first is by using the command `--activate-feature`.
 
@@ -576,7 +576,7 @@ Next is using one of the two `bootstrapping` commands.
 The first is `bootstrap-system`.
 
 ```console
-$ dunes --bootstrap-system
+$ dune --bootstrap-system
 ```
 
 This will preactivate protocol features, set the boot contract and activate all protocol features.
@@ -584,7 +584,7 @@ This will preactivate protocol features, set the boot contract and activate all 
 The second is `bootstrap-system-full`.
 
 ```console
-$ dunes --bootstrap-system-full
+$ dune --bootstrap-system-full
 ```
 
 This will do the same as `--bootstrap-system` but additionally set the contracts 
@@ -596,11 +596,11 @@ and create the correct accounts needed for those.
 ### Wallet
 
 The default wallet is created for you and always unlocked for you when using this system. 
-The wallet of DUNES is not in any way designed to be a `secure` wallet.
+The wallet of DUNE is not in any way designed to be a `secure` wallet.
 
 During testing or replication of state we sometimes might want to import a previous wallet.
 
-DUNES exposes two commands `--export-wallet` and `--import-wallet <WALLET DIR>`.
+DUNE exposes two commands `--export-wallet` and `--import-wallet <WALLET DIR>`.
 
 `export-wallet` will produce a `.tgz` at the current location called `wallet.tgz`.
 
@@ -619,7 +619,7 @@ Sometimes the running container can get corrupted or overly large and you will w
 To do this use the command `destroy-container`.
 
 ```console
-$ dunes --destroy-container
+$ dune --destroy-container
 ```
 
 This will stop the running container and erase it.
@@ -627,33 +627,33 @@ This will stop the running container and erase it.
 When you are done for the day it is best practice to stop the container, which is exposed via `stop-container`.
 
 ```console
-$ dunes --stop-container
+$ dune --stop-container
 ```
 
 This will stop all running nodes safely, and then stop the running container.
 
 And lastly, if you are building some IDE plugin support or ancillary tooling you will want to start the container.
 ```console
-$ dunes --start-container
+$ dune --start-container
 ```
 
 As mentioned above all commands that use the container will automatically create a new container if one does not exist 
 and automatically start the container if is stopped.
 
-# DUNES plugins
+# DUNE plugins
 
-DUNES can be extended with custom functionality using plugins: [Documentation of DUNES plugins](docs/PLUGIN.md)
+DUNE can be extended with custom functionality using plugins: [Documentation of DUNE plugins](docs/PLUGIN.md)
 
-# DUNES autocompletion
+# DUNE autocompletion
 
-DUNES supports autocompletion using `argcomplete`.
+DUNE supports autocompletion using `argcomplete`.
 For one time activation of argcomplete in `bash` run:
-`eval "$(register-python-argcomplete dunes)"`
+`eval "$(register-python-argcomplete dune)"`
 Above can be added to `.bashrc`.
 
 Example of autocompletion:
 ```
-user@localhost:~/$ dunes --set-
+user@localhost:~/$ dune --set-
 --set-active          --set-bios-contract   --set-core-contract   --set-token-contract  
 ```
 
@@ -661,10 +661,10 @@ For more information about how to install autocompletion globally or in zsh:
 [https://github.com/kislyuk/argcomplete#global-completion](https://github.com/kislyuk/argcomplete#global-completion)
 
 
-# Preparing DUNES release
+# Preparing DUNE release
 
-[Steps for preparing a new DUNES release](docs/RELEASE.md)
+[Steps for preparing a new DUNE release](docs/RELEASE.md)
 
-# Troubleshooting DUNES / FAQ
+# Troubleshooting DUNE / FAQ
 
-[Troubleshooting common DUNES problems](docs/FAQ.md)
+[Troubleshooting common DUNE problems](docs/FAQ.md)
