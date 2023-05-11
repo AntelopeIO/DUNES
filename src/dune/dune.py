@@ -1,6 +1,7 @@
 # pylint: disable=missing-function-docstring, missing-module-docstring
 import os
 import sys                      # sys.stderr
+import time
 from context import context
 from docker import docker
 from node_state import node_state
@@ -162,10 +163,25 @@ class dune:
     def stop_node(self, nod):
         if self.node_exists(nod):
             if self.is_node_running(nod):
-                pid = self._docker.find_pid(
-                    '/app/nodes/' + nod.name() + ' ')
-                print("Stopping node [" + nod.name() + "]")
+                pid = self._docker.find_pid('/app/nodes/' + nod.name() + ' ')
                 self._docker.execute_cmd(['kill', pid])
+                max_wait_time_secs = 30
+                print("Waiting for node [" + nod.name() + "] to shutdown, PID: " + pid)
+
+                while True:
+                    time.sleep(1)
+                    pid = self._docker.find_pid('/app/nodes/' + nod.name() + ' ')
+                    if pid == -1:
+                        break
+
+                    max_wait_time_secs -= 1
+
+                    if max_wait_time_secs <= 0 :
+                        print("ERROR: Cannot stop [" + nod.name() + "], PID: " + pid)
+                        sys.exit(1)
+
+                print("Stopped node [" + nod.name() + "]")
+
             else:
                 print("Node [" + nod.name() + "] is not running")
         else:
