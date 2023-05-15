@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-"""Test DUNE Plugin
+"""Test DUNES Plugin
 
-This script tests that after copying plugin to src/plugin DUNE detects it and run properly.
+This script tests that after copying plugin to src/plugin DUNES detects it and run properly.
 """
 
 import os
@@ -14,15 +14,18 @@ from common import DUNES_EXE
 current_script_path = os.path.abspath(__file__)
 current_script_dir = os.path.dirname(current_script_path)
 
-src_dir = current_script_dir + '/../plugin_example/dune_hello'
-dst_dir = current_script_dir + '/../src/plugin/dune_hello'
+src_dir = current_script_dir + '/../plugin_example/dunes_hello'
+dst_dir = current_script_dir + '/../src/plugin/dunes_hello'
+
 
 def prepare_plugin():
     remove_plugin()
     shutil.copytree(src_dir, dst_dir)
 
+
 def remove_plugin():
     shutil.rmtree(dst_dir, ignore_errors=True)
+
 
 def test_plugin_help():
     prepare_plugin()
@@ -32,7 +35,7 @@ def test_plugin_help():
             b'--hello',
         ]
 
-    # Call DUNE.
+    # Call DUNES.
     completed_process = subprocess.run([DUNES_EXE, "--help"], check=True, stdout=subprocess.PIPE)
 
     # Test for expected values in the captured output.
@@ -47,10 +50,10 @@ def test_plugin_execution():
 
     expect_list = \
         [
-            b'Hello from DUNE',
+            b'Hello from DUNES',
         ]
 
-    # Call DUNE.
+    # Call DUNES.
     completed_process = subprocess.run([DUNES_EXE, "--hello"], check=True, stdout=subprocess.PIPE)
 
     # Test for expected values in the captured output.

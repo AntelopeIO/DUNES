@@ -37,7 +37,7 @@ export SSUBPREFIX
 echo "Unpacking tarball: $NAME.tar.gz..."
 tar -xzvf "$DIR"/"$NAME".tar.gz -C "$PROJECT"
 dpkg-deb --build "$PROJECT"
-mv "$PROJECT".deb "$NAME".deb  # rename DUNE.deb to antelopeio-dune<etc>.deb
+mv "$PROJECT".deb "$NAME".deb  # rename DUNES.deb to dunes<etc>.deb
 mv "$NAME".* "$ORIGINAL_DIR"   # move into user's original path
 rm -r "$PROJECT"
 

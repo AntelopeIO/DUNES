@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""Test DUNE bootstrap
+"""Test DUNES bootstrap
 
 These options are tested:
   --create-key
@@ -60,9 +60,11 @@ def test_booststrap():
     subprocess.run([DUNES_EXE, "--create-account", ACCT_NAME2], check=True)
 
     # Creation of second account should now be successful
-    second_account_results = subprocess.run([DUNES_EXE, "--", "cleos", "get", "account", ACCT_NAME2], check=True, stdout=subprocess.PIPE)
+    second_account_results = subprocess.run([DUNES_EXE, "--", "cleos", "get", "account", ACCT_NAME2],
+                                            check=True, stdout=subprocess.PIPE)
     assert b'created:' in second_account_results.stdout
 
-    #Verify that "Create New Account" has been deployed
-    results = subprocess.run([DUNES_EXE, "--", "cleos", "get", "abi", "eosio"], check=True, stdout=subprocess.PIPE)
+    # Verify that "Create New Account" has been deployed
+    results = subprocess.run([DUNES_EXE, "--", "cleos", "get", "abi", "eosio"],
+                             check=True, stdout=subprocess.PIPE)
     assert b'Create New Account' in results.stdout

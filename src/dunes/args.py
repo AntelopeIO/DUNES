@@ -43,9 +43,9 @@ class arg_parser:
 
     def __init__(self):
         self._parser = argparse.ArgumentParser(
-            description='''DUNE: Docker Utilities for Node Execution.
-                    dune [ARGUMENTS] -- <COMMANDS> runs any number of commandline commands in the container.
-                    Example: dune -- cleos --help''')
+            description='''DUNES: Docker Utilities for Node Execution and Subsystems.
+                    dunes [ARGUMENTS] -- <COMMANDS> runs any number of commandline commands in the container.
+                    Example: dunes -- cleos --help''')
         self._parser.add_argument('-s', '--start', nargs=1, metavar="<NODE>",
                                   help='start a new node with a given name')
         self._parser.add_argument('-c', '--config', nargs=1, metavar="<CONFIG_DIR>",
@@ -146,15 +146,15 @@ class arg_parser:
         self._parser.add_argument('--list-features', action='store_true',
                                   help='list available protocol feature code names')
         self._parser.add_argument('--version', action='store_true',
-                                  help='display the current version of DUNE')
+                                  help='display the current version of DUNES')
         self._parser.add_argument('--version-all', action='store_true',
-                                  help='display the current version of DUNE, CDT and leap')
+                                  help='display the current version of DUNES, CDT and leap')
         self._parser.add_argument('--debug', action='store_true', help='print additional info '
                                                                        'useful for debugging, '
                                                                        'like running docker '
                                                                        'commands')
         self._parser.add_argument(
-            '--upgrade', action='store_true', help='upgrades DUNE image to the latest version')
+            '--upgrade', action='store_true', help='upgrades DUNES image to the latest version')
         self._parser.add_argument(
             '--leap', nargs='?', const='-1', metavar="LEAP_VERSION", help='sets the version of leap. '
             'If no version is provided then available leap versions are displayed.')
@@ -230,7 +230,7 @@ class arg_parser:
         try:
             argcomplete.autocomplete(self._parser)
         except ImportError:
-            print('Cannot load argcomplete. DUNE will work without autocompletion.')
+            print('Cannot load argcomplete. DUNES will work without autocompletion.')
 
         return self._parser.parse_args()
 

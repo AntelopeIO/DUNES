@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""Test DUNE bootstrap
+"""Test DUNES bootstrap
 
 These options are tested:
   --create-key
@@ -30,7 +30,8 @@ def test_booststrap():
     # Create an account.
     subprocess.run([DUNES_EXE, "--create-account", ACCT_NAME], check=True)
 
-    account_results = subprocess.run([DUNES_EXE, "--", "cleos", "get", "account", ACCT_NAME], check=True, stdout=subprocess.PIPE)
+    account_results = subprocess.run([DUNES_EXE, "--", "cleos", "get", "account", ACCT_NAME],
+                                     check=True, stdout=subprocess.PIPE)
     assert b'created:' in account_results.stdout
 
     # Create a key. Get it to a var as well.
@@ -59,17 +60,22 @@ def test_booststrap():
     # Create a second account should fail because of not enough RAM
     subprocess.run([DUNES_EXE, "--create-account", ACCT_NAME2], check=False)
 
-    second_account_results = subprocess.run([DUNES_EXE, "--", "cleos", "get", "account", ACCT_NAME2], check=False, stdout=subprocess.PIPE)
+    second_account_results = subprocess.run([DUNES_EXE, "--", "cleos", "get", "account", ACCT_NAME2],
+                                            check=False, stdout=subprocess.PIPE)
     assert b'created:' not in second_account_results.stdout
 
     # Create an example account with RAM
-    subprocess.run([DUNES_EXE, "--system-newaccount", ACCT_NAME2, "eosio", "EOS8C5BLCX2LrmcRLHMC8bN5mML4aFSHrZvyijzfLy48tiije6nTt",
+    subprocess.run([DUNES_EXE, "--system-newaccount", ACCT_NAME2, "eosio",
+                    "EOS8C5BLCX2LrmcRLHMC8bN5mML4aFSHrZvyijzfLy48tiije6nTt",
                     "5KNitA34Usr2EVLQKtFrwAJVhyB2F3U7fDHEuP2ee2zZ16w7PeB",
-                    "--", "--stake-net", "1.0000 SYS", "--stake-cpu", "1.0000 SYS", "--buy-ram-bytes", "3000"], check=True)
+                    "--", "--stake-net", "1.0000 SYS", "--stake-cpu", "1.0000 SYS",
+                    "--buy-ram-bytes", "3000"], check=True)
 
     # Creation of second account should now be successful
-    second_account_results = subprocess.run([DUNES_EXE, "--", "cleos", "get", "account", ACCT_NAME2], check=True, stdout=subprocess.PIPE)
+    second_account_results = subprocess.run([DUNES_EXE, "--", "cleos", "get", "account", ACCT_NAME2],
+                                            check=True, stdout=subprocess.PIPE)
     assert b'created:' in second_account_results.stdout
 
-    results = subprocess.run([DUNES_EXE, "--get-table", "eosio.token", "eosio", "accounts"], check=True, stdout=subprocess.PIPE)
+    results = subprocess.run([DUNES_EXE, "--get-table", "eosio.token", "eosio", "accounts"],
+                             check=True, stdout=subprocess.PIPE)
     assert b'"rows"' in results.stdout
