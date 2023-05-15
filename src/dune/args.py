@@ -149,6 +149,7 @@ class arg_parser:
                                   help='display the current version of DUNE')
         self._parser.add_argument('--version-all', action='store_true',
                                   help='display the current version of DUNE, CDT and leap')
+        self._parser.add_argument('--version-short', action='store_true', help=argparse.SUPPRESS)
         self._parser.add_argument('--debug', action='store_true', help='print additional info '
                                                                        'useful for debugging, '
                                                                        'like running docker '

@@ -10,17 +10,16 @@ from dune import dune
 from dune import dune_error
 from dune import dune_node_not_found
 from dune import node
-from dune import version_full
-
-
-def handle_version():
-    print("DUNE " + version_full())
+from version import version_full
 
 
 def handle_simple_args():
     # Handle args that do not require docker started up
     if args.version is True:
-        handle_version()
+        print("DUNE v" + version_full())
+        sys.exit(0)
+    if args.version_short is True:
+        print(version_full())
         sys.exit(0)
 
 
