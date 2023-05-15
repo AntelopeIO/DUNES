@@ -64,22 +64,22 @@ Depending on the distro you are using will determine which `python3` package to 
 
 ### DUNES installation on Linux <a name="dunes-linux"></a>
 
-This is the fastest way to get started. From the [latest release](https://github.com/AntelopeIO/DUNE/releases/latest) page, download DUNES `*.deb` file or visit the [release tags](https://github.com/AntelopeIO/DUNE/releases) page to download specific version of DUNES deb package.
+This is the fastest way to get started. From the [latest release](https://github.com/AntelopeIO/DUNES/releases/latest) page, download DUNES `*.deb` file or visit the [release tags](https://github.com/AntelopeIO/DUNES/releases) page to download specific version of DUNES deb package.
 
 Once you have a `*.deb` file downloaded, you can install it as follows:
 ```bash
 sudo apt-get update
-sudo apt-get install -y ~/Downloads/antelopeio-dunes*.deb
+sudo apt-get install -y ~/Downloads/dunes*.deb
 ```
 Your download path may vary.
 
 #### Alternative: DUNES installation using RPM package
 
-From the [latest release](https://github.com/AntelopeIO/DUNE/releases/latest) page, download DUNES `*.rpm` file.
+From the [latest release](https://github.com/AntelopeIO/DUNES/releases/latest) page, download DUNES `*.rpm` file.
 
 Once you have a `*.rpm` file downloaded, you can install it as follows:
 ```bash
-sudo rpm -i ~/Downloads/antelopeio-dunes*.rpm
+sudo rpm -i ~/Downloads/dunes*.rpm
 ```
 Your download path may vary.
 
@@ -107,7 +107,7 @@ $ echo "PATH=<LocationOfDUNES>:$PATH" >> .bashrc
 If you want to rebuild the DUNES image pick your preferred terminal application and input the following command:
 
 ```console
-<PathToDUNE>/DUNES$ ./bootstrap.sh
+<PathToDUNES>/DUNES$ ./bootstrap.sh
 ```
 
 ### Windows 10 & 11
@@ -133,19 +133,19 @@ Visit the download page for [Python 3](https://python.org/downloads). You should
 Make sure you mark "Add Python to PATH" during installation.
 After installation open `cmd.exe` and verify `python --version` returns current Python version.
 
-#### DUNE installation on Windows <a name="dune-windows"></a>
+#### DUNES installation on Windows <a name="dunes-windows"></a>
 
 1. Install [Chocolatey](https://docs.chocolatey.org/en-us/choco/setup).
-2. Download latest `*.nupkg` from [latest release](https://github.com/AntelopeIO/DUNE/releases/latest) page.
+2. Download latest `*.nupkg` from [latest release](https://github.com/AntelopeIO/DUNES/releases/latest) page.
 3. Run PowerShell as administrator and go to the directory where your *`.nupkg` was downloaded.
 4. Run following commands:
 ```
-choco uninstall antelopeio-dune -y
+choco uninstall dunes -y
 choco install netfx-4.8 python311 docker-desktop -y
 ```
 5. Now restart PowerShell as administrator again (so that `python` command could be executed) and run:
 ```
-choco install .\antelopeio-dunes.1.1.0.nupkg -y
+choco install .\dunes.1.1.0.nupkg -y
 ```
 5. Restart your computer (this is because %PATH% has to be reloaded. In cmd.exe it is enough to run command `refreshenv`).
 6. Open PowerShell / cmd.exe and try that following command works: `dunes.bat --version`.
@@ -284,7 +284,7 @@ This will build a given CMake app project. This command takes a directory to the
 **--destroy-container** 
 This will destroy and remove the currently running container. 
 WARNING! This will delete all data that is running. 
-This is useful if you need to update to a new version of DUNE or if you corrupt the container some how.
+This is useful if you need to update to a new version of DUNES or if you corrupt the container some how.
 
 ---
 
@@ -294,7 +294,7 @@ This will stop the currently running container.
 ---
 
 **--start-container** 
-This will start the `dune` container.
+This will start the `dunes` container.
 
 ---
 
@@ -381,7 +381,7 @@ The core concept of this utility is to abstract over Leap programs such as `node
 As such some of the commands might seem restrictive.  Please take note that if you find any of the commands to be too 
 restrictive then you can use the command `--` followed by whatever normal `cleos`, `nodeos`, CDT and OS commands that you need.
 
-When you run any command with DUNE, if a container has not been created yet it will automatically create one for you. 
+When you run any command with DUNES, if a container has not been created yet it will automatically create one for you. 
 The command of `start-container` shouldn't necessarily be needed during normal operation.
 
 A developer wallet is automatically created for you and is always unlocked 

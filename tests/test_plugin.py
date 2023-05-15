@@ -9,7 +9,7 @@ import os
 import shutil
 import subprocess
 
-from common import DUNE_EXE
+from common import DUNES_EXE
 
 current_script_path = os.path.abspath(__file__)
 current_script_dir = os.path.dirname(current_script_path)
@@ -33,7 +33,7 @@ def test_plugin_help():
         ]
 
     # Call DUNE.
-    completed_process = subprocess.run([DUNE_EXE,"--help"], check=True, stdout=subprocess.PIPE)
+    completed_process = subprocess.run([DUNES_EXE, "--help"], check=True, stdout=subprocess.PIPE)
 
     # Test for expected values in the captured output.
     for expect in expect_list:
@@ -51,7 +51,7 @@ def test_plugin_execution():
         ]
 
     # Call DUNE.
-    completed_process = subprocess.run([DUNE_EXE,"--hello"], check=True, stdout=subprocess.PIPE)
+    completed_process = subprocess.run([DUNES_EXE, "--hello"], check=True, stdout=subprocess.PIPE)
 
     # Test for expected values in the captured output.
     for expect in expect_list:

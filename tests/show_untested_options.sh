@@ -3,14 +3,14 @@
 # This file MUST remain co-located with the files to work.
 
 
-# Find paths to the tests and the dune executable.
+# Find paths to the tests and the DUNES executable.
 SCRIPT=`readlink -f "$0"`
 TEST_DIR=`dirname "$SCRIPT"`
-DUNE_DIR=`dirname "$TEST_DIR"`
-DUNE="$DUNE_DIR/dune"
+DUNES_DIR=`dirname "$TEST_DIR"`
+DUNES="$DUNES_DIR/dunes"
 
 # Get a list of the options.
-options=`$DUNE --help | grep -o "^  --[a-z\-]*"`
+options=`$DUNES --help | grep -o "^  --[a-z\-]*"`
 
 # Get a list of the test files.
 files=`find "$TEST_DIR" | grep "[.]py\$"`

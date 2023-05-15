@@ -11,7 +11,7 @@ to `--debug` option.
 
 import subprocess
 
-from common import DUNE_EXE
+from common import DUNES_EXE
 
 
 def test_version_debug():
@@ -19,4 +19,4 @@ def test_version_debug():
 
     # Call DUNE, we only care that `--debug` is available, not that it
     # does anything. For now.
-    subprocess.run([DUNE_EXE,"--version","--debug"], check=True)
+    subprocess.run([DUNES_EXE, "--version", "--debug"], check=True)

@@ -11,8 +11,7 @@ if [[ -z $RELEASE ]]; then
   RELEASE="1"
 fi
 
-#add PROJECT_PREFIX to avoid conflict with ocaml dune
-PROJECT="$PROJECT_PREFIX-$PROJECT"
+PROJECT="$PROJECT"
 NAME="${PROJECT}-${VERSION_NO_SUFFIX}-${RELEASE}"
 
 export PREFIX

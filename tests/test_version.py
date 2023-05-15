@@ -10,7 +10,7 @@ in response to `--version` option.
 
 import subprocess
 
-from common import DUNE_EXE
+from common import DUNES_EXE
 
 
 def test_version():
@@ -23,7 +23,7 @@ def test_version():
         ]
 
     # Call DUNE.
-    completed_process = subprocess.run([DUNE_EXE,"--version"], check=True, stdout=subprocess.PIPE)
+    completed_process = subprocess.run([DUNES_EXE, "--version"], check=True, stdout=subprocess.PIPE)
 
     # Test for expected values in the captured output.
     for expect in expect_list:

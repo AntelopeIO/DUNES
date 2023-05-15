@@ -6,7 +6,7 @@ class ctx:
 
 
 class context:
-    _file_name = ".dune.ctx"
+    _file_name = ".dunes.ctx"
     _dir = '/app/'
     _docker = None
     _ctx = ctx()

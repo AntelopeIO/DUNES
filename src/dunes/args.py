@@ -136,7 +136,7 @@ class arg_parser:
                                        'and multisig contracts. If optional arguments are provided '
                                        'it creates specific CURRENCY (default "SYS") with maximum amount of '
                                        'MAX_VALUE and initial value of INITIAL_VALUE')
-        self._parser.add_argument('--send-action', nargs=4, action=fix_action_data,
+        self._parser.add_argument('--send-action', nargs=4,
                                   metavar=("<ACCOUNT>", "<ACTION>", "<DATA>", "<PERMISSION>"),
                                   help='send action to account with data given and permission')
         self._parser.add_argument('--get-table', nargs=3, metavar=("<ACCOUNT>", "<SCOPE>", "<TABLE>"),

@@ -6,11 +6,11 @@ from args import arg_parser
 from args import parse_optional
 import version_selector
 from docker import docker_error
-from dune import dune
-from dune import dune_error
-from dune import dune_node_not_found
-from dune import node
-from dune import version_full
+from dunes import dunes
+from dunes import dunes_error
+from dunes import dunes_node_not_found
+from dunes import node
+from dunes import version_full
 
 
 def handle_version():
@@ -80,7 +80,7 @@ if __name__ == '__main__':
 
     handle_simple_args()
 
-    dune_sys = dune(args)
+    dune_sys = dunes(args)
 
     for module in modules:
         if hasattr(module, 'set_dune'):
@@ -93,7 +93,7 @@ if __name__ == '__main__':
             WAS_REMAINDER_ARGS_USED = False
 
             if args.start is not None:
-                n: object
+                n: object = None
                 if args.config is None:
                     n = node(args.start[0])
                 elif len(args.config) == 1:
@@ -184,7 +184,8 @@ if __name__ == '__main__':
                 commands, WAS_REMAINDER_ARGS_USED = parse_optional(args.remainder)
 
                 if (len(args.system_newaccount) > 4
-                    or (WAS_REMAINDER_ARGS_USED and len(args.system_newaccount) < 4)):
+                    or (WAS_REMAINDER_ARGS_USED
+                        and len(args.system_newaccount) < 4)):
                     parser.exit_with_help_message("--system-newaccount has invalid arguments\n")
                 if WAS_REMAINDER_ARGS_USED:
                     dune_sys.system_newaccount(*args.system_newaccount, commands)
@@ -273,8 +274,8 @@ if __name__ == '__main__':
 
             elif args.version_all:
                 handle_version()
-                dune_sys.execute_cmd(['apt','list','leap'], colors=True)
-                dune_sys.execute_cmd(['apt','list','cdt'], colors=True)
+                dune_sys.execute_cmd(['apt', 'list', 'leap'], colors=True)
+                dune_sys.execute_cmd(['apt', 'list', 'cdt'], colors=True)
 
 # Integration with antler-proj begin ----------------------------------------------------------------------
 
@@ -345,10 +346,10 @@ if __name__ == '__main__':
 
     except KeyboardInterrupt:
         pass
-    except dune_node_not_found as err:
+    except dunes_node_not_found as err:
         print('Node not found [' + err.name() + ']', file=sys.stderr)
         sys.exit(1)
-    except dune_error as err:
+    except dunes_error as err:
         print("Internal Error", file=sys.stderr)
         sys.exit(1)
     except docker_error as err:

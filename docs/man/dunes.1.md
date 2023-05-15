@@ -282,7 +282,7 @@ contracts on Antelope blockchains.
 
 # REPORTING BUGS
 
-Please submit bug reports online at https://github.com/AntelopeIO/DUNE/issues
+Please submit bug reports online at https://github.com/AntelopeIO/DUNES/issues
 
 # SEE ALSO
 
@@ -290,4 +290,4 @@ Please submit bug reports online at https://github.com/AntelopeIO/DUNE/issues
   
 #  COLOPHON
 
-For more details consult the full documentation and sources https://github.com/AntelopeIO/DUNE
+For more details consult the full documentation and sources https://github.com/AntelopeIO/DUNES
