@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 set -o errexit -o pipefail -o noclobber -o nounset
 
-set -v
-
 getopt --test && echo "'getopt --test' failed in this environment." && exit 1
 
 # Set SDIR to the path containing this script. Even if it's a symlink.
