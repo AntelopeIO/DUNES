@@ -23,7 +23,7 @@ def get_short_hash():
     return ''
 
 
-def get_dune_version():
+def get_dunes_version():
     """Try to get the version of this DUNES tool."""
 
     # Find the version or warn and return empty string.
@@ -31,7 +31,7 @@ def get_dune_version():
         return subprocess.check_output([DUNE_EXE, '--version-short'], stderr=None, encoding='utf-8').strip()
     # pylint: disable=bare-except
     except:
-        print( "Failed to determine DUNE version." )
+        print( "Failed to determine DUNES version." )
     return ''
 
 
@@ -58,10 +58,10 @@ def test_ensure_conatiner_image():
     if short_hash != '':
         image_tag = short_hash
     else:
-        image_tag = get_dune_version()
+        image_tag = get_dunes_version()
         # In the case that we have neither short hash nor version, we will fail assertion here:
-        assert image_tag != '', "\n Could not determine what tag to use with either git or DUNE."
-        print( "WARNING: Could not determine git short hash, reverting to DUNE version: ", image_tag )
+        assert image_tag != '', "\n Could not determine what tag to use with either git or DUNES."
+        print( "WARNING: Could not determine git short hash, reverting to DUNES version: ", image_tag )
 
     # Ensure failure text includes the source of the tag: short hash or version.
     determination_string = ''
@@ -70,7 +70,7 @@ def test_ensure_conatiner_image():
         determination_string = f"We determined the short hash for this repo is {short_hash}."
         source_string = 'short hash'
     else:
-        determination_string =f"Unable to determine the short hash for this repo - fell back to DUNE version: {image_tag}."
+        determination_string =f"Unable to determine the short hash for this repo - fell back to DUNES version: {image_tag}."
         source_string = 'version'
 
     # Search for the ID of the image and ensure it exists.
@@ -78,7 +78,7 @@ def test_ensure_conatiner_image():
 
     assert image_id != '', \
         f"\n {determination_string}" \
-        f"\n Given the command 'docker image list -q dune:{image_tag}', we expected a valid ID, but got an empty string." \
+        f"\n Given the command 'docker image list -q dunes:{image_tag}', we expected a valid ID, but got an empty string." \
         "\n It's possible 'bootstrap.sh' needs to be run to generate the correct image for these tests."
 
 
