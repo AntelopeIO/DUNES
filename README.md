@@ -327,7 +327,7 @@ Following optional arguments can be provided:
 - initial value (default is "1000000000.0000"). Initial value of issued currency to system account `eosio`. Precision of initial value needs to be 4.
 
 ---
-**--send-acton** 
+**--send-action** 
 This will send an action to an account. 
 This command takes a valid Antelope account name, a valid Antelope action name, the data payload needed and the permission.
 
