@@ -1,8 +1,4 @@
-import os
-import subprocess
-
-FILE_PATH = os.path.dirname(os.path.abspath(__file__))
-
+"""Provide version information."""
 
 # VERSION INFORMATION
 def version_major():

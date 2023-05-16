@@ -17,6 +17,7 @@ def get_short_hash():
     # Find the short hash or warn and return empty string.
     try:
         return subprocess.check_output(['git', '-C', TEST_PATH, 'rev-parse', '--short', 'HEAD'], stderr=None, encoding='utf-8').strip()
+    # pylint: disable=bare-except
     except:
         print( "Failed to determine git short hash." )
     return ''
@@ -28,6 +29,7 @@ def get_dune_version():
     # Find the version or warn and return empty string.
     try:
         return subprocess.check_output([DUNE_EXE, '--version-short'], stderr=None, encoding='utf-8').strip()
+    # pylint: disable=bare-except
     except:
         print( "Failed to determine DUNE version." )
     return ''
@@ -39,6 +41,7 @@ def get_image_id(tag):
     image_name = 'dune:' + tag
     try:
         return subprocess.check_output(['docker', 'image', 'list', '-q', image_name], stderr=None, encoding='utf-8').strip()
+    # pylint: disable=bare-except
     except:
         print( f"Could not get results from docker for image: {image_name}." )
     return ''
@@ -48,7 +51,7 @@ def test_ensure_conatiner_image():
     """Ensure container version is available and correct."""
 
     # Try to get the short hash.
-    short_hash = #get_short_hash()
+    short_hash = get_short_hash()
 
     # Determine the tag: use short hash if we have it; otherwise, use version.
     image_tag = ''
@@ -57,8 +60,7 @@ def test_ensure_conatiner_image():
     else:
         image_tag = get_dune_version()
         # In the case that we have neither short hash nor version, we will fail assertion here:
-        assert image_tag != '', \
-            f"\n Could not determine what tag to use with either git or DUNE."
+        assert image_tag != '', "\n Could not determine what tag to use with either git or DUNE."
         print( "WARNING: Could not determine git short hash, reverting to DUNE version: ", image_tag )
 
     # Ensure failure text includes the source of the tag: short hash or version.

@@ -6,17 +6,21 @@ from args import arg_parser
 from args import parse_optional
 import version_selector
 from docker import docker_error
+from version import version_full
 from dune import dune
 from dune import dune_error
 from dune import dune_node_not_found
 from dune import node
-from version import version_full
+
+
+def handle_version():
+    print("DUNE v" + version_full())
 
 
 def handle_simple_args():
     # Handle args that do not require docker started up
     if args.version is True:
-        print("DUNE v" + version_full())
+        handle_version()
         sys.exit(0)
     if args.version_short is True:
         print(version_full())
