@@ -10,16 +10,17 @@ if [[ ${VARIANT} == "deb" ]]; then
     fi
 fi
 
-VERSION_NO_SUFFIX="1.1.0"
+SCRIPT=$(readlink -f "$0")
+DIR=$(dirname "$SCRIPT")
+cd $DIR
+export DIR
+
+DUNES_EXE=$(dirname ${DIR})/dune
+
+VERSION_NO_SUFFIX=$(${DUNES_EXE} --version-short)
 VERSION_SUFFIX="dev"
 VERSION="$VERSION_NO_SUFFIX"-"$VERSION_SUFFIX"
 
-SCRIPT=$(readlink -f "$0")
-DIR=$(dirname "$SCRIPT")
-export DIR
-
-ORIGINAL_DIR=`pwd`
-cd $DIR
 
 # Using CMAKE_BINARY_DIR uses an absolute path and will break cross-vm building/download/make functionality
 BUILD_DIR="$DIR/../"
