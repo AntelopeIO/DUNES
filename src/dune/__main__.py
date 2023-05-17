@@ -1,6 +1,7 @@
 import os   # path
 import sys  # sys.exit()
 import importlib.util
+import time
 
 from args import arg_parser
 from args import parse_optional
@@ -93,6 +94,17 @@ if __name__ == '__main__':
             WAS_REMAINDER_ARGS_USED = False
 
             if args.start is not None:
+                if args.rmdirtydb is True:
+                    node_state_dir = '/app/nodes/' + args.start[0] +'/state/'
+                    if dune_sys.docker.dir_exists(node_state_dir) and not dune_sys.is_named_node_running(args.start[0]):
+                        print("Removing container directory " + node_state_dir + " to clean a database dirty flag of node [" + args.start[0] + "]...\n")
+                        dune_sys.docker.execute_cmd(['rm', '-rf', node_state_dir])
+                        time.sleep(2)
+                    elif dune_sys.is_named_node_running(args.start[0]):
+                        print("no action for --rmdirtydb, because node [ "  + args.start[0]  + " ] is already running\n")
+                    else:
+                        print("no action for --rmdirtydb, because container directory "  + node_state_dir + " does not exist\n")
+
                 n: object
                 if args.config is None:
                     n = node(args.start[0])
@@ -117,6 +129,9 @@ if __name__ == '__main__':
 
             elif args.config is not None:
                 parser.exit_with_help_message("--config without --start")
+
+            elif args.rmdirtydb is True:
+                 parser.exit_with_help_message("--rmdirtydb without --start")
 
             elif args.remove is not None:
                 dune_sys.remove_node(node(args.remove))
