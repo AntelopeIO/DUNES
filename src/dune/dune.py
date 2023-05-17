@@ -88,7 +88,7 @@ class dune:
 
     def is_node_running(self, nod):
         return self._docker.find_pid('/app/nodes/' + nod.name() + ' ') != -1
-    
+
     def is_named_node_running(self, nod_name):
         return self._docker.find_pid('/app/nodes/' + nod_name + ' ') != -1
 
