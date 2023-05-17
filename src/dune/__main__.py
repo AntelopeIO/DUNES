@@ -97,8 +97,8 @@ if __name__ == '__main__':
                 if args.rmdirtydb is True:
                     node_state_dir = '/app/nodes/' + args.start[0] +'/state/'
                     if dune_sys.docker.dir_exists(node_state_dir) and not dune_sys.is_named_node_running(args.start[0]):
-                        print("Removing container directory " + node_state_dir + 
-                                " to clean a database dirty flag of node [" + args.start[0] + "]...\n")
+                        print("Removing container directory " + node_state_dir
+                            + " to clean a database dirty flag of node [" + args.start[0] + "]...\n")
                         dune_sys.docker.execute_cmd(['rm', '-rf', node_state_dir])
                         time.sleep(2)
                     elif dune_sys.is_named_node_running(args.start[0]):
