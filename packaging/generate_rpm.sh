@@ -11,7 +11,6 @@ if [[ -z $RELEASE ]]; then
   RELEASE="1"
 fi
 
-PROJECT="$PROJECT"
 NAME="${PROJECT}-${VERSION_NO_SUFFIX}-${RELEASE}"
 
 export PREFIX
