@@ -8,7 +8,7 @@ This script tests that the container image being tested is correct.
 
 import subprocess
 
-from common import TEST_PATH, DUNE_EXE
+from common import TEST_PATH, DUNES_EXE
 
 
 def get_short_hash():
@@ -28,7 +28,7 @@ def get_dunes_version():
 
     # Find the version or warn and return empty string.
     try:
-        return subprocess.check_output([DUNE_EXE, '--version-short'], stderr=None, encoding='utf-8').strip()
+        return subprocess.check_output([DUNES_EXE, '--version-short'], stderr=None, encoding='utf-8').strip()
     # pylint: disable=bare-except
     except:
         print( "Failed to determine DUNES version." )
@@ -38,7 +38,7 @@ def get_dunes_version():
 def get_image_id(tag):
     """Try to get the ID of a an image given its tag."""
 
-    image_name = 'dune:' + tag
+    image_name = 'dunes:' + tag
     try:
         return subprocess.check_output(['docker', 'image', 'list', '-q', image_name], stderr=None, encoding='utf-8').strip()
     # pylint: disable=bare-except
