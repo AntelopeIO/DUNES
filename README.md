@@ -145,7 +145,7 @@ choco install netfx-4.8 python311 docker-desktop -y
 ```
 5. Now restart PowerShell as administrator again (so that `python` command could be executed) and run:
 ```
-choco install .\antelopeio-dune.1.1.0.nupkg -y
+choco install .\antelopeio-dune.1.1.1.nupkg -y
 ```
 5. Restart your computer (this is because %PATH% has to be reloaded. In cmd.exe it is enough to run command `refreshenv`).
 6. Open PowerShell / cmd.exe and try that following command works: `dune.bat --version`.
