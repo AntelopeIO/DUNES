@@ -15,7 +15,7 @@ def version_minor():
 
 
 def version_patch():
-    return 0
+    return 1
 
 
 def version_suffix():
