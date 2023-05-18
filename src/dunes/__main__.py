@@ -8,9 +8,9 @@ import version_selector
 from docker import docker_error
 
 from version import version_full
-from dunes import dune
-from dunes import dune_error
-from dunes import dune_node_not_found
+from dunes import dunes
+from dunes import dunes_error
+from dunes import dunes_node_not_found
 from dunes import node
 
 
