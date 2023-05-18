@@ -1,22 +1,21 @@
 #!/usr/bin/env python3
 
-"""Test DUNE List Features
+"""Test DUNES List Features
 
 This script tests that the compiled binary produce expected output in
 response to the `--list-features` option.
 """
 
 
-
 import subprocess
 
-from common import DUNE_EXE
+from common import DUNES_EXE
 
 
 def test_list_features():
-    """Test that the output of `dune --list-features` is as expected."""
+    """Test that the output of `dunes --list-features` is as expected."""
 
-    # List of expected output lines from `dune --list-features`.
+    # List of expected output lines from `dunes --list-features`.
     expect_list = \
 	[b"GET_CODE_HASH",
         b"CRYPTO_PRIMITIVES",
@@ -43,6 +42,6 @@ def test_list_features():
         expect = expect + temp + b'\n'
 
     # Call the tool, check return code, check expected value.
-    completed_process = subprocess.run([DUNE_EXE,"--list-features"],
+    completed_process = subprocess.run([DUNES_EXE, "--list-features"],
                                        check=True, stdout=subprocess.PIPE)
     assert completed_process.stdout == expect
