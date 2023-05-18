@@ -2,8 +2,8 @@
 
 ![Logo](docs/images/logo.png)
 
-Docker Utilities for Node Execution and Subsystems (DUNES) is a tool to abstract over [Leap](https://github.com/AntelopeIO/leap) programs, 
-[CDT](https://github.com/AntelopeIO/cdt), and other services/tools to perform the functions of node management, compiling smart contracts, 
+Docker Utilities for Node Execution and Subsystems (DUNES) is a tool to abstract over [Leap](https://github.com/AntelopeIO/leap) programs,
+[CDT](https://github.com/AntelopeIO/cdt), and other services/tools to perform the functions of node management, compiling smart contracts,
 running tests, and several other common tasks required to develop smart contracts on [Antelope](https://github.com/AntelopeIO) blockchains.
 
 ## Getting started
@@ -31,18 +31,18 @@ This should display the list of commands and features.  If it fails with unknown
 ### Several useful facts for working with Docker in Linux
 
 The Docker installation package consists of two independent products which install together: Docker Engine and Docker Desktop.
-  
+
 It is easy to confuse which system you are currently working with.
-  
+
 Docker Desktop has a built-in daemon which works in parallel with the `dockerd` daemon.
-  
+
 Docker Desktop keeps its settings and storage of images and containers in the user's home directory.
-  
+
 Docker Engine keeps its settings and storage in the system directories.
-  
+
 Docker Desktop works with userns-remap turned on only. It is hardcoded and can't be changed.
-  
-Docker Desktop has a built-in daemon which works in parallel with the `dockerd` daemon.   
+
+Docker Desktop has a built-in daemon which works in parallel with the `dockerd` daemon.
 
 Therefore, to successfully work with DUNES you should:
 
@@ -145,7 +145,7 @@ choco install netfx-4.8 python311 docker-desktop -y
 ```
 5. Now restart PowerShell as administrator again (so that `python` command could be executed) and run:
 ```
-choco install .\dunes.1.1.0.nupkg -y
+choco install .\dunes.1.1.1.nupkg -y
 ```
 5. Restart your computer (this is because %PATH% has to be reloaded. In cmd.exe it is enough to run command `refreshenv`).
 6. Open PowerShell / cmd.exe and try that following command works: `dunes.bat --version`.
@@ -156,7 +156,7 @@ Due to current Docker Desktop limitations DUNES supports only `C:/` disk drive, 
 
 ### Mac OS
 
-When finished installing. Check the installation with the command. 
+When finished installing. Check the installation with the command.
 ```console
 $ docker --help
 ```
@@ -176,150 +176,150 @@ $ echo "PATH=<LocationOfDUNES>:$PATH" >> .bashrc
 
 ---
 
-**-h** or **--help** 
+**-h** or **--help**
 This will display the available commands and a small description of each and argument values.
 
 ---
 
-**--start** 
-This will start a new node for deploying smart contracts and send actions against. 
+**--start**
+This will start a new node for deploying smart contracts and send actions against.
 This command takes a name of your choosing and an optional `config.ini` (look at scripts/config.ini for reference).
 
 ---
 
-**--stop** 
+**--stop**
 This will stop a node that is running. This command takes a name of a node that was previously started.
 
 ---
 
-**--remove** 
+**--remove**
 This will remove a node from the system. This command takes a name of a node that was previously started.
 
 ---
 
-**--list** 
-This will print the status of all nodes currently in the system. 
+**--list**
+This will print the status of all nodes currently in the system.
 It will display if the node is active, running, and the ports for http/p2p/SHiP.
 
 ---
 
-**--simple-list** 
+**--simple-list**
 Does the same thing as `--list` but does not use unicode and other formatting for use with scripts or plugins.
 
 ---
 
-**--set-active** 
+**--set-active**
 This will set a node as the current active node. This command takes a name of a node that was previously started.
 
 ---
 
-**--get-active** 
+**--get-active**
 This will return the name of the currently active node.
 
 ---
 
-**--export-node** 
-This will create a snapshot and tar ball the state snapshot, blocklog and index and export to desired location. 
+**--export-node**
+This will create a snapshot and tar ball the state snapshot, blocklog and index and export to desired location.
 This command takes a name of a node that was previously started, and a directory to save the exported node contents.
 
 ---
 
-**--import-node** 
-This will import a previously exported node.tgz. 
+**--import-node**
+This will import a previously exported node.tgz.
 This command takes the path of the export and the name of what you want to name the imported node.
 
 ---
 
-**--monitor** 
+**--monitor**
 This will return information from the currently active node.
 
 ---
 
-**--import-dev-key** 
+**--import-dev-key**
 This will import a private key into the pre-created developer wallet. This command takes a private key.
 
 ---
 
-**--create-key** 
+**--create-key**
 This will produce a public key and private key pair for development uses.
 
 ---
 
-**--export-wallet** 
+**--export-wallet**
 This will export the system wallet to your current directory.
 
 ---
 
-**--import-wallet** 
+**--import-wallet**
 This will import an exported wallet from a given location. This command takes a path that points to the exported wallet.
 
 ---
 
-**--create-account** 
-This will create a new on-chain account. 
+**--create-account**
+This will create a new on-chain account.
 This command takes a compatible name for the new Antelope account and an optional creator (also a valid Antelope account name).
 
 ---
 
-**--system-newaccount** 
+**--system-newaccount**
 This will create a new account on the blockchain with initial resources using command `cleos system newaccount`
 
 ---
 
-**--create-cmake-app** 
+**--create-cmake-app**
 This will produce a new smart contract project that utilizes CMake as its build system. This command takes a project name and a directory.
 
 ---
 
-**--create-bare-app** 
+**--create-bare-app**
 This will produce a new smart contract project that is bare, i.e. uses only `cdt-cpp` tools. This command takes a project name and a directory.
 
 ---
 
-**--cmake-build** 
+**--cmake-build**
 This will build a given CMake app project. This command takes a directory to the project and optional CMake flags.
 
 ---
 
-**--destroy-container** 
-This will destroy and remove the currently running container. 
-WARNING! This will delete all data that is running. 
+**--destroy-container**
+This will destroy and remove the currently running container.
+WARNING! This will delete all data that is running.
 This is useful if you need to update to a new version of DUNES or if you corrupt the container some how.
 
 ---
 
-**--stop-container** 
+**--stop-container**
 This will stop the currently running container.
 
 ---
 
-**--start-container** 
+**--start-container**
 This will start the `dunes` container.
 
 ---
 
-**--set-core-contract** 
+**--set-core-contract**
 This will deploy the core contract to an account. This command takes a valid Antelope account name.
 
 ---
 
-**--set-bios-contract** 
+**--set-bios-contract**
 This will deploy the bios contract to an account. This command takes a valid Antelope account name.
 
 ---
 
-**--set-token-contract** 
+**--set-token-contract**
 This will deploy the token contract to an account. This command takes a valid Antelope account name.
 
 ---
 
-**--bootstrap-system** 
+**--bootstrap-system**
 This will install the boot contract to the `eosio` account and activate all protocol features.
 
 ---
 
-**--bootstrap-system-full** 
-This will install the boot contract to the `eosio` account and activate all protocol features. 
+**--bootstrap-system-full**
+This will install the boot contract to the `eosio` account and activate all protocol features.
 It will also create all the accounts needed by the core, token, and multisig contracts from [reference-contracts](https://github.com/AntelopeIO/reference-contracts) and deploy those three contracts to their corresponding accounts. Note that the core contract will replace the boot contract on the `eosio` account.
 Following optional arguments can be provided:
 - currency (default is "SYS")
@@ -327,48 +327,48 @@ Following optional arguments can be provided:
 - initial value (default is "1000000000.0000"). Initial value of issued currency to system account `eosio`. Precision of initial value needs to be 4.
 
 ---
-**--send-action** 
-This will send an action to an account. 
+**--send-action**
+This will send an action to an account.
 This command takes a valid Antelope account name, a valid Antelope action name, the data payload needed and the permission.
 
 ---
 
-**--get-table** 
-This will get table data from the specified table. 
+**--get-table**
+This will get table data from the specified table.
 This command takes a valid Antelope account name, table scope, and table name.
 
 ---
 
-**--activate-feature** 
+**--activate-feature**
 This will activate a protocol feature. This command takes a code name for the protocol feature.
 
 ---
 
-**--list-features** 
+**--list-features**
 This will list the available protocol feature code names.
 
 ---
 
-**--leap** 
+**--leap**
 Sets specific version of leap. If no version is provided then a list of available Leap versions will be displayed.
 
 ---
 
-**--cdt** 
+**--cdt**
 Sets specific version of CDT (Contract Development Toolkit). If no version is provided then a list of available CDT versions will be displayed.
 
 ---
-**--version-all** 
+**--version-all**
 Lists version of DUNES, leap and CDT
 
 ---
 
-**--upgrade** 
+**--upgrade**
 Upgrades DUNES docker image to the latest version
 
 ---
 
-**--** 
+**--**
 (Not listed with help) This will allow you to call the tool and pass through to the underlying system.
 
 ---
@@ -377,21 +377,21 @@ Upgrades DUNES docker image to the latest version
 
 ## Concepts and operations
 
-The core concept of this utility is to abstract over Leap programs such as `nodeos` and `cleos`, CDT, etc. 
-As such some of the commands might seem restrictive.  Please take note that if you find any of the commands to be too 
+The core concept of this utility is to abstract over Leap programs such as `nodeos` and `cleos`, CDT, etc.
+As such some of the commands might seem restrictive.  Please take note that if you find any of the commands to be too
 restrictive then you can use the command `--` followed by whatever normal `cleos`, `nodeos`, CDT and OS commands that you need.
 
-When you run any command with DUNES, if a container has not been created yet it will automatically create one for you. 
+When you run any command with DUNES, if a container has not been created yet it will automatically create one for you.
 The command of `start-container` shouldn't necessarily be needed during normal operation.
 
-A developer wallet is automatically created for you and is always unlocked 
-and none of the commands will ever ask you to unlock the wallet. 
-If you need to run any `cleos` wallet commands or `keosd` commands via `--` and the wallet is locked, 
+A developer wallet is automatically created for you and is always unlocked
+and none of the commands will ever ask you to unlock the wallet.
+If you need to run any `cleos` wallet commands or `keosd` commands via `--` and the wallet is locked,
 then simply run one of the wallet commands from DUNES first and it will unlock the wallet.
 
 If you deploy a smart contract to an account it will automatically add the `code` permission to that account for you.
 
-The drive/directory that your workspace is in is mapped into the container and prefixed with `/host`. 
+The drive/directory that your workspace is in is mapped into the container and prefixed with `/host`.
 So on Windows this would be `/host/Users/<name>/<some path>` (NOTE: on Windows only `C:/` disk drive is supported).
 On Linux and Mac this would be something like `/host/home/<name>/<some path>`.
 
@@ -431,8 +431,8 @@ $ dunes --list
 
 This gives us information about the nodes, their particular ports, if the node is running and a new concept of is the node `active`.
 
-The way DUNES operates is state based, so you set the active node to which node you want and fire away at the commands 
-and any that are directed towards the nodes or are listening to nodes will set their URL information correctly and immediately. 
+The way DUNES operates is state based, so you set the active node to which node you want and fire away at the commands
+and any that are directed towards the nodes or are listening to nodes will set their URL information correctly and immediately.
 This state persists after shutting down the software.
 
 When you create a new node, as long as it is successful, it will automatically switch to that node as the active node.
@@ -441,10 +441,10 @@ You can manually set the active node with the command `--set-active <node name>`
 
 ### Multiple nodes
 
-When creating multiple nodes you have the option to stop the currently running node if the ports clash 
+When creating multiple nodes you have the option to stop the currently running node if the ports clash
 or change the ports via the config.ini and start the node in parallel.
 
-If we start them in parallel we can create complex topologies of nodes via the config.ini 
+If we start them in parallel we can create complex topologies of nodes via the config.ini
 and try to replicate things like an EOS mainnet or the like.
 
 These types of topologies are out of the scope of this README but please look at documentation for Leap node configurations.
@@ -529,12 +529,12 @@ The only current command open is `--get-table` which is analogous to `cleos get 
 $ dunes --get-table <ACCOUNT> <SCOPE> <TABLE NAME>
 ```
 
-This will allow for all of the same utilities from cleos itself. 
+This will allow for all of the same utilities from cleos itself.
 As we move forward we hope to greatly expand upon these utilities.
 
 ### DApp/WebApp
 
-The services through the docker container are exposed at 8888 for http, 9876 for p2p and 8080 for SHiP. 
+The services through the docker container are exposed at 8888 for http, 9876 for p2p and 8080 for SHiP.
 You will need to ensure the running node is using those ports.
 
 ## Account management
@@ -547,7 +547,7 @@ But we also have the ability to supply the creator of the account and the public
 $ dunes --create-account bucky foo
 ```
 
-The above command will use the existing `foo` account to create a new account account called `bucky` 
+The above command will use the existing `foo` account to create a new account account called `bucky`
 and it will automatically generate the public and private key pair for this account and import the private key into the development wallet.
 
 Or, to explicitly specify the public and private key pair of the new account:
@@ -566,7 +566,7 @@ This can be achieved in a few ways with DUNES.
 
 The first is by using the command `--activate-feature`.
 
-This will require you to know which protocol features you want to enable. 
+This will require you to know which protocol features you want to enable.
 A list of available features are listed via `--list-features`.
 
 If will try to preactivate the protocol features if it hasn't already done so, so you shouldn't have to worry about that step.
@@ -587,7 +587,7 @@ The second is `bootstrap-system-full`.
 $ dunes --bootstrap-system-full
 ```
 
-This will do the same as `--bootstrap-system` but additionally set the contracts 
+This will do the same as `--bootstrap-system` but additionally set the contracts
 from [reference-contracts](https://github.com/AntelopeIO/reference-contracts)
 and create the correct accounts needed for those.
 
@@ -595,7 +595,7 @@ and create the correct accounts needed for those.
 
 ### Wallet
 
-The default wallet is created for you and always unlocked for you when using this system. 
+The default wallet is created for you and always unlocked for you when using this system.
 The wallet of DUNES is not in any way designed to be a `secure` wallet.
 
 During testing or replication of state we sometimes might want to import a previous wallet.
@@ -637,7 +637,7 @@ And lastly, if you are building some IDE plugin support or ancillary tooling you
 $ dunes --start-container
 ```
 
-As mentioned above all commands that use the container will automatically create a new container if one does not exist 
+As mentioned above all commands that use the container will automatically create a new container if one does not exist
 and automatically start the container if is stopped.
 
 # DUNES plugins
@@ -654,7 +654,7 @@ Above can be added to `.bashrc`.
 Example of autocompletion:
 ```
 user@localhost:~/$ dunes --set-
---set-active          --set-bios-contract   --set-core-contract   --set-token-contract  
+--set-active          --set-bios-contract   --set-core-contract   --set-token-contract
 ```
 
 For more information about how to install autocompletion globally or in zsh:
