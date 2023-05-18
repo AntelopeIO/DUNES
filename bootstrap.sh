@@ -5,10 +5,10 @@ getopt --test && echo "'getopt --test' failed in this environment." && exit 1
 
 # Set SDIR to the path containing this script. Even if it's a symlink.
 SDIR=$(dirname $(readlink -f "$0"))
-cd ${SDIR}
+cd "${SDIR}"
 
-LONGOPTS=leap:,cdt:,release,help
-OPTIONS=l:c:rh
+LONGOPTS=leap:,cdt:,release,push,help
+OPTIONS=l:c:rph
 
 PARSED=$(getopt --options=$OPTIONS --longoptions=$LONGOPTS --name "$0" -- "$@")
 
@@ -24,7 +24,9 @@ where:
   -c, --cdt=version
     sets the CDT version
   -r, --release
-    tag the image with the version reported by DUNES"
+    tag the image with the version reported by DUNES
+  -p, --push
+    with --release, push the release and latest images to ghcr.io"
 
 while true; do
     case "$1" in
@@ -37,8 +39,12 @@ while true; do
             shift 2
             ;;
         -r|--release)
-            RELEASE_VERSION=$(${SDIR}/dunes --version-short)
+            RELEASE_VERSION=$("${SDIR}"/dunes --version-short)
             echo "Release version: ${RELEASE_VERSION}"
+            shift 1
+            ;;
+        -p|--push)
+            PUSH_VERSION=$("${SDIR}"/dunes --version-short)
             shift 1
             ;;
         --)
@@ -66,9 +72,15 @@ if [ -n "${RELEASE_VERSION}" ]; then
     docker tag dunes ghcr.io/antelopeio/dunes:latest
     docker tag dunes ghcr.io/antelopeio/dunes:${RELEASE_VERSION}
     echo "Tagged image with latest and version '${RELEASE_VERSION}'."
+    if [ -n "${PUSH_VERSION}" ]; then
+        echo "Uploading to ghcr.io/antelopeio."
+        docker push ghcr.io/antelopeio/dunes:latest
+        docker push ghcr.io/antelopeio/dunes:${RELEASE_VERSION}
+        echo "Uploaded latest and version '${RELEASE_VERSION}'."
+    fi
 fi
 
-GIT_CMD="git -C ${SDIR} rev-parse --short HEAD"
+GIT_CMD="git -C \"${SDIR}\" rev-parse --short HEAD"
 if ${GIT_CMD} > /dev/null 2> /dev/null; then
     COMMIT_HASH=$(${GIT_CMD})
     docker tag dunes dunes:${COMMIT_HASH}

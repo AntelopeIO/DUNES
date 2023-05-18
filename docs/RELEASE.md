@@ -9,13 +9,8 @@ Otherwise you can open Windows console as a regular user.
 
 
 ## How to prepare new DUNES docker image?
-1. Make sure you are logged in with docker login, example command: `docker login ghcr.io -u <your_username> --password-stdin`
-2. Change version in `packaging/generate_package.sh`
-3. Run `./bootstrap.sh` in your DUNES directory
-4. Change below `X.Y.Z` to your version and in DUNES directory run:
-```
-docker tag dunes ghcr.io/antelopeio/dunes:latest
-docker push ghcr.io/antelopeio/dunes:latest
-docker tag dunes ghcr.io/antelopeio/dunes:X.Y.Z
-docker push ghcr.io/antelopeio/dunes:X.Y.Z
-```
+1. Ensure `src/dune/version.py` contains the correct version information.
+2. Make sure you are logged in with docker login, example command: `docker login ghcr.io -u <your_username> --password-stdin`.
+3. Update `VERSION_SUFFIX` if necessary in `packaging/generate_package.sh`/
+4. Update `RELEASE` in `packaging/generate_deb.sh` and `packaging/generate_rpm.sh` if necessary. (This is the package version, not the executable version.)
+5. Run `./bootstrap.sh --release --push` in your DUNES directory.
