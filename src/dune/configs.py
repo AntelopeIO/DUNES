@@ -1,6 +1,6 @@
-import importlib
 import sys, inspect
 
+#pylint: disable=invalid-name
 class node_config_v0_0_0 :
     _config_args = {"wasm-runtime" : "eos-vm",
                     "abi-serializer-max-time-ms" : "15",
@@ -55,3 +55,5 @@ def write_config_ini(path, major, minor=0, patch=0) :
     config_ini = get_config_ini(major, minor, patch)
     with open(path+"/config.ini", "w") as f :
         f.write(config_ini)
+
+#pylint: enable=invalid-name
