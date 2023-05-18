@@ -4,7 +4,7 @@ import sys                      # sys.stderr
 from context import context
 from docker import docker
 from node_state import node_state
-from configs import write_config_ini
+from configs import get_config_ini
 
 # VERSION INFORMATION
 def version_major():
@@ -129,8 +129,11 @@ class dune:
         # copy config.ini to config-dir
         if not is_restart and nod.config() is None:
             current_ver = self.get_current_nodeos_version()
-            write_config_ini("/app", current_ver[0], current_ver[1], current_ver[2])
+            config_str = get_config_ini(current_ver[0], current_ver[1], current_ver[2])
+            self._docker.write_file("config.ini", config_str)
             nod.set_config('/app/config.ini')
+        
+        print(nod.config_dir())
 
         if nod.config() is not None:
             self._docker.execute_cmd(['cp', nod.config(), nod.config_dir()])

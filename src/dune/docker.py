@@ -97,6 +97,9 @@ class docker:
     def rm_file(self, file_name):
         self.execute_cmd(['rm', '-rf', file_name])
 
+    def write_file(self, file_name, body):
+        self.execute_cmd(['echo', body, '>', file_name])
+
     def find_pid(self, process_name):
         stdout, stderr, exit_code = self.execute_cmd(['ps', 'ax'])
         for line in stdout.splitlines(True):
