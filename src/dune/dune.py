@@ -4,7 +4,6 @@ import sys                      # sys.stderr
 from context import context
 from docker import docker
 from node_state import node_state
-from configs import get_config_ini
 from configs import write_config_ini
 
 # VERSION INFORMATION
@@ -102,7 +101,7 @@ class dune:
     def create_node(self, nod):
         print("Creating node [" + nod.name() + "]")
         self._docker.execute_cmd(['mkdir', '-p', nod.data_dir()])
-    
+
     def get_current_nodeos_version(self):
         stdout, stderr, exit_code = self._docker.execute_cmd(['nodeos', '--version'])
         return stdout[1:].split('.')
