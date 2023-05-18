@@ -66,11 +66,11 @@ class context:
 
         # if they don't exist just set to normal default values
         if http_port is None:
-            http_port = "127.0.0.1:8888"
+            http_port = "0.0.0.0:8888"
         if p2p_port is None:
             p2p_port = "0.0.0.0:9876"
         if ship_port is None:
-            ship_port = "127.0.0.1:8080"
+            ship_port = "0.0.0.0:8080"
         return [http_port, p2p_port, ship_port]
 
     def set_active(self, nod):
