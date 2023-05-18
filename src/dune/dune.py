@@ -4,6 +4,8 @@ import sys                      # sys.stderr
 from context import context
 from docker import docker
 from node_state import node_state
+from configs import get_config_ini
+from configs import write_config_ini
 
 # VERSION INFORMATION
 def version_major():
@@ -100,6 +102,10 @@ class dune:
     def create_node(self, nod):
         print("Creating node [" + nod.name() + "]")
         self._docker.execute_cmd(['mkdir', '-p', nod.data_dir()])
+    
+    def get_current_nodeos_version(self):
+        stdout, stderr, exit_code = self._docker.execute_cmd(['nodeos', '--version'])
+        return stdout[1:].split('.')
 
     def start_node(self, nod, snapshot=None):
         stdout, stderr, exit_code = self._docker.execute_cmd(['ls', '/app/nodes'])
@@ -123,6 +129,8 @@ class dune:
 
         # copy config.ini to config-dir
         if not is_restart and nod.config() is None:
+            current_ver = self.get_current_nodeos_version()
+            write_config_ini("/app", current_ver[0], current_ver[1], current_ver[2])
             nod.set_config('/app/config.ini')
 
         if nod.config() is not None:
