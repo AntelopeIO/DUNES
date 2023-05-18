@@ -16,6 +16,7 @@ eval set -- "$PARSED"
 LEAP_ARGUMENT=
 CDT_ARGUMENT=
 RELEASE_VERSION=
+PUSH_VERSION=
 
 usage="$(basename "$0") [-l|--leap=version] [-c|--cdt=version] [-r|--release]
 where:
@@ -80,7 +81,7 @@ if [ -n "${RELEASE_VERSION}" ]; then
     fi
 fi
 
-GIT_CMD="git -C \"${SDIR}\" rev-parse --short HEAD"
+GIT_CMD='git rev-parse --short HEAD'
 if ${GIT_CMD} > /dev/null 2> /dev/null; then
     COMMIT_HASH=$(${GIT_CMD})
     docker tag dunes dunes:${COMMIT_HASH}
