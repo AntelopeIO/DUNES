@@ -1,4 +1,6 @@
-import sys, inspect
+import sys
+import inspect
+import os
 
 #pylint: disable=invalid-name
 class node_config_v0_0_0 :
@@ -33,7 +35,7 @@ class node_config_v4_0_0(node_config_v0_0_0) :
     _config_args = {"read-only-read-window-time-us" : "120000"}
 
     def get_config_ini(self) :
-        config = super().get_config_ini()
+        config = super(node_config_v4_0_0, self).get_config_ini()
         for k,v in self._config_args.items() :
             config += k + "=" + v + "\n"
         return config
@@ -49,11 +51,7 @@ def get_config_ini(major, minor=0, patch=0) :
                     config_cls_name = obj.__name__
 
     config_cls = getattr(current_mod, config_cls_name)
+    print(config_cls)
     return config_cls.get_config_ini(config_cls)
-
-def write_config_ini(path, major, minor=0, patch=0) :
-    config_ini = get_config_ini(major, minor, patch)
-    with open(path+"/config.ini", "w") as f :
-        f.write(config_ini)
 
 #pylint: enable=invalid-name
