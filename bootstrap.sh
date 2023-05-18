@@ -69,14 +69,14 @@ fi
 docker build --no-cache --build-arg USER_ID=0 --build-arg GROUP_ID="$GROUP_ID" $LEAP_ARGUMENT $CDT_ARGUMENT -f Dockerfile.unix -t dunes "$SDIR"
 
 if [ -n "${RELEASE_VERSION}" ]; then
-    docker tag dunes dunes:${RELEASE_VERSION}
+    docker tag dunes dunes:"${RELEASE_VERSION}"
     docker tag dunes ghcr.io/antelopeio/dunes:latest
-    docker tag dunes ghcr.io/antelopeio/dunes:${RELEASE_VERSION}
+    docker tag dunes ghcr.io/antelopeio/dunes:"${RELEASE_VERSION}"
     echo "Tagged image with latest and version '${RELEASE_VERSION}'."
     if [ -n "${PUSH_VERSION}" ]; then
         echo "Uploading to ghcr.io/antelopeio."
         docker push ghcr.io/antelopeio/dunes:latest
-        docker push ghcr.io/antelopeio/dunes:${RELEASE_VERSION}
+        docker push ghcr.io/antelopeio/dunes:"${RELEASE_VERSION}"
         echo "Uploaded latest and version '${RELEASE_VERSION}'."
     fi
 fi
