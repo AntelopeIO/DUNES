@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""Test DUNE Version
+"""Test DUNES Version
 
 This script tests work with the crypto keys:
 --create-key
@@ -9,7 +9,7 @@ This script tests work with the crypto keys:
 """
 import subprocess
 
-from common import DUNE_EXE
+from common import DUNES_EXE
 from container import container
 
 
@@ -17,14 +17,14 @@ def test_create_and_import_keys():
     """Test `--create-key` and `--import-dev-key` key."""
 
     # Ensure a container exists.
-    cntr = container('dune_container', 'dune:latest')
+    cntr = container('dunes_container', 'dunes:latest')
     if not cntr.exists():
         cntr.create()
 
     # Create a key. Get it to a var as well.
     public_key = None
     private_key = None
-    stdout_result = subprocess.run([DUNE_EXE,"--create-key"], check=True, stdout=subprocess.PIPE)
+    stdout_result = subprocess.run([DUNES_EXE, "--create-key"], check=True, stdout=subprocess.PIPE)
     result_list = stdout_result.stdout.decode().split("\n")
     for entry in result_list:
         # ignore empty entries.
@@ -40,4 +40,4 @@ def test_create_and_import_keys():
     assert private_key is not None
 
     # Import the key.
-    subprocess.run([DUNE_EXE,"--import-dev-key",private_key], check=True)
+    subprocess.run([DUNES_EXE, "--import-dev-key", private_key], check=True)

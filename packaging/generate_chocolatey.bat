@@ -9,10 +9,10 @@ if errorlevel 1 (
 set mypath=%cd%
 set script-path=%~dp0
 
-set target-dir=%script-path%\antelopeio-dune\tools
+set target-dir=%script-path%\dunes\tools
 mkdir %target-dir%
 copy %script-path%\..\LICENSE %target-dir%
-copy "%script-path%"\..\dune* %target-dir%
+copy "%script-path%"\..\dunes* %target-dir%
 copy "%script-path%"\..\Dockerfile* %target-dir%
 copy "%script-path%"\..\bootstrap* %target-dir%
 copy "%script-path%"\..\README* %target-dir%
@@ -32,11 +32,11 @@ mkdir %target-dir%\docs\
 xcopy "%script-path%"\..\docs\* %target-dir%\docs\ /e /k /h /i
 
 
-cd %script-path%\antelopeio-dune
+cd %script-path%\dunes
 
 choco pack
 cd %mypath%
 rmdir /Q /S %target-dir%
-move %script-path%\antelopeio-dune\*.nupkg %mypath%
+move %script-path%\dunes\*.nupkg %mypath%
 
 echo Nupkg has been created in the current directory

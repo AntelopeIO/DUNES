@@ -26,10 +26,9 @@ VERSION="$VERSION_NO_SUFFIX"-"$VERSION_SUFFIX"
 BUILD_DIR="$DIR/../"
 
 VENDOR="EOSNetworkFoundation"
-PROJECT_PREFIX="antelopeio"
-PROJECT="dune"
-DESC="Docker Utilities for Node Execution (DUNE) is a tool to abstract over Leap programs, CDT and other services/tools related to Antelope blockchains."
-URL="https://github.com/AntelopeIO/DUNE"
+PROJECT="dunes"
+DESC="Docker Utilities for Node Execution and Subsystems (DUNES) is a tool to abstract over Leap programs, CDT and other services/tools related to Antelope blockchains."
+URL="https://github.com/AntelopeIO/DUNES"
 EMAIL="support@eosnetwork.com"
 
 export BUILD_DIR
@@ -37,7 +36,6 @@ export VERSION_NO_SUFFIX
 export VERSION_SUFFIX
 export VERSION
 export VENDOR
-export PROJECT_PREFIX
 export PROJECT
 export DESC
 export URL

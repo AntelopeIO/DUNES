@@ -37,7 +37,7 @@ while true; do
             shift 2
             ;;
         -r|--release)
-            RELEASE_VERSION=$(${SDIR}/dune --version-short)
+            RELEASE_VERSION=$(${SDIR}/dunes --version-short)
             echo "Release version: ${RELEASE_VERSION}"
             shift 1
             ;;
@@ -59,19 +59,19 @@ if [[ $(uname) == "Darwin" ]]; then
   GROUP_ID=200
 fi
 
-docker build --no-cache --build-arg USER_ID=0 --build-arg GROUP_ID="$GROUP_ID" $LEAP_ARGUMENT $CDT_ARGUMENT -f Dockerfile.unix -t dune "$SDIR"
+docker build --no-cache --build-arg USER_ID=0 --build-arg GROUP_ID="$GROUP_ID" $LEAP_ARGUMENT $CDT_ARGUMENT -f Dockerfile.unix -t dunes "$SDIR"
 
 if [ -n "${RELEASE_VERSION}" ]; then
-    docker tag dune dune:${RELEASE_VERSION}
-    docker tag dune ghcr.io/antelopeio/dune:latest
-    docker tag dune ghcr.io/antelopeio/dune:${RELEASE_VERSION}
+    docker tag dunes dunes:${RELEASE_VERSION}
+    docker tag dunes ghcr.io/antelopeio/dunes:latest
+    docker tag dunes ghcr.io/antelopeio/dunes:${RELEASE_VERSION}
     echo "Tagged image with latest and version '${RELEASE_VERSION}'."
 fi
 
 GIT_CMD="git -C ${SDIR} rev-parse --short HEAD"
 if ${GIT_CMD} > /dev/null 2> /dev/null; then
     COMMIT_HASH=$(${GIT_CMD})
-    docker tag dune dune:${COMMIT_HASH}
+    docker tag dunes dunes:${COMMIT_HASH}
     echo "Tagged image with commit hash '${COMMIT_HASH}'."
 else
     echo "Could not determine git commit hash for this image. Not tagging."

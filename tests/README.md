@@ -1,4 +1,4 @@
-# Pytest Validation for DUNE
+# Pytest Validation for DUNES
 
 # WARNING
 
@@ -13,7 +13,7 @@ or - very likely - is part of your Linux distribution. Additionally,
 the source is available [here](https://github.com/pytest-dev/pytest).
 
 Following the [instructions](../README.md#getting-started) for
-building and installing DUNE.
+building and installing DUNES.
 
 ## Running the Tests
 
@@ -32,8 +32,8 @@ can be found [here](https://docs.pytest.org/en/stable/).
 
 ## What to do when you find a defect?
 
-Check DUNE's github site to see if the issue already exists. Make sure
-that your issue isn't already fixed in the main DUNE branch by
+Check DUNES's github site to see if the issue already exists. Make sure
+that your issue isn't already fixed in the main DUNES branch by
 rerunning the tests there if you haven't already. If the problem is
 repeatable in the main branch and no issue already exists, add a new
 issue including what platform (e.g. Ubuntu 20.04 x86, OSX arm64, etc),
