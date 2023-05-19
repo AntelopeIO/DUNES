@@ -131,11 +131,11 @@ class dune:
         if not is_restart and nod.config() is None:
             current_ver = self.get_current_nodeos_version()
             config_ini = get_config_ini(self._docker.get_arch(), *current_ver)
-            config_file = tempfile.NamedTemporaryFile("w+", encoding="UTF-8", delete=False)
-            config_file.write(config_ini)
-            config_file.close()
-            self._docker.cp_from_host(config_file.name, "/app/config.ini")
-            os.remove(config_file.name)
+            with tempfile.NamedTemporaryFile("w+", encoding="UTF-8", delete=False) as config_file :
+                config_file.write(config_ini)
+                config_file.close()
+                self._docker.cp_from_host(config_file.name, "/app/config.ini")
+                os.remove(config_file.name)
             nod.set_config('/app/config.ini')
 
         if nod.config() is not None:
