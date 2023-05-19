@@ -25,10 +25,10 @@ class node_config_v0_0_0 :
         config = ""
         vm_type = ""
         if arch == "amd64":
-            vm_type = "jit"
+            vm_type = "-jit"
 
         for k,v in self._config_args.items() :
-            config += k + "=" + v.format("-"+vm_type) + "\n"
+            config += k + "=" + v.format(vm_type) + "\n"
         for plugin in self._plugins :
             config += "plugin=" + plugin + "\n"
         return config
