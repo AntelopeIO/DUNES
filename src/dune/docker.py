@@ -107,7 +107,9 @@ class docker:
         stdout, stderr, exit_code = self.execute_cmd(['uname', '-m'])
         if stdout in ('x86_64\n', 'amd64\n') :
             return 'amd64'
-        return 'arm64'
+        elif stdout in ('aarch64\n', 'arm64v8\n', 'arm64\n') :
+            return 'arm64'
+        raise Exception("Error, using an unsupported architecture")
 
     def find_pid(self, process_name):
         stdout, stderr, exit_code = self.execute_cmd(['ps', 'ax'])
