@@ -1,6 +1,7 @@
 # pylint: disable=missing-function-docstring, missing-module-docstring
 import os
 import sys                      # sys.stderr
+import tempfile
 from context import context
 from docker import docker
 from node_state import node_state
@@ -129,11 +130,13 @@ class dune:
         # copy config.ini to config-dir
         if not is_restart and nod.config() is None:
             current_ver = self.get_current_nodeos_version()
-            config_str = get_config_ini(current_ver[0], current_ver[1], current_ver[2])
-            self._docker.write_file("config.ini", config_str)
+            config_ini = get_config_ini(self._docker.get_arch(), current_ver[0], current_ver[1], current_ver[2])
+            config_file = tempfile.NamedTemporaryFile("w+", encoding="UTF-8", delete=False)
+            config_file.write(config_ini)
+            config_file.close()
+            self._docker.cp_from_host(config_file.name, "/app/config.ini")
+            os.remove(config_file.name)
             nod.set_config('/app/config.ini')
-        
-        print(nod.config_dir())
 
         if nod.config() is not None:
             self._docker.execute_cmd(['cp', nod.config(), nod.config_dir()])

@@ -45,7 +45,7 @@ class docker:
 
                 stdout, stderr, exit_code = self.execute_docker_cmd(
                     ['run', '-p', '127.0.0.1:8888:8888/tcp', '-p', '127.0.0.1:9876:9876/tcp', '-p',
-                     '127.0.0.1:8080:8080/tcp', '-p', '127.0.0.1:3000:3000/tcp', '-p', '127.0.0.1:8000:8000/tcp', '-v',
+                     '127.0.0.1:8080:8080/tcp', '-p', '127.0.0.1:3000:3000/tcp', '-p', '127.0.0.1:8001:8001/tcp', '-v',
                      host_dir + ':/host', '-d', '--name=' + self._container,
                      self._image, 'tail', '-f', '/dev/null'])
 
@@ -98,7 +98,16 @@ class docker:
         self.execute_cmd(['rm', '-rf', file_name])
 
     def write_file(self, file_name, body):
-        self.execute_cmd(['echo', body, '>', file_name])
+        return self.execute_cmd(['echo', body, '>', file_name])
+
+    def append_file(self, file_name, body):
+        return self.execute_cmd(['echo', body, '>>', file_name])
+
+    def get_arch(self) :
+        stdout, stderr, exit_code = self.execute_cmd(['uname', '-m'])
+        if stdout in ('x86_64\n', 'amd64\n') :
+            return 'amd64'
+        return 'arm64'
 
     def find_pid(self, process_name):
         stdout, stderr, exit_code = self.execute_cmd(['ps', 'ax'])
