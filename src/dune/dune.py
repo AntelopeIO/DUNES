@@ -135,6 +135,8 @@ class dune:
 
         print(nod.config_dir())
 
+        print(nod.config_dir())
+
         if nod.config() is not None:
             self._docker.execute_cmd(['cp', nod.config(), nod.config_dir()])
             print("Using Configuration [" + nod.config() + "]")
