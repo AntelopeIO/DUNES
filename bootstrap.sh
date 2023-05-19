@@ -84,7 +84,7 @@ fi
 GIT_CMD='git rev-parse --short HEAD'
 if ${GIT_CMD} > /dev/null 2> /dev/null; then
     COMMIT_HASH=$(${GIT_CMD})
-    docker tag dunes dunes:${COMMIT_HASH}
+    docker tag dunes dunes:"${COMMIT_HASH}"
     echo "Tagged image with commit hash '${COMMIT_HASH}'."
 else
     echo "Could not determine git commit hash for this image. Not tagging."
