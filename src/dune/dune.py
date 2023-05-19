@@ -105,7 +105,7 @@ class dune:
 
     def get_current_nodeos_version(self):
         stdout, stderr, exit_code = self._docker.execute_cmd(['nodeos', '--version'])
-        return stdout[1:].split('.')
+        return stdout[1:].split('.-')
 
     def start_node(self, nod, snapshot=None):
         stdout, stderr, exit_code = self._docker.execute_cmd(['ls', '/app/nodes'])
