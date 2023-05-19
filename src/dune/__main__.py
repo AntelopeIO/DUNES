@@ -1,7 +1,6 @@
 import os   # path
 import sys  # sys.exit()
 import importlib.util
-import time
 
 from args import arg_parser
 from args import parse_optional
@@ -94,13 +93,13 @@ if __name__ == '__main__':
             WAS_REMAINDER_ARGS_USED = False
 
             if args.start is not None:
+                WAS_REPLAY_BLOCKCHAIN_USED = False
                 if args.rmdirtydb is True:
                     node_state_dir = '/app/nodes/' + args.start[0] +'/state/'
                     if dune_sys.docker.dir_exists(node_state_dir) and not dune_sys.is_named_node_running(args.start[0]):
-                        print("Removing container directory " + node_state_dir
-                            + " to clean a database dirty flag of node [" + args.start[0] + "]...\n")
-                        dune_sys.docker.execute_cmd(['rm', '-rf', node_state_dir])
-                        time.sleep(2)
+                        print("Use --replay-blockchain option of nodeos to clean "
+                                + "a database dirty flag for node [" + args.start[0] + "]...\n")
+                        WAS_REPLAY_BLOCKCHAIN_USED = True
                     elif dune_sys.is_named_node_running(args.start[0]):
                         print("no action for --rmdirtydb, because node [ "  + args.start[0]  + " ] is already running\n")
                     else:
@@ -126,7 +125,7 @@ if __name__ == '__main__':
                     n = node(args.start[0], dune_sys.docker.abs_host_path(cfg_temp))
                 else:
                     parser.exit_with_help_message("--start / --config error")
-                dune_sys.start_node(n)
+                dune_sys.start_node(n, None, WAS_REPLAY_BLOCKCHAIN_USED)
 
             elif args.config is not None:
                 parser.exit_with_help_message("--config without --start")

@@ -105,7 +105,7 @@ class dune:
         print("Creating node [" + nod.name() + "]")
         self._docker.execute_cmd(['mkdir', '-p', nod.data_dir()])
 
-    def start_node(self, nod, snapshot=None):
+    def start_node(self, nod, snapshot=None, replay_blockchain=False):
         stdout, stderr, exit_code = self._docker.execute_cmd(['ls', '/app/nodes'])
 
         if self.is_node_running(nod):
@@ -116,6 +116,11 @@ class dune:
 
         if snapshot is not None:
             cmd = cmd + ['--snapshot /app/nodes/' + nod.name() + '/snapshots/' + snapshot + ' -e']
+        else:
+            cmd = cmd + [' ']
+
+        if replay_blockchain is True:
+            cmd = cmd + ['--replay-blockchain']
         else:
             cmd = cmd + [' ']
 
