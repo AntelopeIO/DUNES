@@ -4,7 +4,7 @@ set -o errexit -o pipefail -o noclobber -o nounset
 getopt --test && echo "'getopt --test' failed in this environment." && exit 1
 
 # Set SDIR to the path containing this script. Even if it's a symlink.
-SDIR=$(dirname $(readlink -f "$0"))
+SDIR=$(dirname "$(readlink -f "$0")")
 cd "${SDIR}"
 
 LONGOPTS=leap:,cdt:,release,push,help
