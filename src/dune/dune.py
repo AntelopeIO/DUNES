@@ -130,7 +130,7 @@ class dune:
         # copy config.ini to config-dir
         if not is_restart and nod.config() is None:
             current_ver = self.get_current_nodeos_version()
-            config_ini = get_config_ini(self._docker.get_arch(), current_ver[0], current_ver[1], current_ver[2])
+            config_ini = get_config_ini(self._docker.get_arch(), *current_ver)
             config_file = tempfile.NamedTemporaryFile("w+", encoding="UTF-8", delete=False)
             config_file.write(config_ini)
             config_file.close()
