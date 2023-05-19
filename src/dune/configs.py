@@ -1,18 +1,17 @@
 import sys
 import inspect
-import os
 
 #pylint: disable=invalid-name
 class node_config_v0_0_0 :
     _config_args = {"wasm-runtime" : "eos-vm",
                     "abi-serializer-max-time-ms" : "15",
                     "contracts-console" : "true",
-                    "http-server-address" : "127.0.0.1:8888",
-                    "p2p-listen-endpoint" : "127.0.0.1:9876",
-                    "state-history-endpoint" : "127.0.0.1:8080",
+                    "http-server-address" : "0.0.0.0:8888",
+                    "p2p-listen-endpoint" : "0.0.0.0:9876",
+                    "state-history-endpoint" : "0.0.0.0:8080",
                     "agent-name" : "DUNE Test Node",
                     "net-threads" : "2",
-                    "max-transaction-time" : "1000",
+                    "max-transaction-time" : "100",
                     "producer-name" : "eosio",
                     "enable-stale-production" : "true",
                     "resource-monitor-not-shutdown-on-threshold-exceeded" : "true"}
@@ -32,11 +31,12 @@ class node_config_v0_0_0 :
 
 
 class node_config_v4_0_0(node_config_v0_0_0) :
-    _config_args = {"read-only-read-window-time-us" : "120000"}
+    _config_add = {"read-only-read-window-time-us" : "120000"}
 
     def get_config_ini(self) :
-        config = super(node_config_v4_0_0, self).get_config_ini()
-        for k,v in self._config_args.items() :
+        # pylint: disable=too-many-function-args
+        config = super().get_config_ini(self)
+        for k,v in self._config_add.items() :
             config += k + "=" + v + "\n"
         return config
 

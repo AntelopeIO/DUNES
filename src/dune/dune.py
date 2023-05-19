@@ -130,9 +130,9 @@ class dune:
         if not is_restart and nod.config() is None:
             current_ver = self.get_current_nodeos_version()
             config_str = get_config_ini(current_ver[0], current_ver[1], current_ver[2])
-            self._docker.write_file("config.ini", config_str)
+            self._docker.write_file("/app/config.ini", config_str)
             nod.set_config('/app/config.ini')
-        
+
         print(nod.config_dir())
 
         if nod.config() is not None:
