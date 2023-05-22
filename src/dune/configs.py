@@ -41,6 +41,7 @@ class node_config_v4_0_0(node_config_v0_0_0) :
     _config_add = {"read-only-read-window-time-us" : "120000"}
 
     def get_config_ini(self, arch) :
+        #pylint: disable=too-many-function-args
         config = super().get_config_ini(super(), arch)
         for k,v in self._config_add.items() :
             config += k + " = " + v + "\n"

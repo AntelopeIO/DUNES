@@ -1,7 +1,6 @@
 # pylint: disable=missing-function-docstring, missing-module-docstring
 import os
 import sys                      # sys.stderr
-import tempfile
 from context import context
 from docker import docker
 from node_state import node_state
