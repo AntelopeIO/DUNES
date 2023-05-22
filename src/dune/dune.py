@@ -1,6 +1,7 @@
 # pylint: disable=missing-function-docstring, missing-module-docstring
 import os
 import sys                      # sys.stderr
+import tempfile
 from context import context
 from docker import docker
 from node_state import node_state
@@ -104,7 +105,7 @@ class dune:
 
     def get_current_nodeos_version(self):
         stdout, stderr, exit_code = self._docker.execute_cmd(['nodeos', '--version'])
-        return stdout[1:].split('.')
+        return stdout[1:].split('.-')
 
     def start_node(self, nod, snapshot=None):
         stdout, stderr, exit_code = self._docker.execute_cmd(['ls', '/app/nodes'])
@@ -133,7 +134,6 @@ class dune:
             self._docker.write_file("/app/config.ini", config_str)
             nod.set_config('/app/config.ini')
 
-        print(nod.config_dir())
 
 
         if nod.config() is not None:
