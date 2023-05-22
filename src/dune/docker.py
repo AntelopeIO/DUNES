@@ -99,10 +99,14 @@ class docker:
         self.execute_cmd(['rm', '-rf', file_name])
 
     def write_file(self, file_name, body):
-        with tempfile.NamedTemporaryFile(mode='w+',) as tmp:
+        tmp_name = ""
+        with tempfile.NamedTemporaryFile(mode='w+', delete=False) as tmp:
             tmp.write(body)
             tmp.flush()
-            self.cp_from_host(tmp.name, file_name)
+            tmp_name = tmp.name
+
+        self.cp_from_host(tmp_name, file_name)
+        os.unlink(tmp_name)
 
     def find_pid(self, process_name):
         stdout, stderr, exit_code = self.execute_cmd(['ps', 'ax'])
