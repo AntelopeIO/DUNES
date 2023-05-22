@@ -106,7 +106,7 @@ class dune:
     def get_current_nodeos_version(self):
         stdout, stderr, exit_code = self._docker.execute_cmd(['nodeos', '--version'])
         #from "v4.0.0-rc1\n" make array of "["4","0","0","rc1"]"
-        return re.split(r"[+.-]", stdout[1:-1])
+        return re.strip().split(r"[+.-]", stdout[1:])
 
     def start_node(self, nod, snapshot=None):
         stdout, stderr, exit_code = self._docker.execute_cmd(['ls', '/app/nodes'])
