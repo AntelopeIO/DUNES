@@ -5,10 +5,11 @@ import platform
 TEST_PATH = os.path.dirname(os.path.abspath(__file__))
 
 # Set path for executable:
+DUNE_EXE = os.path.join( os.path.split(TEST_PATH)[0] , "dune")
+
 if platform.system() == 'Windows':
-    DUNE_EXE = os.path.split(TEST_PATH)[0] + r"\dune.bat"
-else:
-    DUNE_EXE = os.path.split(TEST_PATH)[0] + "/dune"
+    DUNE_EXE += ".bat"
+    
 print("Executable path: ", DUNE_EXE)
 
 # Default addresses
