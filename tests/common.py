@@ -9,7 +9,7 @@ DUNE_EXE = os.path.join( os.path.split(TEST_PATH)[0] , "dune")
 
 if platform.system() == 'Windows':
     DUNE_EXE += ".bat"
-    
+
 print("Executable path: ", DUNE_EXE)
 
 # Default addresses
