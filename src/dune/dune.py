@@ -1,7 +1,7 @@
 # pylint: disable=missing-function-docstring, missing-module-docstring
 import os
+import re
 import sys                      # sys.stderr
-import tempfile
 from context import context
 from docker import docker
 from node_state import node_state
@@ -105,7 +105,8 @@ class dune:
 
     def get_current_nodeos_version(self):
         stdout, stderr, exit_code = self._docker.execute_cmd(['nodeos', '--version'])
-        return stdout[1:].split('.-')
+        #from "v4.0.0-rc1\n" make array of "["4","0","0","rc1"]"
+        return re.split(r"[+.-]", stdout[1:-1])
 
     def start_node(self, nod, snapshot=None):
         stdout, stderr, exit_code = self._docker.execute_cmd(['ls', '/app/nodes'])
@@ -130,12 +131,8 @@ class dune:
         # copy config.ini to config-dir
         if not is_restart and nod.config() is None:
             current_ver = self.get_current_nodeos_version()
-            config_ini = get_config_ini(self._docker.get_arch(), *current_ver)
-            with tempfile.NamedTemporaryFile("w+", encoding="UTF-8", delete=False) as config_file :
-                config_file.write(config_ini)
-                config_file.close()
-                self._docker.cp_from_host(config_file.name, "/app/config.ini")
-                os.remove(config_file.name)
+            config_str = get_config_ini(self._docker.get_arch(), current_ver[0], current_ver[1], current_ver[2])
+            self._docker.write_file("/app/config.ini", config_str)
             nod.set_config('/app/config.ini')
 
         if nod.config() is not None:

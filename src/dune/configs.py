@@ -5,16 +5,19 @@ import inspect
 class node_config_v0_0_0 :
     _config_args = {"wasm-runtime" : "eos-vm{0}",
                     "abi-serializer-max-time-ms" : "15",
+                    "chain-state-db-size-mb" : "65536",
                     "contracts-console" : "true",
-                    "http-server-address" : "127.0.0.1:8888",
-                    "p2p-listen-endpoint" : "127.0.0.1:9876",
-                    "state-history-endpoint" : "127.0.0.1:8080",
+                    "http-server-address" : "0.0.0.0:8888",
+                    "p2p-listen-endpoint" : "0.0.0.0:9876",
+                    "state-history-endpoint" : "0.0.0.0:8080",
+                    "verbose-http-errors" : "true",
                     "agent-name" : "DUNE Test Node",
                     "net-threads" : "2",
-                    "max-transaction-time" : "1000",
+                    "max-transaction-time" : "100",
                     "producer-name" : "eosio",
                     "enable-stale-production" : "true",
-                    "resource-monitor-not-shutdown-on-threshold-exceeded" : "true"}
+                    "resource-monitor-not-shutdown-on-threshold-exceeded" : "true",
+                    "http-validate-host" : "false"}
 
     _plugins = ["eosio::chain_api_plugin",
                 "eosio::http_plugin",
@@ -28,19 +31,20 @@ class node_config_v0_0_0 :
             vm_type = "-jit"
 
         for k,v in self._config_args.items() :
-            config += k + "=" + v.format(vm_type) + "\n"
+            config += k + " = " + v.format(vm_type) + "\n"
         for plugin in self._plugins :
-            config += "plugin=" + plugin + "\n"
+            config += "plugin = " + plugin + "\n"
         return config
 
 
 class node_config_v4_0_0(node_config_v0_0_0) :
-    _config_args = {"read-only-read-window-time-us" : "1200000"}
+    _config_add = {"read-only-read-window-time-us" : "120000"}
 
     def get_config_ini(self, arch) :
+        #pylint: disable=too-many-function-args
         config = super().get_config_ini(super(), arch)
-        for k,v in self._config_args.items() :
-            config += k + "=" + v + "\n"
+        for k,v in self._config_add.items() :
+            config += k + " = " + v + "\n"
         return config
 
 def get_config_ini(arch, major, minor=0, patch=0) :
