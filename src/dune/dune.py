@@ -1,5 +1,6 @@
 # pylint: disable=missing-function-docstring, missing-module-docstring
 import os
+import re
 import sys                      # sys.stderr
 from context import context
 from docker import docker
@@ -104,7 +105,7 @@ class dune:
 
     def get_current_nodeos_version(self):
         stdout, stderr, exit_code = self._docker.execute_cmd(['nodeos', '--version'])
-        return stdout[1:].split('.-')
+        return re.split(r"[.-]", stdout[1:-1])
 
     def start_node(self, nod, snapshot=None):
         stdout, stderr, exit_code = self._docker.execute_cmd(['ls', '/app/nodes'])
