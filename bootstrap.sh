@@ -18,7 +18,7 @@ CDT_ARGUMENT=
 RELEASE_VERSION=
 PUSH_VERSION=
 
-usage="$(basename "$0") [-l|--leap=version] [-c|--cdt=version] [-r|--release]
+usage="$(basename "$0") [-l|--leap=version] [-c|--cdt=version] [-r|--release [-p|--push]]
 where:
   -l, --leap=version
     sets the leap version
