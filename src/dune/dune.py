@@ -92,6 +92,10 @@ class dune:
     def is_named_node_running(self, nod_name):
         return self._docker.find_pid('/app/nodes/' + nod_name + ' ') != -1
 
+    def is_node_dirtydbflag_set(self, nod_name):
+        # use 'atabase dirty flag set' which is used in main.cpp of LEAP
+        return self._docker.file_has_string('/app/' + nod_name +'.out', 'atabase dirty flag set', tail_file_only = True)
+
     def set_active(self, nod):
         if self.node_exists(nod):
             self._context.set_active(nod)

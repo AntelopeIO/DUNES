@@ -402,53 +402,77 @@ def test_node_start_rmdirtydb():
     subprocess.run([DUNE_EXE, "--start-container"], check=True)
 
     # Ensure there are no existing nodes.
-    #   Tests `--simple-list` and `--list`
     remove_all()
     validate_node_list([])
     expect_empty_verbose_list()
 
-    # Create a node and test its state.
-    #   Tests `--start` when the node needs to be created.
-    subprocess.run([DUNE_EXE,"--start", NODE_ALPHA, "--rmdirtydb"], check=True)
+    # Create NODE_ALPHA
+    res = subprocess.run([DUNE_EXE,"--start", NODE_ALPHA, "--rmdirtydb"], stdout=subprocess.PIPE, check=True)
+    assert b'no action for --rmdirtydb, because node [ ALPHA_NODE ] has never run before' in res.stdout
     validate_node_state(NODE_ALPHA, True, True)
-    # Stop the node and test its state.
-    #   Tests `--stop`
+
+    # verify already running
+    res = subprocess.run([DUNE_EXE,"--start", NODE_ALPHA, "--rmdirtydb"], stdout=subprocess.PIPE, check=True)
+    assert b'no action for --rmdirtydb, because node [ ALPHA_NODE ] is already running' in res.stdout
+    validate_node_state(NODE_ALPHA, True, True)
+
+    # use kill -9  to kill NODE_ALPHA
+    pid_node = cntr.find_pid('/app/nodes/' + NODE_ALPHA + ' ')
+    assert pid_node != -1
+    cntr.execute_cmd(['kill', '-9', pid_node])
+    pid_node = cntr.find_pid('/app/nodes/' + NODE_ALPHA + ' ')
+    assert pid_node == -1
+    validate_node_state(NODE_ALPHA, True, False)
+
+    # start NODE_ALPHA to verify the node fails to start
+    res = subprocess.run([DUNE_EXE,"--start", NODE_ALPHA], stdout=subprocess.PIPE, check=False)
+    assert b'database dirty flag set' in res.stdout
+    validate_node_state(NODE_ALPHA, True, False)
+
+    # start NODE_ALPHA with --rmdirtydb to verify the node starts successfully
+    res = subprocess.run([DUNE_EXE,"--start", NODE_ALPHA, "--rmdirtydb"], stdout=subprocess.PIPE, check=False)
+    assert res.returncode == 0
+    assert b'Found the database dirty flag for node [ ALPHA_NODE ]' in res.stdout
+    assert b'using --replay-blockchain of nodeos to clean the dirty flag' in res.stdout
+    validate_node_state(NODE_ALPHA, True, True)
+
+    # stop NODE_ALPHA and then bring it up again, verify no dirty database flag set
     subprocess.run([DUNE_EXE,"--stop", NODE_ALPHA], check=True)
     validate_node_state(NODE_ALPHA, True, False)
-    # Restart the node and test its state.
-    #   Tests `--start` when the node already exists.
-    subprocess.run([DUNE_EXE,"--start", NODE_ALPHA, "--rmdirtydb"], check=True)
+    res = subprocess.run([DUNE_EXE,"--start", NODE_ALPHA, "--rmdirtydb"], stdout=subprocess.PIPE, check=False)
+    assert res.returncode == 0
+    assert b'no action for --rmdirtydb, because node [ ALPHA_NODE ] dirty database flag is not yet set' in res.stdout
     validate_node_state(NODE_ALPHA, True, True)
 
-    # Create a 2nd node and test the state of both nodes.
-    #   Tests the behavior of `--start` on an already active, running node.
+    # Use similar  steps to test the 2nd node NODE_BRAVO
     subprocess.run([DUNE_EXE,"--start", NODE_BRAVO, "--rmdirtydb"], check=True)
     validate_node_state(NODE_BRAVO, True, True)
-    validate_node_list([[NODE_ALPHA, False, False],[NODE_BRAVO, True, True]])
 
-    # Test --get-active shows NODE_BRAVO
-    #   Tests `--get-active`.
-    assert subprocess.run([DUNE_EXE,"--get-active"], check=True, stdout=subprocess.PIPE).stdout.decode() == (NODE_BRAVO + "\n")
+    pid_node = cntr.find_pid('/app/nodes/' + NODE_BRAVO + ' ')
+    assert pid_node != -1
+    cntr.execute_cmd(['kill', '-9', pid_node])
+    pid_node = cntr.find_pid('/app/nodes/' + NODE_BRAVO + ' ')
+    assert pid_node == -1
+    validate_node_state(NODE_BRAVO, True, False)
 
-    # Test --set-active works to switch to NODE_ALPHA and --get active returns the correct value.
-    #   Tests `--set-active` switch active node while run state is left unchanged.
-    subprocess.run([DUNE_EXE,"--set-active", NODE_ALPHA], check=True)
-    validate_node_list([[NODE_ALPHA, True, False],[NODE_BRAVO, False, True]]) # Note this is TF,FT
-    assert subprocess.run([DUNE_EXE,"--get-active"], check=True, stdout=subprocess.PIPE).stdout.decode() == (NODE_ALPHA + "\n")
+    res = subprocess.run([DUNE_EXE,"--start", NODE_BRAVO], stdout=subprocess.PIPE, check=False)
+    assert b'database dirty flag set' in res.stdout
+    validate_node_state(NODE_BRAVO, True, False)
 
-    # Remove NODE_ALPHA, ensure it is no longer in the list.
-    #   Tests `--remove`.
-    subprocess.run([DUNE_EXE,"--remove", NODE_ALPHA], check=True)
-    validate_node_list([[NODE_BRAVO, False, True]]) # Note the state of NODE_BRAVO is FT
+    # start NODE_BRAVO with --rmdirtydb to verify the node starts successfully
+    res = subprocess.run([DUNE_EXE,"--start", NODE_BRAVO, "--rmdirtydb"], stdout=subprocess.PIPE, check=False)
+    assert res.returncode == 0
+    assert b'Found the database dirty flag for node [ BRAVO_NODE ]' in res.stdout
+    assert b'using --replay-blockchain of nodeos to clean the dirty flag' in res.stdout
+    validate_node_state(NODE_BRAVO, True, True)
 
     # Remove anything to get to a clean slate.
     remove_all()
 
-    # Test `--start` where start includes a config path.
+    # Test --rmdirtydb can be used together with --config in --start
     subprocess.run([DUNE_EXE,"--start", NODE_ALPHA, "--config", CONFIG_PATH, "--rmdirtydb"], check=True)
     validate_node_list([[NODE_ALPHA, True, True, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR]])
 
-    # Test `--start` where start includes a config file.
     subprocess.run([DUNE_EXE,"--start", NODE_BRAVO, "--config", CONFIG_FILE, "--rmdirtydb"], check=True)
     validate_node_list([[NODE_ALPHA, False, False, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
                         [NODE_BRAVO, True, True, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR]])

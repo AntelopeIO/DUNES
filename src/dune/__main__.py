@@ -96,14 +96,16 @@ if __name__ == '__main__':
                 WAS_REPLAY_BLOCKCHAIN_USED = False
                 if args.rmdirtydb is True:
                     node_state_dir = '/app/nodes/' + args.start[0] +'/state/'
-                    if dune_sys.docker.dir_exists(node_state_dir) and not dune_sys.is_named_node_running(args.start[0]):
-                        print("Use --replay-blockchain option of nodeos to clean "
-                                + "a database dirty flag for node [" + args.start[0] + "]...\n")
-                        WAS_REPLAY_BLOCKCHAIN_USED = True
-                    elif dune_sys.is_named_node_running(args.start[0]):
+                    if dune_sys.is_named_node_running(args.start[0]):
                         print("no action for --rmdirtydb, because node [ "  + args.start[0]  + " ] is already running\n")
+                    elif not dune_sys.docker.dir_exists(node_state_dir):
+                        print("no action for --rmdirtydb, because node [ "  + args.start[0]  + " ] has never run before\n")
+                    elif dune_sys.is_node_dirtydbflag_set(args.start[0]):
+                        print("Found the database dirty flag for node [ " + args.start[0] + " ], "
+                                + "using --replay-blockchain of nodeos to clean the dirty flag...\n")
+                        WAS_REPLAY_BLOCKCHAIN_USED = True
                     else:
-                        print("no action for --rmdirtydb, because container directory "  + node_state_dir + " does not exist\n")
+                        print("no action for --rmdirtydb, because node [ "  + args.start[0]  + " ] dirty database flag is not yet set\n")
 
                 n: object
                 if args.config is None:
@@ -125,7 +127,7 @@ if __name__ == '__main__':
                     n = node(args.start[0], dune_sys.docker.abs_host_path(cfg_temp))
                 else:
                     parser.exit_with_help_message("--start / --config error")
-                dune_sys.start_node(n, None, WAS_REPLAY_BLOCKCHAIN_USED)
+                dune_sys.start_node(n, replay_blockchain=WAS_REPLAY_BLOCKCHAIN_USED)
 
             elif args.config is not None:
                 parser.exit_with_help_message("--config without --start")
