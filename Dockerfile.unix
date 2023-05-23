@@ -3,6 +3,9 @@ FROM ubuntu:20.04
 
 ARG USER_ID
 ARG GROUP_ID
+ARG LEAP_VERSION
+ARG CDT_VERSION
+
 
 RUN apt-get update
 RUN apt-get update --fix-missing
