@@ -1,11 +1,12 @@
 # pylint: disable=missing-function-docstring, missing-module-docstring
 import os
-import sys  # sys.stderr
+import re
+import sys # sys.stderr
 import time
 from context import context
 from docker import docker
 from node_state import node_state
-
+from configs import get_config_ini
 
 # VERSION INFORMATION
 def version_major():
@@ -103,6 +104,11 @@ class dunes:
         print("Creating node [" + nod.name() + "]")
         self._docker.execute_cmd(['mkdir', '-p', nod.data_dir()])
 
+    def get_current_nodeos_version(self):
+        stdout, stderr, exit_code = self._docker.execute_cmd(['nodeos', '--version'])
+        #from "v4.0.0-rc1\n" make array of "["4","0","0","rc1"]"
+        return re.split(r"[+.-]", stdout[1:].strip())
+
     def start_node(self, nod, snapshot=None):
         stdout, stderr, exit_code = self._docker.execute_cmd(['ls', '/app/nodes'])
 
@@ -125,6 +131,9 @@ class dunes:
 
         # copy config.ini to config-dir
         if not is_restart and nod.config() is None:
+            current_ver = self.get_current_nodeos_version()
+            config_str = get_config_ini(self._docker.get_arch(), current_ver[0], current_ver[1], current_ver[2])
+            self._docker.write_file("/app/config.ini", config_str)
             nod.set_config('/app/config.ini')
 
         if nod.config() is not None:

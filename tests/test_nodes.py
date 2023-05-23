@@ -19,7 +19,7 @@ This script tests that the compiled binary produce expected output for these com
 import shutil                   # rmtree
 import subprocess
 
-# pylint: disable=wildcard-import
+# pylint: disable=unused-wildcard-import,wildcard-import
 from common import *                   # local defines
 from container import container
 

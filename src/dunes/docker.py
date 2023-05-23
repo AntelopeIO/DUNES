@@ -1,11 +1,11 @@
 import os
 import platform
 import subprocess
+import tempfile
 
 
 class docker_error(Exception):
     pass
-
 
 class docker:
 
@@ -142,6 +142,24 @@ class docker:
 
     def rm_file(self, file_name):
         self.execute_cmd(['rm', '-rf', file_name])
+
+    def write_file(self, file_name, body):
+        tmp_name = ""
+        with tempfile.NamedTemporaryFile(mode='w+', delete=False) as tmp:
+            tmp.write(body)
+            tmp.flush()
+            tmp_name = tmp.name
+
+        self.cp_from_host(tmp_name, file_name)
+        os.unlink(tmp_name)
+
+    def get_arch(self) :
+        stdout, stderr, exit_code = self.execute_cmd(['uname', '-m'])
+        if stdout in ('x86_64\n', 'amd64\n') :
+            return 'amd64'
+        if stdout in ('aarch64\n', 'arm64v8\n', 'arm64\n') :
+            return 'arm64'
+        raise NotImplementedError("Error, using an unsupported architecture")
 
     def find_pid(self, process_name):
         stdout, stderr, exit_code = self.execute_cmd(['ps', 'ax'])
