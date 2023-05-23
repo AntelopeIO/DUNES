@@ -202,10 +202,6 @@ contracts on Antelope blockchains.
 
     Display the current versions of DUNES, CDT, and leap.
 
-**`--version-short`**
-
-    Display the current version of DUNES in short format.
-
 **`--debug`**
 
     Print additional information useful for debugging, such as running docker commands.

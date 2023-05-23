@@ -150,6 +150,7 @@ class arg_parser:
                                   help='Display the current version of DUNES.')
         self._parser.add_argument('--version-all', action='store_true',
                                   help='Display the current versions of DUNES, CDT, and leap.')
+        self._parser.add_argument('--version-short', action='store_true', help=argparse.SUPPRESS)
         self._parser.add_argument('--debug', action='store_true',
                                   help='Print additional information useful for debugging, '
                                        'such as running docker commands.')
