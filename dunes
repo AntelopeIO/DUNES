@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
 SDIR=$(dirname "$(readlink -f "$0")")
-python3 $SDIR/src/dune "$@"
+python3 $SDIR/src/dunes "$@"

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""Test DUNE Version
+"""Test DUNES Version
 
 This script tests that the compiled binary produces output in response
 to `--debug` option.
@@ -8,15 +8,14 @@ to `--debug` option.
 """
 
 
-
 import subprocess
 
-from common import DUNE_EXE
+from common import DUNES_EXE
 
 
 def test_version_debug():
     """Test that the output of `--version --debug` is as expected."""
 
-    # Call DUNE, we only care that `--debug` is available, not that it
+    # Call DUNES, we only care that `--debug` is available, not that it
     # does anything. For now.
-    subprocess.run([DUNE_EXE,"--version","--debug"], check=True)
+    subprocess.run([DUNES_EXE, "--version", "--debug"], check=True)

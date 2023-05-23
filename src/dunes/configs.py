@@ -11,7 +11,7 @@ class node_config_v0_0_0 :
                     "p2p-listen-endpoint" : "0.0.0.0:9876",
                     "state-history-endpoint" : "0.0.0.0:8080",
                     "verbose-http-errors" : "true",
-                    "agent-name" : "DUNE Test Node",
+                    "agent-name" : "DUNES Test Node",
                     "net-threads" : "2",
                     "max-transaction-time" : "100",
                     "producer-name" : "eosio",
