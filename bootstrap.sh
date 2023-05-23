@@ -7,7 +7,7 @@ getopt --test && echo "'getopt --test' failed in this environment." && exit 1
 SDIR=$(dirname "$(readlink -f "$0")")
 cd "${SDIR}"
 
-LONGOPTS=leap:,cdt:,release,push,help
+LONGOPTS=leap:,cdt:,release,push,tag:,help
 OPTIONS=l:c:rph
 
 PARSED=$(getopt --options=$OPTIONS --longoptions=$LONGOPTS --name "$0" -- "$@")
@@ -18,7 +18,7 @@ CDT_ARGUMENT=
 RELEASE_VERSION=
 PUSH_VERSION=
 
-usage="$(basename "$0") [-l|--leap=version] [-c|--cdt=version] [-r|--release [-p|--push]]
+usage="$(basename "$0") [-l|--leap=version] [-c|--cdt=version] [-r|--release [-p|--push]] [--tag]
 where:
   -l, --leap=version
     sets the leap version
@@ -27,7 +27,10 @@ where:
   -r, --release
     tag the image with the version reported by DUNES
   -p, --push
-    with --release, push the release and latest images to ghcr.io"
+    with --release, push the release and latest images to ghcr.io
+  --tag=tag
+    ONLY tag the image with the user provided tag"
+
 
 while true; do
     case "$1" in
@@ -48,6 +51,11 @@ while true; do
             PUSH_VERSION=$("${SDIR}"/dunes --version-short)
             shift 1
             ;;
+        --tag)
+            TAG_OVERRIDE="dunes:$2"
+            echo "Overriding default tagging with $TAG_OVERRIDE"
+            shift 2
+            ;;
         --)
             shift
             break
@@ -64,6 +72,18 @@ GROUP_ID=0
 # for mac users
 if [[ $(uname) == "Darwin" ]]; then
   GROUP_ID=200
+fi
+
+
+# Test for tag override
+if [ -n "${TAG_OVERRIDE}" ]; then
+    # Currently, tag override conflicts with release.
+    if [ -n "${RELEASE_VERSION}" ]; then
+        echo "--tag conflicts with --release, exiting"
+        exit 1
+    fi
+    docker build --no-cache --build-arg USER_ID=0 --build-arg GROUP_ID="$GROUP_ID" $LEAP_ARGUMENT $CDT_ARGUMENT -f Dockerfile.unix -t "${TAG_OVERRIDE}" "$SDIR"
+    exit 0
 fi
 
 docker build --no-cache --build-arg USER_ID=0 --build-arg GROUP_ID="$GROUP_ID" $LEAP_ARGUMENT $CDT_ARGUMENT -f Dockerfile.unix -t dunes "$SDIR"
