@@ -44,13 +44,13 @@ def test_version_bootstrapping():
     subprocess.run(['docker', 'start', CONTAINER_NAME], check=True)
 
     # Try to get CDT version info from inside the container.
-    completed_process = subprocess.run(['docker', 'exec', '-it', CONTAINER_NAME, '/usr/bin/ls', '/usr/opt/cdt'],
+    completed_process = subprocess.run(['docker', 'exec', '-i', CONTAINER_NAME, '/usr/bin/ls', '/usr/opt/cdt'],
                                        check=False, stdout=subprocess.PIPE)
     # Test that the version is in the output.
     assert CDT_VERSION in completed_process.stdout.decode()
 
     # Try to get LEAP version info from inside the container.
-    completed_process = subprocess.run(['docker', 'exec', '-it', CONTAINER_NAME, 'leap-util', 'version', 'client'],
+    completed_process = subprocess.run(['docker', 'exec', '-i', CONTAINER_NAME, 'leap-util', 'version', 'client'],
                                        check=False, stdout=subprocess.PIPE)
     # Test that the version is in the output.
     assert LEAP_VERSION in completed_process.stdout.decode()
