@@ -1,0 +1,8 @@
+VERIFICATION
+Verification is intended to assist the Chocolatey moderators and community
+in verifying that this package's contents are trustworthy.
+
+Download the *.nupkg file from github releases: https://github.com/AntelopeIO/DUNE/releases
+Take its sha256
+If the package in Chocolatey repo has the same sha256, it's authentic.
+

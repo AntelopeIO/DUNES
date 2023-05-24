@@ -20,10 +20,10 @@ Docker Utilities for Node Execution and Subsystems (DUNES) is a tool to abstract
 
     </description>
     <dependencies>
-      <dependency id="python311"/>
-      <dependency id="docker-desktop"/>
+      <dependency id="python311" version="[3.11,)"/>
+      <dependency id="docker-desktop" version="[4.14,)"/>
 	  <!-- Below was added as a workaround for Chocolatey CI Package Verifier which tried to install netfx-4.8.1 not compatible with Windows Server 2019  -->
-      <dependency id="netfx-4.8"/>
+      <dependency id="netfx-4.8" version="[4.8,)"/>
     </dependencies>
   </metadata>
   <files>
