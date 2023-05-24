@@ -7,16 +7,23 @@ getopt --test && echo "'getopt --test' failed in this environment." && exit 1
 SDIR=$(dirname "$(readlink -f "$0")")
 cd "${SDIR}"
 
+# Forward definitions
+LEAP_ARGUMENT=
+CDT_ARGUMENT=
+RELEASE_VERSION=
+PUSH_VERSION=
+TAG_OVERRIDE=
+
+
+
+# Command line decoding begins.
+
 LONGOPTS=leap:,cdt:,release,push,tag:,help
 OPTIONS=l:c:rph
 
 PARSED=$(getopt --options=$OPTIONS --longoptions=$LONGOPTS --name "$0" -- "$@")
 
 eval set -- "$PARSED"
-LEAP_ARGUMENT=
-CDT_ARGUMENT=
-RELEASE_VERSION=
-PUSH_VERSION=
 
 usage="$(basename "$0") [-l|--leap=version] [-c|--cdt=version] [-r|--release [-p|--push]] [--tag]
 where:
@@ -66,34 +73,59 @@ while true; do
             ;;
     esac
 done
+# Command line decoding completed.
 
 
+
+# Set group ID. Note the difference for mac users.
 GROUP_ID=0
-# for mac users
 if [[ $(uname) == "Darwin" ]]; then
-  GROUP_ID=200
+    # Set group ID to 200 for mac
+    GROUP_ID=200
 fi
 
 
-# Test for tag override
+# Function to call docker build
+# $1 : tag to apply to the build
+docker_build() {
+
+    if [ -z "$1" ]; then
+        echo "docker_build requires an argument"
+        exit 1
+    fi
+
+    # Note: LEAP_ARGUMENT and CDT_ARGUMENT are either empty or they include '--build-arg'
+    docker build --no-cache --build-arg USER_ID=0 --build-arg GROUP_ID="$GROUP_ID" $LEAP_ARGUMENT $CDT_ARGUMENT -f Dockerfile.unix -t "$1" "$SDIR"
+}
+
+
+# Test for tag override. Note that an override will exit without tagging latest, version, or short hash.
 if [ -n "${TAG_OVERRIDE}" ]; then
     # Currently, tag override conflicts with release.
     if [ -n "${RELEASE_VERSION}" ]; then
         echo "--tag conflicts with --release, exiting"
         exit 1
     fi
-    docker build --no-cache --build-arg USER_ID=0 --build-arg GROUP_ID="$GROUP_ID" $LEAP_ARGUMENT $CDT_ARGUMENT -f Dockerfile.unix -t "${TAG_OVERRIDE}" "$SDIR"
+    # Call the build with the override tag.
+    docker_build "${TAG_OVERRIDE}"
+    # Tag override exits before normal build process.
     exit 0
 fi
 
-docker build --no-cache --build-arg USER_ID=0 --build-arg GROUP_ID="$GROUP_ID" $LEAP_ARGUMENT $CDT_ARGUMENT -f Dockerfile.unix -t dunes "$SDIR"
 
+# Call the build with our default tag.
+docker_build dunes
+
+# Test for release command.
 if [ -n "${RELEASE_VERSION}" ]; then
+    # Make the additional release tags.
     docker tag dunes dunes:"${RELEASE_VERSION}"
     docker tag dunes ghcr.io/antelopeio/dunes:latest
     docker tag dunes ghcr.io/antelopeio/dunes:"${RELEASE_VERSION}"
     echo "Tagged image with latest and version '${RELEASE_VERSION}'."
+    # Test for push command.
     if [ -n "${PUSH_VERSION}" ]; then
+        # Push the images.
         echo "Uploading to ghcr.io/antelopeio."
         docker push ghcr.io/antelopeio/dunes:latest
         docker push ghcr.io/antelopeio/dunes:"${RELEASE_VERSION}"
@@ -101,11 +133,14 @@ if [ -n "${RELEASE_VERSION}" ]; then
     fi
 fi
 
+# Test to see if this is git repository.
 GIT_CMD='git rev-parse --short HEAD'
 if ${GIT_CMD} > /dev/null 2> /dev/null; then
+    # Tag the image with the short commit hash.
     COMMIT_HASH=$(${GIT_CMD})
     docker tag dunes dunes:"${COMMIT_HASH}"
     echo "Tagged image with commit hash '${COMMIT_HASH}'."
 else
+    # Inform the user we did not tag with a commit hash.
     echo "Could not determine git commit hash for this image. Not tagging."
 fi
