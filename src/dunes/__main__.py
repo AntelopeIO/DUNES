@@ -39,6 +39,8 @@ def load_module(absolute_path):
     try:
         spec.loader.exec_module(py_mod)
         return py_mod
+    # Any exception here should be trapped and None returned.
+    #   pylint: disable=bare-except
     except:
         return None
 
@@ -81,13 +83,15 @@ if __name__ == '__main__':
 
     current_script_path = os.path.abspath(__file__)
     current_script_dir = os.path.dirname(current_script_path)
-    pluggin_dir = os.path.join(os.path.split(current_script_dir)[0], 'plugin');
+    pluggin_dir = os.path.join(os.path.split(current_script_dir)[0], 'plugin')
 
     modules = []
     for module in load_all_modules_from_dir(pluggin_dir):
         try:
             module.add_parsing(parser.get_parser())
             modules.append(module)
+        # Any exception here should be trapped here and the user notified before continuing.
+        #   pylint: disable=bare-except
         except:
             print(f"Can't load module {module}")
             continue
