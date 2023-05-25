@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
 
-"""Test DUNE Version_
+"""Test DUNES Version_
 
 This script tests that the compiled binary produce expected output
 in response to `--version` option.
 """
 
 
-
 import subprocess
 
-from common import DUNE_EXE
+from common import DUNES_EXE
 
 
 def test_version():
@@ -19,11 +18,11 @@ def test_version():
     # List of expected values.
     expect_list = \
         [
-            b'DUNE v1.',
+            b'DUNES v1.',
         ]
 
-    # Call DUNE.
-    completed_process = subprocess.run([DUNE_EXE,"--version"], check=True, stdout=subprocess.PIPE)
+    # Call DUNES.
+    completed_process = subprocess.run([DUNES_EXE, "--version"], check=True, stdout=subprocess.PIPE)
 
     # Test for expected values in the captured output.
     for expect in expect_list:
