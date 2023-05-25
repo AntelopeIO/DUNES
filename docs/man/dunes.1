@@ -204,7 +204,7 @@ Create a new empty smart contract project at the given location.
 .nf
 \f[C]
 Build a smart contract project at the given directory.
-Additional CMake options can be added to CMake call as OPTIONS 
+Additional CMake options can be added to CMake call as OPTIONS. 
  
 Example: dunes --cmake-build \[ti]/project -- -DFLAG1=On -DFLAG2=Off               
 \f[R]
@@ -215,7 +215,7 @@ Example: dunes --cmake-build \[ti]/project -- -DFLAG1=On -DFLAG2=Off
 .nf
 \f[C]
 Run the ctest tests for a smart contract project at the directory given.
-Additional ctest options can be added to ctest call as OPTIONS
+Additional ctest options can be added to ctest call as OPTIONS.
  
 Example: dunes --ctest \[ti]/project -- --progress -V
 \f[R]
@@ -225,8 +225,8 @@ Example: dunes --ctest \[ti]/project -- --progress -V
 .IP
 .nf
 \f[C]
-Start gdb in the container with given executive binary
-Additional gdb options can be added to the call as OPTIONS               
+Start gdb in the container with given executive binary.
+Additional gdb options can be added to the call as OPTIONS.               
 \f[R]
 .fi
 .PP
@@ -274,7 +274,7 @@ Set the core contract to the specified account (use \[ga]eosio\[ga] as account f
 .IP
 .nf
 \f[C]
-Set the bios contract to the specified account (use \[ga]eosio\[ga] as account for normal system setup).
+Set the BIOS contract to the specified account (use \[ga]eosio\[ga] as account for normal system setup).
 \f[R]
 .fi
 .PP
@@ -290,7 +290,7 @@ Set the token contract to the specified account (use \[ga]eosio.token\[ga] as ac
 .IP
 .nf
 \f[C]
-Do setup of typical configuration settings to prepare EOS system for work
+Do setup of typical configuration settings to prepare EOS system for work.
 Install boot contracts to eosio and activate all protocol features.
 \f[R]
 .fi
@@ -446,7 +446,7 @@ Remove a dependency from the specified smart contract project.
 .IP
 .nf
 \f[C]
-Update an application in the given smart contract project.
+Update an application in the specified smart contract project.
 \f[R]
 .fi
 .PP
@@ -454,7 +454,7 @@ Update an application in the given smart contract project.
 .IP
 .nf
 \f[C]
-Update a library in the given smart contract project.
+Update a library in the specified smart contract project.
 \f[R]
 .fi
 .PP
@@ -462,7 +462,7 @@ Update a library in the given smart contract project.
 .IP
 .nf
 \f[C]
-Update a dependency in the given smart contract project.
+Update a dependency in the specified smart contract project.
 \f[R]
 .fi
 .PP
@@ -479,7 +479,7 @@ Build the given smart contract project.
 .IP
 .nf
 \f[C]
-Clean the given project and rebuild it from scratch.
+Clean the specified project and rebuild it from scratch.
                     
 \f[R]
 .fi
@@ -488,7 +488,7 @@ Clean the given project and rebuild it from scratch.
 .IP
 .nf
 \f[C]
-Validate the given smart contract project.
+Validate the specified smart contract project.
                     
 \f[R]
 .fi
@@ -497,7 +497,7 @@ Validate the given smart contract project.
 .IP
 .nf
 \f[C]
-Populate the given smart contract project.
+Populate the specified smart contract project.
 \f[R]
 .fi
 .SH EXIT STATUS
