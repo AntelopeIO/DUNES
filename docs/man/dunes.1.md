@@ -121,21 +121,21 @@ contracts on Antelope blockchains.
 **`--cmake-build <DIR> [-- OPTIONS]`**
 
     Build a smart contract project at the given directory.
-    Additional CMake options can be added to CMake call as OPTIONS 
+    Additional CMake options can be added to CMake call as OPTIONS. 
      
     Example: dunes --cmake-build ~/project -- -DFLAG1=On -DFLAG2=Off               
 
 **`--ctest <DIR> [-- OPTIONS]`**
 
     Run the ctest tests for a smart contract project at the directory given.
-    Additional ctest options can be added to ctest call as OPTIONS
+    Additional ctest options can be added to ctest call as OPTIONS.
      
     Example: dunes --ctest ~/project -- --progress -V
 
 **`--gdb <PROGRAM> [-- OPTIONS]`**
 
-    Start gdb in the container with given executive binary
-    Additional gdb options can be added to the call as OPTIONS               
+    Start gdb in the container with given executive binary.
+    Additional gdb options can be added to the call as OPTIONS.               
 
 **`--deploy <DIR> <ACCOUNT>`**
 
@@ -160,7 +160,7 @@ contracts on Antelope blockchains.
 
 **`--set-bios-contract <ACCOUNT>`**
 
-    Set the bios contract to the specified account (use `eosio` as account for normal system setup).
+    Set the BIOS contract to the specified account (use `eosio` as account for normal system setup).
 
 **`--set-token-contract <ACCOUNT>`**
 
@@ -168,7 +168,7 @@ contracts on Antelope blockchains.
 
 **`--bootstrap-system`**
 
-    Do setup of typical configuration settings to prepare EOS system for work
+    Do setup of typical configuration settings to prepare EOS system for work.
     Install boot contracts to eosio and activate all protocol features.
 
 **`--bootstrap-system-full [CURRENCY] [MAX_VALUE] [INITIAL_VALUE]`**
@@ -248,15 +248,15 @@ contracts on Antelope blockchains.
 
 **`--update-app <PROJ_DIR> <APP_NAME> <LANG> [CMPLR_OPTS] [LINK_OPTS]`**
 
-    Update an application in the given smart contract project.
+    Update an application in the specified smart contract project.
 
 **`--update-lib <PROJ_DIR> <LIB_NAME> <LANG> [CMPLR_OPTS] [LINK_OPTS]`**
  
-    Update a library in the given smart contract project.
+    Update a library in the specified smart contract project.
 
 **`--update-dep <PROJ_DIR> <OBJ_NAME> <DEP_NAME> [LOCATION] [TAG/RELEASE] [HASH]`**
 
-    Update a dependency in the given smart contract project.
+    Update a dependency in the specified smart contract project.
  
 **`--build-project <PROJ_DIR>`**
 
@@ -264,15 +264,15 @@ contracts on Antelope blockchains.
                         
 **`--clean-build-project <PROJ_DIR>`**
 
-    Clean the given project and rebuild it from scratch.
+    Clean the specified project and rebuild it from scratch.
                         
 **`--validate <PROJ_DIR>`**
 
-    Validate the given smart contract project.
+    Validate the specified smart contract project.
                         
 **`--populate <PROJ_DIR>`**
 
-    Populate the given smart contract project.
+    Populate the specified smart contract project.
 
 # EXIT STATUS
 
