@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""Test various DUNE commands.
+"""Test various DUNES commands.
 
 This script tests that the compiled binary produce expected output for these commands:
   --start
@@ -16,7 +16,6 @@ This script tests that the compiled binary produce expected output for these com
 """
 
 
-import os                       # mkdir
 import shutil                   # rmtree
 import subprocess
 
@@ -43,8 +42,8 @@ ALT_SHIP_ADDR="0.0.0.0:9993"
 def remove_all():
     """ Remove any existing nodes. """
 
-    # Call dune, check the return is True.
-    completed_process = subprocess.run([DUNE_EXE,"--simple-list"],
+    # Call dunes, check the return is True.
+    completed_process = subprocess.run([DUNES_EXE, "--simple-list"],
                                        check=True, stdout=subprocess.PIPE)
 
     # Convert the captured stdin to a list.
@@ -61,11 +60,11 @@ def remove_all():
         # Remove the entry
         name = entry.split('|')[0]
         print("Removing: ", name)
-        subprocess.run([DUNE_EXE,"--remove",name], check=True)
+        subprocess.run([DUNES_EXE, "--remove", name], check=True)
 
 
 def validate_node_state( node_name, active_state, running_state ):
-    """Validate the result of a call to `dune --simple-list` contains the
+    """Validate the result of a call to `dunes --simple-list` contains the
     node in a given state.
 
     :param node_name: The node to search for.
@@ -88,8 +87,8 @@ def validate_node_state( node_name, active_state, running_state ):
         expect += "N|"
     expect += DEFAULT_HTTP_ADDR + "|" + DEFAULT_P2P_ADDR + "|" + DEFAULT_SHIP_ADDR
 
-    # Call dune, check the return is True.
-    completed_process = subprocess.run([DUNE_EXE,"--simple-list"],
+    # Call dunes, check the return is True.
+    completed_process = subprocess.run([DUNES_EXE, "--simple-list"],
                                        check=True, stdout=subprocess.PIPE)
 
     # Convert the captured stdin to a list for comparison with expected output.
@@ -100,7 +99,7 @@ def validate_node_state( node_name, active_state, running_state ):
 
 # pylint: disable=too-many-branches
 def validate_node_list( node_list ):
-    """Validate the result of a call to `dune --simple-list` contains all
+    """Validate the result of a call to `dunes --simple-list` contains all
     the nodes and states in node_list.
 
     :param node_list: A list of lists with the form:
@@ -108,7 +107,7 @@ def validate_node_list( node_list ):
         where node name is required, but other values have reasonable defaults.
     """
 
-    # Test algorith:
+    # Test algorithm:
     #   Build the list of expected results.
     #   Get the actual results.
     #   For each entry in the actual results,
@@ -121,7 +120,7 @@ def validate_node_list( node_list ):
 
         # Valid the array count in the entry.
         is_valid = True
-        if not len(entry) in (1,2,3,4,5,6):
+        if not len(entry) in (1, 2, 3, 4, 5, 6):
             print("len() should be a value between 1 and 6 but is: ", len(entry), " value: ", entry)
             is_valid = False
 
@@ -129,7 +128,7 @@ def validate_node_list( node_list ):
         active = False
         if len(entry) > 1:
             active = entry[1]
-            if not active in (True,False):
+            if active not in (True, False):
                 print("Invalid value for Active. Expect True/False, received: ", active)
                 is_valid = False
 
@@ -137,7 +136,7 @@ def validate_node_list( node_list ):
         running = False
         if len(entry) > 2:
             running = entry[2]
-            if not running in (True,False):
+            if running not in (True, False):
                 print("Invalid value for Running. Expect True/False, received: ", running)
                 is_valid = False
 
@@ -148,7 +147,7 @@ def validate_node_list( node_list ):
         p2p_addr=DEFAULT_P2P_ADDR
         if len(entry) > 4:
             p2p_addr = entry[4]
-        ship_addr=DEFAULT_SHIP_ADDR
+        ship_addr = DEFAULT_SHIP_ADDR
         if len(entry) > 5:
             ship_addr = entry[5]
 
@@ -167,9 +166,8 @@ def validate_node_list( node_list ):
         temp += http_addr + "|" + p2p_addr + "|" + ship_addr
         expect_list.append(temp)
 
-
-    # Call dune, check the return is True.
-    completed_process = subprocess.run([DUNE_EXE,"--simple-list"],
+    # Call dunes, check the return is True.
+    completed_process = subprocess.run([DUNES_EXE, "--simple-list"],
                                        check=True, stdout=subprocess.PIPE)
 
     # Convert the captured stdin to a list for comparison with expected output.
@@ -191,13 +189,13 @@ def validate_node_list( node_list ):
 def expect_empty_verbose_list():
     """Test that the output of list options are empty."""
 
-    # List of expected output lines from `dune --list`.
+    # List of expected output lines from `dunes --list`.
     empty_verbose_list = \
         "Node Name   | Active? | Running? | HTTP           | P2P          | SHiP          \n" + \
         "---------------------------------------------------------------------------------\n"
 
     # Call the tool, check expected value.
-    completed_process = subprocess.run([DUNE_EXE,"--list"], check=True, stdout=subprocess.PIPE)
+    completed_process = subprocess.run([DUNES_EXE, "--list"], check=True, stdout=subprocess.PIPE)
     assert completed_process.stdout.decode() == empty_verbose_list
 
 
@@ -206,10 +204,10 @@ def test_nodes():
     """Run the tests."""
 
     # Remove any container that already exists and create a fresh one.
-    cntr = container('dune_container', 'dune:latest')
+    cntr = container('dunes_container', 'dunes:latest')
     if cntr.exists():
-        subprocess.run([DUNE_EXE, "--destroy-container"], check=True)
-    subprocess.run([DUNE_EXE, "--start-container"], check=True)
+        subprocess.run([DUNES_EXE, "--destroy-container"], check=True)
+    subprocess.run([DUNES_EXE, "--start-container"], check=True)
 
     # Ensure there are no existing nodes.
     #   Tests `--simple-list` and `--list`
@@ -219,59 +217,63 @@ def test_nodes():
 
     # Create a node and test its state.
     #   Tests `--start` when the node needs to be created.
-    subprocess.run([DUNE_EXE,"--start", NODE_ALPHA], check=True)
+    subprocess.run([DUNES_EXE, "--start", NODE_ALPHA], check=True)
     validate_node_state(NODE_ALPHA, True, True)
     # Stop the node and test its state.
     #   Tests `--stop`
-    subprocess.run([DUNE_EXE,"--stop", NODE_ALPHA], check=True)
+    subprocess.run([DUNES_EXE, "--stop", NODE_ALPHA], check=True)
     validate_node_state(NODE_ALPHA, True, False)
     # Restart the node and test its state.
     #   Tests `--start` when the node already exists.
-    subprocess.run([DUNE_EXE,"--start", NODE_ALPHA], check=True)
+    subprocess.run([DUNES_EXE, "--start", NODE_ALPHA], check=True)
     validate_node_state(NODE_ALPHA, True, True)
 
     # Create a 2nd node and test the state of both nodes.
     #   Tests the behavior of `--start` on an already active, running node.
-    subprocess.run([DUNE_EXE,"--start", NODE_BRAVO], check=True)
+    subprocess.run([DUNES_EXE, "--start", NODE_BRAVO], check=True)
     validate_node_state(NODE_BRAVO, True, True)
     validate_node_list([[NODE_ALPHA, False, False],[NODE_BRAVO, True, True]])
 
     # Test --get-active shows NODE_BRAVO
     #   Tests `--get-active`.
-    assert subprocess.run([DUNE_EXE,"--get-active"], check=True, stdout=subprocess.PIPE).stdout.decode() == (NODE_BRAVO + "\n")
+    assert subprocess.run([DUNES_EXE, "--get-active"], check=True, stdout=subprocess.PIPE).stdout.decode() == (NODE_BRAVO + "\n")
 
     # Test --set-active works to switch to NODE_ALPHA and --get active returns the correct value.
     #   Tests `--set-active` switch active node while run state is left unchanged.
-    subprocess.run([DUNE_EXE,"--set-active", NODE_ALPHA], check=True)
+    subprocess.run([DUNES_EXE, "--set-active", NODE_ALPHA], check=True)
     validate_node_list([[NODE_ALPHA, True, False],[NODE_BRAVO, False, True]]) # Note this is TF,FT
-    assert subprocess.run([DUNE_EXE,"--get-active"], check=True, stdout=subprocess.PIPE).stdout.decode() == (NODE_ALPHA + "\n")
+    assert subprocess.run([DUNES_EXE, "--get-active"], check=True, stdout=subprocess.PIPE).stdout.decode() == (NODE_ALPHA + "\n")
 
     # Remove NODE_ALPHA, ensure it is no longer in the list.
     #   Tests `--remove`.
-    subprocess.run([DUNE_EXE,"--remove", NODE_ALPHA], check=True)
+    subprocess.run([DUNES_EXE, "--remove", NODE_ALPHA], check=True)
     validate_node_list([[NODE_BRAVO, False, True]]) # Note the state of NODE_BRAVO is FT
 
     # Remove anything to get to a clean slate.
     remove_all()
 
     # Test `--start` where start includes a config path.
-    subprocess.run([DUNE_EXE,"--start", NODE_ALPHA, "--config", CONFIG_PATH], check=True)
+    subprocess.run([DUNES_EXE, "--start", NODE_ALPHA, "--config", CONFIG_PATH], check=True)
     validate_node_list([[NODE_ALPHA, True, True, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR]])
 
     # Test `--start` where start includes a config file.
-    subprocess.run([DUNE_EXE,"--start", NODE_BRAVO, "--config", CONFIG_FILE], check=True)
+    subprocess.run([DUNES_EXE, "--start", NODE_BRAVO, "--config", CONFIG_FILE], check=True)
     validate_node_list([[NODE_ALPHA, False, False, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
                         [NODE_BRAVO, True, True, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR]])
 
     # Test `--start` with invalid config file path.
     #   pylint: disable=subprocess-run-check
-    completed_process = subprocess.run([DUNE_EXE,"--start", NODE_ALPHA, "--config", "unknown_config"], check=False)
+    completed_process = subprocess.run([DUNES_EXE, "--start", NODE_ALPHA, "--config", "unknown_config"], check=False)
     assert completed_process.returncode != 0
+    validate_node_list([[NODE_ALPHA, False, False, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
+                        [NODE_BRAVO, True, True, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR]])
 
     # Test `--config` alone.
     #   pylint: disable=subprocess-run-check
-    completed_process = subprocess.run([DUNE_EXE,"--config", "unknown_config"], check=False)
+    completed_process = subprocess.run([DUNES_EXE, "--config", "unknown_config"], check=False)
     assert completed_process.returncode != 0
+    validate_node_list([[NODE_ALPHA, False, False, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
+                        [NODE_BRAVO, True, True, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR]])
 
     #
     # Testing the import and export of nodes may not be sophisticated
@@ -284,43 +286,106 @@ def test_nodes():
         shutil.rmtree(EXPORT_DIR)
     os.mkdir(EXPORT_DIR)
 
-
     # Just add an additional node for export.
-    subprocess.run([DUNE_EXE,"--start", NODE_CHARLIE], check=True)
-
+    subprocess.run([DUNES_EXE, "--start", NODE_CHARLIE], check=True)
+    validate_node_list([[NODE_ALPHA, False, False, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
+                        [NODE_BRAVO, False, True, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
+                        [NODE_CHARLIE, True, True, DEFAULT_HTTP_ADDR, DEFAULT_P2P_ADDR, DEFAULT_SHIP_ADDR]])
 
     # things we need to test:
     #  export to TEST_PATH, TEST_PATH/my_file.tgz, TEST_PATH/does_not_exist_yet/my_file.tgz
 
     # Test --export-node using standard filename.
-    subprocess.run([DUNE_EXE,"--export-node", NODE_ALPHA, EXPORT_DIR], check=True)
+    subprocess.run([DUNES_EXE, "--export-node", NODE_ALPHA, EXPORT_DIR], check=True)
     assert os.path.exists(EXPORT_DIR + "/" + NODE_ALPHA + ".tgz")
 
+    # Below check documents current behavior: node_bravo is active, however before exporting node_charlie was active.
+    # Fix this in issue https://github.com/AntelopeIO/DUNES/issues/159
+    validate_node_list([[NODE_ALPHA, False, False, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
+                        [NODE_BRAVO, True, True, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
+                        [NODE_CHARLIE, False, True, DEFAULT_HTTP_ADDR, DEFAULT_P2P_ADDR, DEFAULT_SHIP_ADDR]])
+
     # Test --export-node using provided filename.
-    subprocess.run([DUNE_EXE,"--export-node", NODE_BRAVO, EXPORT_DIR + "/bravo_export.tgz"], check=True)
+    subprocess.run([DUNES_EXE, "--export-node", NODE_BRAVO, EXPORT_DIR + "/bravo_export.tgz"], check=True)
     assert os.path.exists(EXPORT_DIR + "/bravo_export.tgz")
 
+    validate_node_list([[NODE_ALPHA, False, False, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
+                        [NODE_BRAVO, True, True, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
+                        [NODE_CHARLIE, False, True, DEFAULT_HTTP_ADDR, DEFAULT_P2P_ADDR, DEFAULT_SHIP_ADDR]])
+
     # Test --export-node using non-existing path.
-    subprocess.run([DUNE_EXE,"--export-node", NODE_CHARLIE, EXPORT_DIR + "/new_path/charlie_export.tgz"], check=True)
+    subprocess.run([DUNES_EXE, "--export-node", NODE_CHARLIE, EXPORT_DIR + "/new_path/charlie_export.tgz"], check=True)
     assert os.path.exists(EXPORT_DIR + "/new_path/charlie_export.tgz")
 
+    validate_node_list([[NODE_ALPHA, False, False, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
+                        [NODE_BRAVO, False, True, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
+                        [NODE_CHARLIE, True, True, DEFAULT_HTTP_ADDR, DEFAULT_P2P_ADDR, DEFAULT_SHIP_ADDR]])
 
     # Clean up before import.
     remove_all()
 
     # Test --import-node
     #  Import each node from the export tests and
-    subprocess.run([DUNE_EXE,"--import-node", EXPORT_DIR + "/ALPHA_NODE.tgz", NODE_ALPHA], check=True)
+    subprocess.run([DUNES_EXE, "--import-node", EXPORT_DIR + "/ALPHA_NODE.tgz", NODE_ALPHA], check=True)
     validate_node_list([[NODE_ALPHA, True, True, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR]])
 
-    subprocess.run([DUNE_EXE,"--import-node", EXPORT_DIR + "/bravo_export.tgz", NODE_BRAVO], check=True)
+    subprocess.run([DUNES_EXE, "--import-node", EXPORT_DIR + "/bravo_export.tgz", NODE_BRAVO], check=True)
     validate_node_list([[NODE_ALPHA, False, False, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
                         [NODE_BRAVO, True, True, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR]])
 
-    subprocess.run([DUNE_EXE,"--import-node", EXPORT_DIR + "/new_path/charlie_export.tgz", NODE_CHARLIE], check=True)
+    subprocess.run([DUNES_EXE, "--import-node", EXPORT_DIR + "/new_path/charlie_export.tgz", NODE_CHARLIE], check=True)
     validate_node_list([[NODE_ALPHA, False, False, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
                         [NODE_BRAVO, False, True, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
                         [NODE_CHARLIE, True, True, DEFAULT_HTTP_ADDR, DEFAULT_P2P_ADDR, DEFAULT_SHIP_ADDR]])
+
+    # Finally, clean everything up before final return.
+    remove_all()
+
+
+def test_start_active_node():
+    """start_active_node"""
+
+    # Remove any container that already exists and create a fresh one.
+    cntr = container('dunes_container', 'dunes:latest')
+    if cntr.exists():
+        subprocess.run([DUNES_EXE, "--destroy-container"], check=True)
+    subprocess.run([DUNES_EXE, "--start-container"], check=True)
+
+    # Ensure there are no existing nodes.
+    #   Tests `--simple-list` and `--list`
+    remove_all()
+    validate_node_list([])
+    expect_empty_verbose_list()
+
+    # Create a node and test its state.
+    #   Tests `--start` when the node needs to be created.
+    subprocess.run([DUNES_EXE, "--start", NODE_ALPHA], check=True)
+    validate_node_state(NODE_ALPHA, True, True)
+
+    # Create a 2nd node and test the state of both nodes.
+    subprocess.run([DUNES_EXE, "--start", NODE_BRAVO], check=True)
+    validate_node_state(NODE_BRAVO, True, True)
+    validate_node_list([[NODE_ALPHA, False, False], [NODE_BRAVO, True, True]])
+
+    # Create a 3rd node
+    subprocess.run([DUNES_EXE, "--start", NODE_CHARLIE], check=True)
+    validate_node_state(NODE_CHARLIE, True, True)
+    validate_node_list([[NODE_ALPHA, False, False], [NODE_BRAVO, False, False], [NODE_CHARLIE, True, True]])
+
+    # Test --get-active shows NODE_BRAVO
+    #   Tests `--get-active`.
+    assert subprocess.run([DUNES_EXE, "--get-active"], check=True, stdout=subprocess.PIPE).stdout.decode() == (NODE_CHARLIE + "\n")
+
+    # Test --set-active works to switch to NODE_ALPHA and --get active returns the correct value.
+    #   Tests `--set-active` switch active node while run state is left unchanged.
+    subprocess.run([DUNES_EXE, "--set-active", NODE_ALPHA], check=True)
+    validate_node_list([[NODE_ALPHA, True, False], [NODE_BRAVO, False, False], [NODE_CHARLIE, False, True]]) # Note this is TF,FT
+    assert subprocess.run([DUNES_EXE, "--get-active"], check=True, stdout=subprocess.PIPE).stdout.decode() == (NODE_ALPHA + "\n")
+
+    # Make sure you can start active node
+    subprocess.run([DUNES_EXE, "--start", NODE_ALPHA], check=True)
+    validate_node_state(NODE_ALPHA, True, True)
+    validate_node_list([[NODE_ALPHA, True, True], [NODE_BRAVO, False, False], [NODE_CHARLIE, False, False]])
 
     # Finally, clean everything up before final return.
     remove_all()

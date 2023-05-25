@@ -10,25 +10,25 @@ if [[ ${VARIANT} == "deb" ]]; then
     fi
 fi
 
-VERSION_NO_SUFFIX="1.1.1"
+SCRIPT=$(readlink -f "$0")
+DIR=$(dirname "$SCRIPT")
+cd $DIR
+export DIR
+
+DUNES_EXE=$(dirname ${DIR})/dune
+
+VERSION_NO_SUFFIX=$(${DUNES_EXE} --version-short)
 VERSION_SUFFIX="dev"
 VERSION="$VERSION_NO_SUFFIX"-"$VERSION_SUFFIX"
 
-SCRIPT=$(readlink -f "$0")
-DIR=$(dirname "$SCRIPT")
-export DIR
-
-ORIGINAL_DIR=`pwd`
-cd $DIR
 
 # Using CMAKE_BINARY_DIR uses an absolute path and will break cross-vm building/download/make functionality
 BUILD_DIR="$DIR/../"
 
 VENDOR="EOSNetworkFoundation"
-PROJECT_PREFIX="antelopeio"
-PROJECT="dune"
-DESC="Docker Utilities for Node Execution (DUNE) is a tool to abstract over Leap programs, CDT and other services/tools related to Antelope blockchains."
-URL="https://github.com/AntelopeIO/DUNE"
+PROJECT="dunes"
+DESC="Docker Utilities for Node Execution and Subsystems (DUNES) is a tool to abstract over Leap programs, CDT and other services/tools related to Antelope blockchains."
+URL="https://github.com/AntelopeIO/DUNES"
 EMAIL="support@eosnetwork.com"
 
 export BUILD_DIR
@@ -36,7 +36,6 @@ export VERSION_NO_SUFFIX
 export VERSION_SUFFIX
 export VERSION
 export VENDOR
-export PROJECT_PREFIX
 export PROJECT
 export DESC
 export URL

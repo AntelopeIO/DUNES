@@ -51,6 +51,8 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 
+src/plugin/dune_hello/*
+
 # Translations
 *.mo
 *.pot
