@@ -35,8 +35,12 @@ def load_module(absolute_path):
     sys.path.append(module_root)
     spec = importlib.util.spec_from_file_location(module_name, absolute_path)
     py_mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(py_mod)
-    return py_mod
+
+    try:
+        spec.loader.exec_module(py_mod)
+        return py_mod
+    except:
+        return None
 
 
 def load_all_modules_from_dir(plugin_dir):
@@ -56,6 +60,9 @@ def load_all_modules_from_dir(plugin_dir):
             continue
 
         loaded_module = load_module(main_py)
+        if not loaded_module:
+            print(f'Could not load {main_py}')
+            continue
         if not hasattr(loaded_module, 'handle_args'):
             print('Plugin ' + main_py + ' does not have handle_args() method')
             continue
@@ -74,11 +81,16 @@ if __name__ == '__main__':
 
     current_script_path = os.path.abspath(__file__)
     current_script_dir = os.path.dirname(current_script_path)
+    pluggin_dir = os.path.join(os.path.split(current_script_dir)[0], 'plugin');
 
-    modules = load_all_modules_from_dir(current_script_dir + '/../plugin/')
-
-    for module in modules:
-        module.add_parsing(parser.get_parser())
+    modules = []
+    for module in load_all_modules_from_dir(pluggin_dir):
+        try:
+            module.add_parsing(parser.get_parser())
+            modules.append(module)
+        except:
+            print(f"Can't load module {module}")
+            continue
 
     args = parser.parse()
 
