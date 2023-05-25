@@ -91,6 +91,13 @@ class dunes:
     def is_node_running(self, nod):
         return self._docker.find_pid('/app/nodes/' + nod.name() + ' ') != -1
 
+    def is_named_node_running(self, nod_name):
+        return self._docker.find_pid('/app/nodes/' + nod_name + ' ') != -1
+
+    def is_node_dirtydbflag_set(self, nod_name):
+        # use 'atabase dirty flag set' which is used in main.cpp of LEAP
+        return self._docker.file_has_string('/app/' + nod_name +'.out', 'atabase dirty flag set', tail_file_only = True)
+
     def set_active(self, nod):
         if self.node_exists(nod):
             self._context.set_active(nod)
@@ -109,7 +116,7 @@ class dunes:
         #from "v4.0.0-rc1\n" make array of "["4","0","0","rc1"]"
         return re.split(r"[+.-]", stdout[1:].strip())
 
-    def start_node(self, nod, snapshot=None):
+    def start_node(self, nod, snapshot=None, replay_blockchain=False):
         stdout, stderr, exit_code = self._docker.execute_cmd(['ls', '/app/nodes'])
 
         if self.is_node_running(nod):
@@ -120,6 +127,11 @@ class dunes:
 
         if snapshot is not None:
             cmd = cmd + ['--snapshot /app/nodes/' + nod.name() + '/snapshots/' + snapshot + ' -e']
+        else:
+            cmd = cmd + [' ']
+
+        if replay_blockchain is True:
+            cmd = cmd + ['--replay-blockchain']
         else:
             cmd = cmd + [' ']
 

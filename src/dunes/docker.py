@@ -128,6 +128,18 @@ class docker:
         # occurrence, it just means that the directory does not exist
         return self.execute_cmd(['test', '-d', directory], check_status=False)[2] == 0
 
+    def file_has_string(self, file_name, str_regex, tail_file_only = False):
+        # using check_status=False, because we do not want to raise docker_error
+        # exception when the file does not have str_regex
+        # if the file is too large, set tail_file_only = True
+        # to search only the tail (last 10 lines) of the file
+        grep_cmd =  'grep "' + str_regex + '" ' +  file_name
+        if tail_file_only is True:
+            grep_cmd = 'tail ' + file_name + ' | grep "' + str_regex + '"'
+        # Has to make sure str_regex is double quoted !
+        # print("[DEBUG] grep_cmd to execute:\t"+ grep_cmd +"\n")
+        return self.execute_cmd(['bash', '-c', grep_cmd], check_status=False)[2] == 0
+
     def tar_dir(self, file_name, directory):
         return self.execute_cmd(['tar', 'cvzf', file_name + '.tgz', directory])
 
