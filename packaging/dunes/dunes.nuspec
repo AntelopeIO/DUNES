@@ -3,7 +3,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
   <metadata>
     <id>dunes</id>
-    <version>1.1.1</version>
+    <version>1.1.2</version>
     <owners>EOS Network Foundation</owners>
     <title>DUNES</title>
     <authors>EOS Network Foundation</authors>
