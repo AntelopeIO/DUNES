@@ -137,7 +137,7 @@ After installation open `cmd.exe` and verify `python --version` returns current 
 
 1. Install [Chocolatey](https://docs.chocolatey.org/en-us/choco/setup).
 2. In PowerShell run as administrator following command:
-`choco install antelopeio-dune --version=1.1.1`
+`choco install antelopeio-dune --version=1.1.2`
 3. Restart your computer (this is because %PATH% has to be reloaded. In cmd.exe it is enough to run command `refreshenv`).
 4. Open PowerShell / cmd.exe and try that following command works: `dune.bat --version`.
 
