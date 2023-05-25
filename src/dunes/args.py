@@ -160,7 +160,7 @@ class arg_parser:
             '--leap', nargs='?', const='-1', metavar="LEAP_VERSION",  help='Set the version of leap. '
             'If no version is provided, display available leap versions.')
         self._parser.add_argument('--cdt', nargs='?', const='-1', metavar="CDT_VERSION",
-                                  help='Set the version of CDT (Contract Development Toolkit).'            
+                                  help='Set the version of CDT (Contract Development Toolkit).'
                                        'If no version is provided, display available CDT versions.')
         self.add_antler_arguments()
 
