@@ -7,7 +7,7 @@ from unittest.mock import patch
 from unittest import TestCase
 from os.path import dirname, realpath
 
-sys.path.insert(1, sys.path.append(dirname(realpath(__file__)) + "/../src/dune"))
+sys.path.insert(1, sys.path.append(dirname(realpath(__file__)) + "/../src/dunes"))
 # pylint: disable=wrong-import-position
 import version_selector
 

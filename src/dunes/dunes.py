@@ -1,10 +1,12 @@
 # pylint: disable=missing-function-docstring, missing-module-docstring
 import os
-import sys                      # sys.stderr
+import re
+import sys # sys.stderr
 import time
 from context import context
 from docker import docker
 from node_state import node_state
+from configs import get_config_ini
 
 # VERSION INFORMATION
 def version_major():
@@ -16,7 +18,7 @@ def version_minor():
 
 
 def version_patch():
-    return 0
+    return 2
 
 
 def version_suffix():
@@ -31,11 +33,11 @@ def version_full():
     return main_version + "." + version_suffix()
 
 
-class dune_error(Exception):
+class dunes_error(Exception):
     pass
 
 
-class dune_node_not_found(dune_error):
+class dunes_node_not_found(dunes_error):
     _name = ""
 
     def __init__(self, n):
@@ -69,7 +71,7 @@ class node:
         return '/app/nodes/' + self.name()
 
 
-class dune:
+class dunes:
     _docker = None
     _wallet_pw = None
     _context = None
@@ -79,7 +81,7 @@ class dune:
 
     def __init__(self, cl_args):
         self._cl_args = cl_args
-        self._docker = docker('dune_container', 'dune:latest', cl_args)
+        self._docker = docker('dunes_container', 'dunes:latest', cl_args)
         self._wallet_pw = self.get_wallet_pw()
         self._context = context(self._docker)
 
@@ -100,7 +102,7 @@ class dune:
         if self.node_exists(nod):
             self._context.set_active(nod)
         else:
-            raise dune_node_not_found(nod.name())
+            raise dunes_node_not_found(nod.name())
 
     def get_active(self):
         return self._context.get_active()
@@ -108,6 +110,11 @@ class dune:
     def create_node(self, nod):
         print("Creating node [" + nod.name() + "]")
         self._docker.execute_cmd(['mkdir', '-p', nod.data_dir()])
+
+    def get_current_nodeos_version(self):
+        stdout, stderr, exit_code = self._docker.execute_cmd(['nodeos', '--version'])
+        #from "v4.0.0-rc1\n" make array of "["4","0","0","rc1"]"
+        return re.split(r"[+.-]", stdout[1:].strip())
 
     def start_node(self, nod, snapshot=None, replay_blockchain=False):
         stdout, stderr, exit_code = self._docker.execute_cmd(['ls', '/app/nodes'])
@@ -129,13 +136,16 @@ class dune:
             cmd = cmd + [' ']
 
         # if node name is not found we need to create it
-        is_restart=True
+        is_restart = True
         if not nod.name() in stdout:
-            is_restart=False
+            is_restart = False
             self.create_node(nod)
 
         # copy config.ini to config-dir
         if not is_restart and nod.config() is None:
+            current_ver = self.get_current_nodeos_version()
+            config_str = get_config_ini(self._docker.get_arch(), current_ver[0], current_ver[1], current_ver[2])
+            self._docker.write_file("/app/config.ini", config_str)
             nod.set_config('/app/config.ini')
 
         if nod.config() is not None:
@@ -170,7 +180,7 @@ class dune:
         print(stdout)
         if exit_code != 0:
             print(stderr)
-            raise dune_error
+            raise dunes_error
 
     def stop_node(self, nod):
         if self.node_exists(nod):
@@ -189,7 +199,7 @@ class dune:
 
                     max_wait_time_secs -= 1
 
-                    if max_wait_time_secs <= 0 :
+                    if max_wait_time_secs <= 0:
                         print("ERROR: Cannot stop [" + nod.name() + "], PID: " + pid)
                         sys.exit(1)
 
@@ -198,7 +208,7 @@ class dune:
             else:
                 print("Node [" + nod.name() + "] is not running")
         else:
-            raise dune_node_not_found(nod.name())
+            raise dunes_node_not_found(nod.name())
 
     def remove_node(self, nod):
         self.stop_node(nod)
@@ -221,21 +231,19 @@ class dune:
     def start_container(self):
         self._docker.start()
 
-
     def state_list(self):
         # [(node_name, active, running, ports),...]
-        rv=[]
+        rv = []
         stdout, stderr, exit_code = self._docker.execute_cmd(['ls', '/app/nodes'])
         ctx = self._context.get_ctx()
         for node_name in stdout.split():
             active = False
             if node_name == ctx.active:
-                active=True
+                active = True
             running = self.is_node_running(node(node_name))
             addrs = self._context.get_config_args(node(node_name))
-            rv.append( node_state(node_name, active, running, addrs[0], addrs[1], addrs[2]) )
+            rv.append(node_state(node_name, active, running, addrs[0], addrs[1], addrs[2]))
         return rv
-
 
     # pylint: disable=too-many-branches
     def list_nodes(self, simple=False, sep='|'):
@@ -243,11 +251,11 @@ class dune:
         buffer = 3
         node_name = "Node Name"
 
-        states=self.state_list()
+        states = self.state_list()
         name_width = len(node_name) + buffer
         if not simple:
             for state in states:
-                name_width = max( len(state.name) + buffer, name_width)
+                name_width = max(len(state.name) + buffer, name_width)
 
         if simple:
             print("Node|Active|Running|HTTP|P2P|SHiP")
@@ -257,12 +265,12 @@ class dune:
             print(f'{"":{"-"}<{name_width + len(header)}}')
 
         for state in states:
-            print( state.string(sep=sep, simple=simple, name_width=name_width) )
+            print(state.string(sep=sep, simple=simple, name_width=name_width))
 
     def stop_conflicting_nodes(self, nod):
-        my_addrs=self._context.get_config_args(nod)
-        was_running=[]
-        was_active=None
+        my_addrs = self._context.get_config_args(nod)
+        was_running = []
+        was_active = None
 
         # For each state, make decisions based on it's
         for state in self.state_list():
@@ -278,23 +286,21 @@ class dune:
                     self.stop_node(node(state.name))
                     print("\t", state.name, "was stopped due to address collision.")
 
-        return (was_active, was_running)
+        return was_active, was_running
 
     # pylint: disable=too-many-locals,too-many-statements
     def export_node(self, nod, path):
         # Sanity check
         if not self.node_exists(nod):
-            raise dune_node_not_found(nod.name())
+            raise dunes_node_not_found(nod.name())
 
         ctx = self._context.get_ctx()
 
-        is_active=nod.name() == ctx.active
-        is_running=self.is_node_running(nod)
+        is_active = nod.name() == ctx.active
+        is_running = self.is_node_running(nod)
 
-        was_running=[]
-        was_active=None
-
-        initial_states=[]
+        was_running = []
+        was_active = None
 
         if not is_active or not is_running:
             (was_active, was_running) = self.stop_conflicting_nodes(nod)
@@ -306,25 +312,24 @@ class dune:
             self.set_active(nod)
 
         # Paths:
-        directory=path
-        filename=nod.name()+".tgz"
+        directory = path
+        filename = nod.name() + ".tgz"
 
         # Update paths based on input.
         if os.path.splitext(path)[1].lower() == ".tgz":
-            directory=os.path.split(path)[0]
-            filename=os.path.split(path)[1]
+            directory = os.path.split(path)[0]
+            filename = os.path.split(path)[1]
 
         # Ensure the directory is absolute and it exists.
-        directory=os.path.realpath(directory)
+        directory = os.path.realpath(directory)
         if not os.path.exists(directory):
             os.makedirs(directory)
 
         # Determine the final full path.
-        fullpath=os.path.join(directory,filename)
+        fullpath = os.path.join(directory, filename)
 
-        src_path='/app/nodes/' + nod.name()
-        dst_path='/app/tmp/' + nod.name()
-
+        src_path = '/app/nodes/' + nod.name()
+        dst_path = '/app/tmp/' + nod.name()
 
         print("Exporting data from node [" + nod.name() + "] to location " + fullpath)
 
@@ -336,7 +341,8 @@ class dune:
         self._docker.execute_cmd(['mkdir', '-p', dst_path])
         self._docker.execute_cmd(['cp', '-R', src_path + '/blocks', dst_path + '/blocks'])
         self._docker.execute_cmd(['cp', src_path + '/config.ini', dst_path + '/config.ini'])
-        self._docker.execute_cmd(['cp', '-R', src_path + '/protocol_features', dst_path + '/protocol_features'])
+        self._docker.execute_cmd(
+            ['cp', '-R', src_path + '/protocol_features', dst_path + '/protocol_features'])
         self._docker.execute_cmd(['cp', '-R', src_path + '/snapshots', dst_path + '/snapshots'])
 
         self._docker.tar_dir(nod.name(), 'tmp/' + nod.name())
@@ -356,16 +362,15 @@ class dune:
         for old_runner in was_running:
             self.start_node(node(old_runner))
 
-
     def import_node(self, path, nod):
 
         # Sanity check path
         if not os.path.exists(path):
             print("File not found: ", path, file=sys.stderr)
-            raise dune_error
+            raise dunes_error
         if os.path.splitext(path)[1].lower() != ".tgz":
             print("Path extension must be `.tgz`: ", path, file=sys.stderr)
-            raise dune_error
+            raise dunes_error
 
         print("Importing node data [" + nod.name() + "]")
 
@@ -377,28 +382,28 @@ class dune:
         stdout, stderr, exit_code = self._docker.cp_from_host(path, '/app/tmp.tgz')
         if exit_code != 0:
             print(stderr)
-            raise dune_error
+            raise dunes_error
 
         # Clean up the tmp file, untar, and remove the file.
-        self._docker.rm_file('/app/tmp') # remove any existing file
+        self._docker.rm_file('/app/tmp')  # remove any existing file
         self._docker.untar('/app/tmp.tgz')
         self._docker.rm_file('/app/tmp.tgz')
 
         # Find the path inside temp of the import data.
         stdout, stderr, exit_code = self._docker.execute_cmd(['ls', '/app/tmp'])
-        src_name=stdout.split()[0]
-        src_path='/app/tmp/' + src_name
+        src_name = stdout.split()[0]
+        src_path = '/app/tmp/' + src_name
 
         # Calculate and create the destination path.
-        dst_path='/app/nodes/' + nod.name()
+        dst_path = '/app/nodes/' + nod.name()
         self._docker.execute_cmd(['mkdir', '-p', dst_path + '/blocks'])
 
         # Move data to the destination.
         self._docker.execute_cmd(['mv', src_path + '/blocks/blocks.index', dst_path + '/blocks/blocks.index'])
-        self._docker.execute_cmd(['mv', src_path + '/blocks/blocks.log',   dst_path + '/blocks/blocks.log'])
-        self._docker.execute_cmd(['mv', src_path + '/config.ini',          dst_path + '/config.ini'])
-        self._docker.execute_cmd(['mv', src_path + '/protocol_features',   dst_path + '/protocol_features'])
-        self._docker.execute_cmd(['mv', src_path + '/snapshots',           dst_path + '/snapshots'])
+        self._docker.execute_cmd(['mv', src_path + '/blocks/blocks.log', dst_path + '/blocks/blocks.log'])
+        self._docker.execute_cmd(['mv', src_path + '/config.ini', dst_path + '/config.ini'])
+        self._docker.execute_cmd(['mv', src_path + '/protocol_features', dst_path + '/protocol_features'])
+        self._docker.execute_cmd(['mv', src_path + '/snapshots', dst_path + '/snapshots'])
         # Clean up the temp.
         self._docker.rm_file('/app/tmp')
 
@@ -406,7 +411,7 @@ class dune:
         stdout, stderr, exit_code = self._docker.execute_cmd(['ls', dst_path + '/snapshots'])
         if len(stdout) == 0:
             print('No snapshot found for ', nod.name(), ' sourced from: \n\t', path, file=sys.stderr)
-            raise dune_error
+            raise dunes_error
 
         # Start and activate the node...
         self.start_node(nod, stdout.split()[0])
@@ -429,8 +434,7 @@ class dune:
                 # we don't want to fail here
                 return
             stderr = stderr or '\n'  # do not fail on next line if stderr is None
-            raise dune_error(stderr.splitlines()[0])
-
+            raise dunes_error(stderr.splitlines()[0])
 
     def import_key(self, key):
         self.unlock_wallet()
@@ -477,7 +481,7 @@ class dune:
         self.import_key(private)
         print(stderr)
 
-    #pylint: disable=too-many-arguments
+    # pylint: disable=too-many-arguments
     def system_newaccount(self, name, creator=None, pub=None, private=None, additional_args=None):
         if private is None:
             keys = self.create_key()
@@ -503,7 +507,7 @@ class dune:
         self.import_key(private)
         print(stderr)
 
-# Integration with antler-proj begin ----------------------------------------------------------------------
+    # Integration with antler-proj begin ------------------------------------------
 
     def create_project(self, path: str, name: str, ver: str = None):
 
@@ -545,11 +549,11 @@ class dune:
         self._docker.execute_cmd(["antler-proj", "add", container_dir, "lib",
                                   dependency_name, lang] + opts)
 
-    def add_dep(self, path: str,        # project path
-                object_name: str,       # object name (app/lib)
-                dependency_name: str,   # dependency name
-                location: str = None,   # location of dep
-                tag_rel: str = None,    # tag/release number
+    def add_dep(self, path: str,  # project path
+                object_name: str,  # object name (app/lib)
+                dependency_name: str,  # dependency name
+                location: str = None,  # location of dep
+                tag_rel: str = None,  # tag/release number
                 hash_str: str = None):  # hash
 
         opts: list = []
@@ -593,11 +597,11 @@ class dune:
         self._docker.execute_cmd(["antler-proj", "update", container_dir, "lib",
                                   dependency_name, lang] + opts)
 
-    def update_dep(self, path: str,        # project path
-                   object_name: str,       # object name (app/lib)
-                   dependency_name: str,   # dependency name
-                   location: str = None,   # location of dep
-                   tag_rel: str = None,    # tag/release number
+    def update_dep(self, path: str,  # project path
+                   object_name: str,  # object name (app/lib)
+                   dependency_name: str,  # dependency name
+                   location: str = None,  # location of dep
+                   tag_rel: str = None,  # tag/release number
                    hash_str: str = None):  # hash
 
         opts: list = []
@@ -613,22 +617,22 @@ class dune:
         self._docker.execute_cmd(["antler-proj", "update", container_dir, "dep",
                                   object_name, dependency_name] + opts)
 
-    def remove_dep(self, path: str,        # project path
-                   object_name: str,       # object name (app/lib)
-                   dependency_name: str):   # dependency name
+    def remove_dep(self, path: str,  # project path
+                   object_name: str,  # object name (app/lib)
+                   dependency_name: str):  # dependency name
 
         container_dir = self._docker.abs_host_path(path)
         self._docker.execute_cmd(["antler-proj", "remove", container_dir, "dep",
                                   object_name, dependency_name])
 
-    def remove_app(self, path: str,        # project path
-                   app_name: str):       # app name
+    def remove_app(self, path: str,  # project path
+                   app_name: str):  # app name
 
         container_dir = self._docker.abs_host_path(path)
         self._docker.execute_cmd(["antler-proj", "remove", container_dir, "app", app_name])
 
-    def remove_lib(self, path: str,        # project path
-                   lib_name: str):       # lib name
+    def remove_lib(self, path: str,  # project path
+                   lib_name: str):  # lib name
 
         container_dir = self._docker.abs_host_path(path)
         self._docker.execute_cmd(["antler-proj", "remove", container_dir, "lib", lib_name])
@@ -648,7 +652,7 @@ class dune:
         container_dir = self._docker.abs_host_path(path)
         self._docker.execute_cmd(["antler-proj", "populate", container_dir])
 
-# Integration with antler-proj end ----------------------------------------------------------------------
+    # Integration with antler-proj end ----------------------------------------------------------------------
 
     def execute_cmd(self, args, **kwargs):
         self._docker.execute_cmd(args, capture_output=False, **kwargs)
@@ -689,7 +693,7 @@ class dune:
             ['cdt-init', '-project', name, '-path', directory] + bare)
         if exit_code != 0:
             print(stdout)
-            raise dune_error()
+            raise dunes_error()
 
     def create_snapshot(self):
         ctx = self._context.get_ctx()
@@ -721,7 +725,7 @@ class dune:
             print(stdout)
         else:
             print(stderr)
-            raise dune_error()
+            raise dunes_error()
 
     def preactivate_feature(self):
         ctx = self._context.get_ctx()
@@ -737,7 +741,7 @@ class dune:
 
         if exit_code != 0:
             print(stderr)
-            raise dune_error()
+            raise dunes_error()
         print("Preactivate Features: " + stdout)
 
     def send_action(self, action, acnt, data, permission='eosio@active'):
@@ -863,17 +867,20 @@ class dune:
                              'eosio@active')
         else:
             print("Feature Not Found")
-            raise dune_error()
+            raise dunes_error()
 
     def setup_token(self, currency, max_value, initial_value):
-        #Create the currency with a maximum value of max_value tokens.
-        self.send_action('create', 'eosio.token',  '[ "eosio", "' + max_value + " " +  currency + '" ]', 'eosio.token@active')
-        #Issue initial_value tokens (Remaining tokens not in circulation can be considered to be held in reserve.)
-        self.send_action('issue', 'eosio.token', '[ "eosio", "' + initial_value + " " + currency + '", "memo" ]')
-        #Initialize the system account with code zero (needed at initialization time) and currency / token with precision 4
+        # Create the currency with a maximum value of max_value tokens.
+        self.send_action('create', 'eosio.token', '[ "eosio", "' + max_value + " " + currency + '" ]',
+                         'eosio.token@active')
+        # Issue initial_value tokens (Remaining tokens not in circulation can be considered to be held in reserve.)
+        self.send_action('issue', 'eosio.token',
+                         '[ "eosio", "' + initial_value + " " + currency + '", "memo" ]')
+        # Initialize the system account with code zero (needed at initialization time) and currency / token with precision 4
         self.send_action('init', 'eosio', '["0", "4,' + currency + '"]')
 
-    def bootstrap_system(self, full, currency = 'SYS', max_value = '10000000000.0000', initial_value = '1000000000.0000'):
+    def bootstrap_system(self, full, currency='SYS', max_value='10000000000.0000',
+                         initial_value='1000000000.0000'):
         self.preactivate_feature()
         if full:
             # create account for multisig contract

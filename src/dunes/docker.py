@@ -1,18 +1,18 @@
 import os
 import platform
 import subprocess
+import tempfile
 
 
 class docker_error(Exception):
     pass
-
 
 class docker:
 
     _container = ""
     _image = ""
     _cl_args = None
-    _dune_url = 'ghcr.io/antelopeio/dune:latest'
+    _dunes_url = 'ghcr.io/antelopeio/dunes:latest'
 
     def __init__(self, container, image, cl_args):
         self._container = container
@@ -31,15 +31,15 @@ class docker:
                 self.execute_docker_cmd(
                     ['container', 'start', self._container])
             else:
-                # download dune image
-                dune_image = subprocess.check_output(['docker', 'images', '-q', self._image], stderr=None, encoding='utf-8')
+                # download DUNES image
+                dunes_image = subprocess.check_output(['docker', 'images', '-q', self._image],
+                                                      stderr=None, encoding='utf-8')
 
-                if dune_image == '':
-                    print('Downloading Dune image')
+                if dunes_image == '':
+                    print('Downloading DUNES image')
                     self.upgrade()
-                    with subprocess.Popen(['docker', 'tag', self._dune_url, 'dune:latest']) as proc:
+                    with subprocess.Popen(['docker', 'tag', self._dunes_url, 'dunes:latest']) as proc:
                         proc.communicate()
-
 
                 # start a new container
                 print("Creating docker container [" + self._container + "]")
@@ -47,10 +47,10 @@ class docker:
                 if platform.system() == 'Windows':
                     host_dir = 'C:/'
 
-                stdout, stderr, exit_code = self.execute_docker_cmd(
+                self.execute_docker_cmd(
                     ['run', '-p', '127.0.0.1:8888:8888/tcp', '-p', '127.0.0.1:9876:9876/tcp', '-p',
-                     '127.0.0.1:8080:8080/tcp', '-p', '127.0.0.1:3000:3000/tcp', '-p', '127.0.0.1:8000:8000/tcp', '-v',
-                     host_dir + ':/host', '-d', '--name=' + self._container,
+                     '127.0.0.1:8080:8080/tcp', '-p', '127.0.0.1:3000:3000/tcp', '-p',
+                     '127.0.0.1:8000:8000/tcp', '-v', host_dir + ':/host', '-d', '--name=' + self._container,
                      self._image, 'tail', '-f', '/dev/null'])
 
     @staticmethod
@@ -85,6 +85,7 @@ class docker:
     def execute_docker_cmd(self, cmd, *, check_status=True, capture_output=True):
         """Execute the given docker command in the active container.
 
+        :param cmd: the command
         :param check_status: if command has a return code != 0 then raise an exception
         :param capture_output: whether to capture stdout and stderr and return them or to
                                print the streams normally
@@ -115,7 +116,7 @@ class docker:
             print('docker '+' '.join(cmd))
             self.print_streams(stdout, stderr)
 
-        return (stdout, stderr, status)
+        return stdout, stderr, status
 
     def file_exists(self, file_name):
         # not checking status code here because a non-zero status is a normal
@@ -154,6 +155,24 @@ class docker:
     def rm_file(self, file_name):
         self.execute_cmd(['rm', '-rf', file_name])
 
+    def write_file(self, file_name, body):
+        tmp_name = ""
+        with tempfile.NamedTemporaryFile(mode='w+', delete=False) as tmp:
+            tmp.write(body)
+            tmp.flush()
+            tmp_name = tmp.name
+
+        self.cp_from_host(tmp_name, file_name)
+        os.unlink(tmp_name)
+
+    def get_arch(self) :
+        stdout, stderr, exit_code = self.execute_cmd(['uname', '-m'])
+        if stdout in ('x86_64\n', 'amd64\n') :
+            return 'amd64'
+        if stdout in ('aarch64\n', 'arm64v8\n', 'arm64\n') :
+            return 'arm64'
+        raise NotImplementedError("Error, using an unsupported architecture")
+
     def find_pid(self, process_name):
         stdout, stderr, exit_code = self.execute_cmd(['ps', 'ax'])
         for line in stdout.splitlines(True):
@@ -166,8 +185,8 @@ class docker:
     def get_container_name(self):
         return self._container
 
-    def commit(self, name):
-        self.execute_docker_cmd(['commit', 'dune', 'dune'])
+    def commit(self):
+        self.execute_docker_cmd(['commit', 'dunes', 'dunes'])
 
     def start(self):
         print("Starting docker container [" + self._container + "]")
@@ -201,5 +220,5 @@ class docker:
         return self.execute_cmd(cmd + ['&'])
 
     def upgrade(self):
-        with subprocess.Popen(['docker', 'pull', self._dune_url]) as proc:
+        with subprocess.Popen(['docker', 'pull', self._dunes_url]) as proc:
             proc.communicate()

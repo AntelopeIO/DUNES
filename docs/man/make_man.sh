@@ -1,3 +1,3 @@
 #!/bin/sh
 
-pandoc dune.1.md -s -t man -o dune.1
+pandoc dunes.1.md -s -t man -o dunes.1

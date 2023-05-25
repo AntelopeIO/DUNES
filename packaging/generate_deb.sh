@@ -13,12 +13,15 @@ if [[ -z $RELEASE ]]; then
   RELEASE="1"
 fi
 
-PACKAGE_NAME=$(echo "$PROJECT_PREFIX-$PROJECT")
+PACKAGE_NAME=$(echo "$PROJECT")
 NAME="${PACKAGE_NAME}_${VERSION_NO_SUFFIX}-${RELEASE}_all"
 
 mkdir -p "$PROJECT"/DEBIAN
 echo "Package: $PACKAGE_NAME
 Version: $VERSION_NO_SUFFIX-$RELEASE
+Provides: antelopeio-dune
+Conflicts: antelopeio-dune
+Replaces: antelopeio-dune
 Depends: python3, docker | docker-ce-cli, curl, wget
 Section: devel
 Priority: optional
@@ -37,7 +40,7 @@ export SSUBPREFIX
 echo "Unpacking tarball: $NAME.tar.gz..."
 tar -xzvf "$DIR"/"$NAME".tar.gz -C "$PROJECT"
 dpkg-deb --build "$PROJECT"
-mv "$PROJECT".deb "$NAME".deb  # rename DUNE.deb to antelopeio-dune<etc>.deb
+mv "$PROJECT".deb "$NAME".deb  # rename DUNES.deb to dunes<etc>.deb
 mv "$NAME".* "$ORIGINAL_DIR"   # move into user's original path
 rm -r "$PROJECT"
 
