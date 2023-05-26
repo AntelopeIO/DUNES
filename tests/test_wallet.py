@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""Test DUNE Version
+"""Test DUNES Version
 
 This script tests export and import of the wallet
 """
@@ -10,7 +10,7 @@ import shutil
 import subprocess
 
 from container import container
-from common import DUNE_EXE
+from common import DUNES_EXE
 
 
 def tar_dir(file_name, directory):
@@ -24,7 +24,7 @@ def untar(file_name):
 def test_export():
     """Test `--export-wallet` key."""
 
-    subprocess.run([DUNE_EXE, "--export-wallet"], check=True)
+    subprocess.run([DUNES_EXE, "--export-wallet"], check=True)
 
     assert os.path.exists("wallet.tgz") is True
 
@@ -32,7 +32,7 @@ def test_export():
 def test_import():
     """Test `--import-wallet` key."""
 
-    cntr = container('dune_container', 'dune:latest')
+    cntr = container('dunes_container', 'dunes:latest')
 
     cntr.rm_file("/app/wallet.tgz")
 
@@ -48,7 +48,7 @@ def test_import():
     tar_dir("wallet", "_wallet")
 
     # Use wallet.tgz created by successfully finished test of export
-    subprocess.run([DUNE_EXE, "--debug",  "--import-wallet", "./wallet.tgz"], check=True)
+    subprocess.run([DUNES_EXE, "--debug", "--import-wallet", "./wallet.tgz"], check=True)
 
     os.remove("wallet.tgz")
     shutil.rmtree("_wallet")

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Do not remove this test for UTF-8: if “Ω” doesn’t appear as greek uppercase omega letter enclosed in quotation marks, you should use an editor that supports UTF-8, not this one.-->
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+    <id>dunes</id>
+    <version>1.1.2</version>
+    <owners>EOS Network Foundation</owners>
+    <title>DUNES</title>
+    <authors>EOS Network Foundation</authors>
+    <projectUrl>https://github.com/AntelopeIO/DUNES</projectUrl>
+    <copyright>EOS Network Foundation</copyright>
+    <licenseUrl>https://github.com/AntelopeIO/DUNES/blob/main/LICENSE</licenseUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <tags>dunes package</tags>
+    <projectSourceUrl>https://github.com/AntelopeIO/DUNES</projectSourceUrl>
+    <bugTrackerUrl>https://github.com/AntelopeIO/DUNES/issues</bugTrackerUrl>
+    <summary>dunes</summary>
+    <description>### dunes eos cleos nodeos leap cdt antelope antelopeio
+Docker Utilities for Node Execution and Subsystems (DUNES) is a tool to abstract over Leap programs, CDT and other services/tools related to Antelope blockchains.
+
+    </description>
+    <dependencies>
+      <dependency id="python311"/>
+      <dependency id="docker-desktop"/>
+	  <!-- Below was added as a workaround for Chocolatey CI Package Verifier which tried to install netfx-4.8.1 not compatible with Windows Server 2019  -->
+      <dependency id="netfx-4.8"/>
+    </dependencies>
+  </metadata>
+  <files>
+    <!-- this section controls what actually gets packaged into the Chocolatey package -->
+    <file src="tools\**" target="tools" />
+	<file src="*.ps1" target="tools" />
+  </files>
+</package>

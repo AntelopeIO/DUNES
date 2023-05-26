@@ -1,7 +1,8 @@
 # pylint: disable=missing-function-docstring, missing-module-docstring
 import os
 import re
-import sys                      # sys.stderr
+import sys # sys.stderr
+import time
 from context import context
 from docker import docker
 from node_state import node_state
@@ -32,11 +33,11 @@ def version_full():
     return main_version + "." + version_suffix()
 
 
-class dune_error(Exception):
+class dunes_error(Exception):
     pass
 
 
-class dune_node_not_found(dune_error):
+class dunes_node_not_found(dunes_error):
     _name = ""
 
     def __init__(self, n):
@@ -70,7 +71,7 @@ class node:
         return '/app/nodes/' + self.name()
 
 
-class dune:
+class dunes:
     _docker = None
     _wallet_pw = None
     _context = None
@@ -80,7 +81,7 @@ class dune:
 
     def __init__(self, cl_args):
         self._cl_args = cl_args
-        self._docker = docker('dune_container', 'dune:latest', cl_args)
+        self._docker = docker('dunes_container', 'dunes:latest', cl_args)
         self._wallet_pw = self.get_wallet_pw()
         self._context = context(self._docker)
 
@@ -90,11 +91,18 @@ class dune:
     def is_node_running(self, nod):
         return self._docker.find_pid('/app/nodes/' + nod.name() + ' ') != -1
 
+    def is_named_node_running(self, nod_name):
+        return self._docker.find_pid('/app/nodes/' + nod_name + ' ') != -1
+
+    def is_node_dirtydbflag_set(self, nod_name):
+        # use 'atabase dirty flag set' which is used in main.cpp of LEAP
+        return self._docker.file_has_string('/app/' + nod_name +'.out', 'atabase dirty flag set', tail_file_only = True)
+
     def set_active(self, nod):
         if self.node_exists(nod):
             self._context.set_active(nod)
         else:
-            raise dune_node_not_found(nod.name())
+            raise dunes_node_not_found(nod.name())
 
     def get_active(self):
         return self._context.get_active()
@@ -108,24 +116,29 @@ class dune:
         #from "v4.0.0-rc1\n" make array of "["4","0","0","rc1"]"
         return re.split(r"[+.-]", stdout[1:].strip())
 
-    def start_node(self, nod, snapshot=None):
+    def start_node(self, nod, snapshot=None, replay_blockchain=False):
         stdout, stderr, exit_code = self._docker.execute_cmd(['ls', '/app/nodes'])
 
         if self.is_node_running(nod):
             print("Node [" + nod.name() + "] is already running.")
             return
 
-        cmd = ['sh', 'start_node.sh', nod.data_dir(), nod.config_dir()]
+        cmd = ['bash', 'start_node.sh', nod.data_dir(), nod.config_dir()]
 
         if snapshot is not None:
             cmd = cmd + ['--snapshot /app/nodes/' + nod.name() + '/snapshots/' + snapshot + ' -e']
         else:
             cmd = cmd + [' ']
 
+        if replay_blockchain is True:
+            cmd = cmd + ['--replay-blockchain']
+        else:
+            cmd = cmd + [' ']
+
         # if node name is not found we need to create it
-        is_restart=True
+        is_restart = True
         if not nod.name() in stdout:
-            is_restart=False
+            is_restart = False
             self.create_node(nod)
 
         # copy config.ini to config-dir
@@ -139,29 +152,19 @@ class dune:
             self._docker.execute_cmd(['cp', nod.config(), nod.config_dir()])
             print("Using Configuration [" + nod.config() + "]")
 
-        ctx = self._context.get_ctx()
-        cfg_args = self._context.get_config_args(nod)
-
-        if self.node_exists(node(ctx.active)):
-            if cfg_args[0] == ctx.http_port:
-                print("Currently active node [" + ctx.active + "] http port is the same as this nodes [" + nod.name() + "]")
-                self.stop_node(node(ctx.active))
-            elif cfg_args[1] == ctx.p2p_port:
-                print("Currently active node [" + ctx.active + "] p2p port is the same as this nodes [" + nod.name() + "]")
-                self.stop_node(node(ctx.active))
-            elif cfg_args[2] == ctx.ship_port:
-                print("Currently active node [" + ctx.active + "] ship port is the same as this nodes [" + nod.name() + "]")
-                self.stop_node(node(ctx.active))
+        self.stop_conflicting_nodes(nod)
 
         stdout, stderr, exit_code = self._docker.execute_cmd(cmd + [nod.name()])
+        print(stdout)
+        print(stderr)
 
-        if exit_code == 0:
+        if exit_code == 0 and self.is_node_running(nod):
             self.set_active(nod)
             print("Active [" + nod.name() + "]")
-            print(stdout)
-            print(stderr)
         else:
-            print(stderr)
+            print("ERROR: " + nod.name() + " is not running!")
+
+        self.execute_cmd(['cat', '/app/' + nod.name() + '.out'])
 
     def cleos_cmd(self, cmd, quiet=True):
         self.unlock_wallet()
@@ -169,7 +172,7 @@ class dune:
         if quiet:
             return self._docker.execute_cmd(
                 ['cleos', '--verbose', '-u', 'http://' + ctx.http_port] + cmd)
-        return self._docker.execute_cmd2(
+        return self.execute_cmd(
             ['cleos', '--verbose', '-u', 'http://' + ctx.http_port] + cmd)
 
     def monitor(self):
@@ -177,19 +180,35 @@ class dune:
         print(stdout)
         if exit_code != 0:
             print(stderr)
-            raise dune_error
+            raise dunes_error
 
     def stop_node(self, nod):
         if self.node_exists(nod):
             if self.is_node_running(nod):
-                pid = self._docker.find_pid(
-                    '/app/nodes/' + nod.name() + ' ')
-                print("Stopping node [" + nod.name() + "]")
+                pid = self._docker.find_pid('/app/nodes/' + nod.name() + ' ')
                 self._docker.execute_cmd(['kill', pid])
+                max_wait_time_secs = 30
+                print("Waiting for node [" + nod.name() + "] to shutdown, PID: "
+                      + pid + " (max waiting time: " + str(max_wait_time_secs) + " secs)")
+
+                while True:
+                    time.sleep(1)
+                    pid = self._docker.find_pid('/app/nodes/' + nod.name() + ' ')
+                    if pid == -1:
+                        break
+
+                    max_wait_time_secs -= 1
+
+                    if max_wait_time_secs <= 0:
+                        print("ERROR: Cannot stop [" + nod.name() + "], PID: " + pid)
+                        sys.exit(1)
+
+                print("Stopped node [" + nod.name() + "]")
+
             else:
                 print("Node [" + nod.name() + "] is not running")
         else:
-            raise dune_node_not_found(nod.name())
+            raise dunes_node_not_found(nod.name())
 
     def remove_node(self, nod):
         self.stop_node(nod)
@@ -212,21 +231,19 @@ class dune:
     def start_container(self):
         self._docker.start()
 
-
     def state_list(self):
         # [(node_name, active, running, ports),...]
-        rv=[]
+        rv = []
         stdout, stderr, exit_code = self._docker.execute_cmd(['ls', '/app/nodes'])
         ctx = self._context.get_ctx()
         for node_name in stdout.split():
             active = False
             if node_name == ctx.active:
-                active=True
+                active = True
             running = self.is_node_running(node(node_name))
             addrs = self._context.get_config_args(node(node_name))
-            rv.append( node_state(node_name, active, running, addrs[0], addrs[1], addrs[2]) )
+            rv.append(node_state(node_name, active, running, addrs[0], addrs[1], addrs[2]))
         return rv
-
 
     # pylint: disable=too-many-branches
     def list_nodes(self, simple=False, sep='|'):
@@ -234,11 +251,11 @@ class dune:
         buffer = 3
         node_name = "Node Name"
 
-        states=self.state_list()
+        states = self.state_list()
         name_width = len(node_name) + buffer
         if not simple:
             for state in states:
-                name_width = max( len(state.name) + buffer, name_width)
+                name_width = max(len(state.name) + buffer, name_width)
 
         if simple:
             print("Node|Active|Running|HTTP|P2P|SHiP")
@@ -248,70 +265,71 @@ class dune:
             print(f'{"":{"-"}<{name_width + len(header)}}')
 
         for state in states:
-            print( state.string(sep=sep, simple=simple, name_width=name_width) )
+            print(state.string(sep=sep, simple=simple, name_width=name_width))
+
+    def stop_conflicting_nodes(self, nod):
+        my_addrs = self._context.get_config_args(nod)
+        was_running = []
+        was_active = None
+
+        # For each state, make decisions based on it's
+        for state in self.state_list():
+            # Don't operate on our node.
+            if state.name == nod.name():
+                continue
+            if state.is_active:
+                was_active = state.name
+            if state.is_running:
+                # We only need to stop a running node if there are address collisions.
+                if state.http in my_addrs or state.p2p in my_addrs or state.ship in my_addrs:
+                    was_running.append(state.name)
+                    self.stop_node(node(state.name))
+                    print("\t", state.name, "was stopped due to address collision.")
+
+        return was_active, was_running
 
     # pylint: disable=too-many-locals,too-many-statements
     def export_node(self, nod, path):
         # Sanity check
         if not self.node_exists(nod):
-            raise dune_node_not_found(nod.name())
+            raise dunes_node_not_found(nod.name())
 
         ctx = self._context.get_ctx()
 
-        is_active=nod.name() == ctx.active
-        is_running=self.is_node_running(nod)
-        my_addrs=self._context.get_config_args(nod)
+        is_active = nod.name() == ctx.active
+        is_running = self.is_node_running(nod)
 
-        was_running=[]
-        was_active=None
-
-        initial_states=[]
+        was_running = []
+        was_active = None
 
         if not is_active or not is_running:
-            # Get the current states.
-            initial_states=self.state_list()
-
-            # For each state, make decisions based on it's
-            for state in initial_states:
-                # Don't operate on our node.
-                if state.name == nod.name():
-                    continue
-                if state.is_active:
-                    was_active = state.name
-                if state.is_running:
-                    # We only need to stop a running node if there are address collisions.
-                    if state.http in my_addrs or state.p2p in my_addrs or state.ship in my_addrs:
-                        was_running.append(state.name)
-                        self.stop_node(node(state.name))
-                        print("\t", state.name, "was stopped due to address collision.")
+            (was_active, was_running) = self.stop_conflicting_nodes(nod)
 
         # Get this node ready for export.
-        if not is_active:
-            self.set_active(nod)
         if not is_running:
             self.start_node(nod)
-
+        if not is_active:
+            self.set_active(nod)
 
         # Paths:
-        directory=path
-        filename=nod.name()+".tgz"
+        directory = path
+        filename = nod.name() + ".tgz"
 
         # Update paths based on input.
         if os.path.splitext(path)[1].lower() == ".tgz":
-            directory=os.path.split(path)[0]
-            filename=os.path.split(path)[1]
+            directory = os.path.split(path)[0]
+            filename = os.path.split(path)[1]
 
         # Ensure the directory is absolute and it exists.
-        directory=os.path.realpath(directory)
+        directory = os.path.realpath(directory)
         if not os.path.exists(directory):
             os.makedirs(directory)
 
         # Determine the final full path.
-        fullpath=os.path.join(directory,filename)
+        fullpath = os.path.join(directory, filename)
 
-        src_path='/app/nodes/' + nod.name()
-        dst_path='/app/tmp/' + nod.name()
-
+        src_path = '/app/nodes/' + nod.name()
+        dst_path = '/app/tmp/' + nod.name()
 
         print("Exporting data from node [" + nod.name() + "] to location " + fullpath)
 
@@ -323,7 +341,8 @@ class dune:
         self._docker.execute_cmd(['mkdir', '-p', dst_path])
         self._docker.execute_cmd(['cp', '-R', src_path + '/blocks', dst_path + '/blocks'])
         self._docker.execute_cmd(['cp', src_path + '/config.ini', dst_path + '/config.ini'])
-        self._docker.execute_cmd(['cp', '-R', src_path + '/protocol_features', dst_path + '/protocol_features'])
+        self._docker.execute_cmd(
+            ['cp', '-R', src_path + '/protocol_features', dst_path + '/protocol_features'])
         self._docker.execute_cmd(['cp', '-R', src_path + '/snapshots', dst_path + '/snapshots'])
 
         self._docker.tar_dir(nod.name(), 'tmp/' + nod.name())
@@ -343,16 +362,15 @@ class dune:
         for old_runner in was_running:
             self.start_node(node(old_runner))
 
-
     def import_node(self, path, nod):
 
         # Sanity check path
         if not os.path.exists(path):
             print("File not found: ", path, file=sys.stderr)
-            raise dune_error
+            raise dunes_error
         if os.path.splitext(path)[1].lower() != ".tgz":
             print("Path extension must be `.tgz`: ", path, file=sys.stderr)
-            raise dune_error
+            raise dunes_error
 
         print("Importing node data [" + nod.name() + "]")
 
@@ -364,28 +382,28 @@ class dune:
         stdout, stderr, exit_code = self._docker.cp_from_host(path, '/app/tmp.tgz')
         if exit_code != 0:
             print(stderr)
-            raise dune_error
+            raise dunes_error
 
         # Clean up the tmp file, untar, and remove the file.
-        self._docker.rm_file('/app/tmp') # remove any existing file
+        self._docker.rm_file('/app/tmp')  # remove any existing file
         self._docker.untar('/app/tmp.tgz')
         self._docker.rm_file('/app/tmp.tgz')
 
         # Find the path inside temp of the import data.
         stdout, stderr, exit_code = self._docker.execute_cmd(['ls', '/app/tmp'])
-        src_name=stdout.split()[0]
-        src_path='/app/tmp/' + src_name
+        src_name = stdout.split()[0]
+        src_path = '/app/tmp/' + src_name
 
         # Calculate and create the destination path.
-        dst_path='/app/nodes/' + nod.name()
+        dst_path = '/app/nodes/' + nod.name()
         self._docker.execute_cmd(['mkdir', '-p', dst_path + '/blocks'])
 
         # Move data to the destination.
         self._docker.execute_cmd(['mv', src_path + '/blocks/blocks.index', dst_path + '/blocks/blocks.index'])
-        self._docker.execute_cmd(['mv', src_path + '/blocks/blocks.log',   dst_path + '/blocks/blocks.log'])
-        self._docker.execute_cmd(['mv', src_path + '/config.ini',          dst_path + '/config.ini'])
-        self._docker.execute_cmd(['mv', src_path + '/protocol_features',   dst_path + '/protocol_features'])
-        self._docker.execute_cmd(['mv', src_path + '/snapshots',           dst_path + '/snapshots'])
+        self._docker.execute_cmd(['mv', src_path + '/blocks/blocks.log', dst_path + '/blocks/blocks.log'])
+        self._docker.execute_cmd(['mv', src_path + '/config.ini', dst_path + '/config.ini'])
+        self._docker.execute_cmd(['mv', src_path + '/protocol_features', dst_path + '/protocol_features'])
+        self._docker.execute_cmd(['mv', src_path + '/snapshots', dst_path + '/snapshots'])
         # Clean up the temp.
         self._docker.rm_file('/app/tmp')
 
@@ -393,7 +411,7 @@ class dune:
         stdout, stderr, exit_code = self._docker.execute_cmd(['ls', dst_path + '/snapshots'])
         if len(stdout) == 0:
             print('No snapshot found for ', nod.name(), ' sourced from: \n\t', path, file=sys.stderr)
-            raise dune_error
+            raise dunes_error
 
         # Start and activate the node...
         self.start_node(nod, stdout.split()[0])
@@ -404,8 +422,19 @@ class dune:
         return stdout
 
     def unlock_wallet(self):
+        # do not check status code here because unlocking an already unlocked
+        # wallet will raise an exception otherwise, which we do not want
         stdout, stderr, exit_code = self._docker.execute_cmd(
-            ['cleos', 'wallet', 'unlock', '--password', self.get_wallet_pw()])
+            ['cleos', 'wallet', 'unlock', '--password', self.get_wallet_pw()],
+            check_status=False)
+
+        # still check for other errors to make sure we're not missing anything
+        if exit_code != 0:
+            if stderr and 'Already unlocked' in stderr:
+                # we don't want to fail here
+                return
+            stderr = stderr or '\n'  # do not fail on next line if stderr is None
+            raise dunes_error(stderr.splitlines()[0])
 
     def import_key(self, key):
         self.unlock_wallet()
@@ -452,11 +481,181 @@ class dune:
         self.import_key(private)
         print(stderr)
 
-    def execute_cmd(self, args):
-        self._docker.execute_cmd2(args)
+    # pylint: disable=too-many-arguments
+    def system_newaccount(self, name, creator=None, pub=None, private=None, additional_args=None):
+        if private is None:
+            keys = self.create_key()
+            private = keys.splitlines()[0].split(':')[1][1:]
+            pub = keys.splitlines()[1].split(':')[1][1:]
+            print(
+                "Creating account [" + name + "] with key pair [Private: " +
+                private + ", Public: " + pub + "]")
 
-    def execute_cmd_at(self, args, at_dir):
-        self._docker.execute_cmd_at(args, at_dir)
+        additional_args_and_creator = []
+
+        if additional_args is not None:
+            additional_args_and_creator += additional_args
+
+        if creator is None:
+            additional_args_and_creator += ['eosio']
+        else:
+            additional_args_and_creator += [creator]
+
+        stdout, stderr, exit_code = self.cleos_cmd(
+            ['system', 'newaccount'] + additional_args_and_creator + [name, pub])
+
+        self.import_key(private)
+        print(stderr)
+
+    # Integration with antler-proj begin ------------------------------------------
+
+    def create_project(self, path: str, name: str, ver: str = None):
+
+        container_dir = self._docker.abs_host_path(path)
+        if not self._docker.dir_exists(container_dir):
+            self._docker.execute_cmd(['mkdir', '-p', container_dir])
+
+        opts: list = []
+        if ver:
+            opts.append(ver)
+
+        self._docker.execute_cmd(["antler-proj", "init", container_dir, name] + opts)
+
+    def add_app(self, path: str, dependency_name: str, lang: str,
+                cmplr_opts: str = None, link_opts: str = None):
+
+        opts: list = []
+        if cmplr_opts:
+            opts.append(cmplr_opts)
+        if link_opts:
+            opts.append(link_opts)
+
+        container_dir = self._docker.abs_host_path(path)
+
+        self._docker.execute_cmd(["antler-proj", "add", container_dir, "app",
+                                  dependency_name, lang] + opts)
+
+    def add_lib(self, path: str, dependency_name: str, lang: str,
+                cmplr_opts: str = None, link_opts: str = None):
+
+        opts: list = []
+        if cmplr_opts:
+            opts.append(cmplr_opts)
+        if link_opts:
+            opts.append(link_opts)
+
+        container_dir = self._docker.abs_host_path(path)
+
+        self._docker.execute_cmd(["antler-proj", "add", container_dir, "lib",
+                                  dependency_name, lang] + opts)
+
+    def add_dep(self, path: str,  # project path
+                object_name: str,  # object name (app/lib)
+                dependency_name: str,  # dependency name
+                location: str = None,  # location of dep
+                tag_rel: str = None,  # tag/release number
+                hash_str: str = None):  # hash
+
+        opts: list = []
+        if location:
+            opts.append(location)
+        if tag_rel:
+            opts.append(tag_rel)
+        if hash_str:
+            opts.append(hash_str)
+
+        container_dir = self._docker.abs_host_path(path)
+
+        self._docker.execute_cmd(["antler-proj", "add", container_dir, "dep",
+                                  object_name, dependency_name] + opts)
+
+    def update_app(self, path: str, dependency_name: str, lang: str,
+                   cmplr_opts: str = None, link_opts: str = None):
+
+        opts: list = []
+        if cmplr_opts:
+            opts.append(cmplr_opts)
+        if link_opts:
+            opts.append(link_opts)
+
+        container_dir = self._docker.abs_host_path(path)
+
+        self._docker.execute_cmd(["antler-proj", "update", container_dir, "app",
+                                  dependency_name, lang])
+
+    def update_lib(self, path: str, dependency_name: str, lang: str,
+                   cmplr_opts: str = None, link_opts: str = None):
+
+        opts: list = []
+        if cmplr_opts:
+            opts.append(cmplr_opts)
+        if link_opts:
+            opts.append(link_opts)
+
+        container_dir = self._docker.abs_host_path(path)
+
+        self._docker.execute_cmd(["antler-proj", "update", container_dir, "lib",
+                                  dependency_name, lang] + opts)
+
+    def update_dep(self, path: str,  # project path
+                   object_name: str,  # object name (app/lib)
+                   dependency_name: str,  # dependency name
+                   location: str = None,  # location of dep
+                   tag_rel: str = None,  # tag/release number
+                   hash_str: str = None):  # hash
+
+        opts: list = []
+        if location:
+            opts.append(location)
+        if tag_rel:
+            opts.append(tag_rel)
+        if hash_str:
+            opts.append(hash_str)
+
+        container_dir = self._docker.abs_host_path(path)
+
+        self._docker.execute_cmd(["antler-proj", "update", container_dir, "dep",
+                                  object_name, dependency_name] + opts)
+
+    def remove_dep(self, path: str,  # project path
+                   object_name: str,  # object name (app/lib)
+                   dependency_name: str):  # dependency name
+
+        container_dir = self._docker.abs_host_path(path)
+        self._docker.execute_cmd(["antler-proj", "remove", container_dir, "dep",
+                                  object_name, dependency_name])
+
+    def remove_app(self, path: str,  # project path
+                   app_name: str):  # app name
+
+        container_dir = self._docker.abs_host_path(path)
+        self._docker.execute_cmd(["antler-proj", "remove", container_dir, "app", app_name])
+
+    def remove_lib(self, path: str,  # project path
+                   lib_name: str):  # lib name
+
+        container_dir = self._docker.abs_host_path(path)
+        self._docker.execute_cmd(["antler-proj", "remove", container_dir, "lib", lib_name])
+
+    def build_project(self, path, clean_build: bool = False):
+        container_dir = self._docker.abs_host_path(path)
+        if clean_build:
+            self._docker.execute_cmd(["antler-proj", "build", container_dir, "--clean"])
+        else:
+            self._docker.execute_cmd(["antler-proj", "build", container_dir])
+
+    def validate_project(self, path):
+        container_dir = self._docker.abs_host_path(path)
+        self._docker.execute_cmd(["antler-proj", "validate", container_dir])
+
+    def populate_project(self, path):
+        container_dir = self._docker.abs_host_path(path)
+        self._docker.execute_cmd(["antler-proj", "populate", container_dir])
+
+    # Integration with antler-proj end ----------------------------------------------------------------------
+
+    def execute_cmd(self, args, **kwargs):
+        self._docker.execute_cmd(args, capture_output=False, **kwargs)
 
     def execute_interactive_cmd(self, args):
         self._docker.execute_interactive_cmd(args)
@@ -466,20 +665,23 @@ class dune:
         build_dir = container_dir + '/build'
         if not self._docker.dir_exists(build_dir):
             self._docker.execute_cmd(['mkdir', '-p', build_dir])
-        self._docker.execute_cmd2(
-            ['cmake', '-S', container_dir, '-B', build_dir] + flags)
-        self._docker.execute_cmd2(['cmake', '--build', build_dir])
+        self.execute_cmd(
+            ['cmake', '-S', container_dir, '-B', build_dir] + flags,
+            colors=True)
+        self.execute_cmd(['cmake', '--build', build_dir], colors=True)
 
     def ctest_runner(self, directory, flags):
         container_dir = self._docker.abs_host_path(directory)
-        self._docker.execute_cmd_at(container_dir, ['ctest'] + flags)
+        self.execute_cmd(['ctest'] + flags,
+                         chdir=container_dir,
+                         colors=True)
 
     def gdb(self, executable, flags):
         container_exec = self._docker.abs_host_path(executable)
         self._docker.execute_interactive_cmd(['gdb', container_exec] + flags)
 
     def build_other_proj(self, cmd):
-        self._docker.execute_cmd2([cmd])
+        self.execute_cmd([cmd])
 
     def init_project(self, name, directory, cmake=True):
         if cmake:
@@ -491,7 +693,7 @@ class dune:
             ['cdt-init', '-project', name, '-path', directory] + bare)
         if exit_code != 0:
             print(stdout)
-            raise dune_error()
+            raise dunes_error()
 
     def create_snapshot(self):
         ctx = self._context.get_ctx()
@@ -523,7 +725,7 @@ class dune:
             print(stdout)
         else:
             print(stderr)
-            raise dune_error()
+            raise dunes_error()
 
     def preactivate_feature(self):
         ctx = self._context.get_ctx()
@@ -539,7 +741,7 @@ class dune:
 
         if exit_code != 0:
             print(stderr)
-            raise dune_error()
+            raise dunes_error()
         print("Preactivate Features: " + stdout)
 
     def send_action(self, action, acnt, data, permission='eosio@active'):
@@ -665,9 +867,20 @@ class dune:
                              'eosio@active')
         else:
             print("Feature Not Found")
-            raise dune_error()
+            raise dunes_error()
 
-    def bootstrap_system(self, full):
+    def setup_token(self, currency, max_value, initial_value):
+        # Create the currency with a maximum value of max_value tokens.
+        self.send_action('create', 'eosio.token', '[ "eosio", "' + max_value + " " + currency + '" ]',
+                         'eosio.token@active')
+        # Issue initial_value tokens (Remaining tokens not in circulation can be considered to be held in reserve.)
+        self.send_action('issue', 'eosio.token',
+                         '[ "eosio", "' + initial_value + " " + currency + '", "memo" ]')
+        # Initialize the system account with code zero (needed at initialization time) and currency / token with precision 4
+        self.send_action('init', 'eosio', '["0", "4,' + currency + '"]')
+
+    def bootstrap_system(self, full, currency='SYS', max_value='10000000000.0000',
+                         initial_value='1000000000.0000'):
         self.preactivate_feature()
         if full:
             # create account for multisig contract
@@ -701,6 +914,7 @@ class dune:
             self.deploy_contract(
                 '/app/reference-contracts/build/contracts/eosio.system',
                 'eosio')
+            self.setup_token(currency, max_value, initial_value)
 
     def start_webapp(self, directory):
         # pylint: disable=fixme

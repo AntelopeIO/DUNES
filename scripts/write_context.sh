@@ -1,3 +1,3 @@
 #! /bin/sh
 
-echo $1 > /app/.dune.ctx
+echo $1 > /app/.dunes.ctx
