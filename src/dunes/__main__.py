@@ -93,7 +93,7 @@ if __name__ == '__main__':
         # Any exception here should be trapped here and the user notified before continuing.
         #   pylint: disable=bare-except
         except:
-            print(f"Can't load module {module}")
+            print(f"Can't load module {module}, exception {sys.exc_info()[0]}")
             continue
 
     args = parser.parse()
