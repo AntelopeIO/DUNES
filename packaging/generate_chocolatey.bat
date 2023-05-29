@@ -11,7 +11,8 @@ set script-path=%~dp0
 
 set target-dir=%script-path%\dunes\tools
 mkdir %target-dir%
-copy %script-path%\..\LICENSE %target-dir%
+copy %script-path%\..\LICENSE %target-dir%\LICENSE.txt
+copy %script-path%\dunes\VERIFICATION.txt %target-dir%
 copy "%script-path%"\..\dunes* %target-dir%
 copy "%script-path%"\..\Dockerfile* %target-dir%
 copy "%script-path%"\..\bootstrap* %target-dir%
