@@ -49,8 +49,8 @@ class arg_parser:
         self._parser.add_argument('-s', '--start', nargs=1, metavar="<NODE>",
                                   help='start a new node with a given name.')
         self._parser.add_argument('-c', '--config', nargs=1, metavar="<CONFIG_DIR>",
-                                  help='optionally used with --start, a path containing'
-                                  ' the config.ini file to use')
+                                  help='optionally used with --start, a directory containing'
+                                  ' the config.ini file or the full path containing the .ini file to use')
         self._parser.add_argument('--rmdirtydb', action='store_true',
                                   help='optionally used with --start to clean a database dirty flag of nodeos'
                                   ' which was set likely due to unclean shutdown')
