@@ -264,7 +264,7 @@ def test_nodes():
     subprocess.run([DUNES_EXE, "--start", NODE_BRAVO, "--config", CONFIG_FILE], check=True)
     validate_node_list([[NODE_ALPHA, False, False, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
                         [NODE_BRAVO, True, True, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR]])
-    
+
     subprocess.run([DUNES_EXE,"--stop", NODE_BRAVO], check=True)
     validate_node_list([[NODE_ALPHA, False, False, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
                         [NODE_BRAVO, True,  False, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR]])
@@ -273,7 +273,7 @@ def test_nodes():
     subprocess.run([DUNES_EXE, "--start", NODE_BRAVO, "--config", CONFIG_FILE_CUST], check=True)
     validate_node_list([[NODE_ALPHA, False, False, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
                         [NODE_BRAVO, True, True, ALT_HTTP_ADDR_CUST, ALT_P2P_ADDR_CUST, ALT_SHIP_ADDR_CUST]])
-    
+
     # stop and then start NODE_BRAVO again using standard config.ini
     subprocess.run([DUNES_EXE,"--stop", NODE_BRAVO], check=True)
     subprocess.run([DUNES_EXE, "--start", NODE_BRAVO, "--config", CONFIG_FILE], check=True)
@@ -494,7 +494,7 @@ def test_node_start_rmdirtydb():
     subprocess.run([DUNES_EXE,"--start", NODE_BRAVO, "--config", CONFIG_FILE, "--rmdirtydb"], check=True)
     validate_node_list([[NODE_ALPHA, False, False, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
                         [NODE_BRAVO, True, True, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR]])
-    
+
     subprocess.run([DUNES_EXE,"--stop", NODE_BRAVO], check=True)
     validate_node_list([[NODE_ALPHA, False, False, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
                         [NODE_BRAVO, True,  False, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR]])
