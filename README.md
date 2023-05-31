@@ -107,7 +107,7 @@ $ echo "PATH=<LocationOfDUNES>:$PATH" >> .bashrc
 If you want to rebuild the DUNES image pick your preferred terminal application and input the following command:
 
 ```console
-<PathToDUNES>/DUNES$ ./bootstrap.sh
+<PathToDUNES>/DUNES$ python3 ./bootstrap.py
 ```
 
 ### Windows 10 & 11

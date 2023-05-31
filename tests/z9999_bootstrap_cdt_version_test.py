@@ -5,7 +5,7 @@
 This script tests that the bootstrap command can create an image with a given version.
 """
 
-
+import sys
 import subprocess
 import os
 
@@ -16,7 +16,7 @@ CONTAINER_NAME='dunes_version_test'
 IMAGE_TAG='dunes_version_test'
 IMAGE_NAME='dunes:dunes_version_test'
 
-BOOTSTRAP=os.path.join( os.path.split(TEST_PATH)[0] , "bootstrap.sh")
+BOOTSTRAP=os.path.join( os.path.split(TEST_PATH)[0] , "bootstrap.py")
 CDT_VERSION='3.0.1'
 LEAP_VERSION='3.2.1'
 
@@ -37,7 +37,7 @@ def test_version_bootstrapping():
     cleanup()
 
     # Execute the bootstrap function.
-    subprocess.run([BOOTSTRAP, '--cdt='+CDT_VERSION, '--leap='+LEAP_VERSION, '--tag='+IMAGE_TAG], check=True)
+    subprocess.run([sys.executable, BOOTSTRAP, '--cdt='+CDT_VERSION, '--leap='+LEAP_VERSION, '--tag='+IMAGE_TAG], check=True)
 
     # Start the container
     subprocess.run(['docker', 'create', '-it', '--name', CONTAINER_NAME, IMAGE_NAME, '/bin/bash'], check=True)

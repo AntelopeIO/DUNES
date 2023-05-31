@@ -21,7 +21,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
       - shell: bash
         run: |
-          ./bootstrap.sh
+          python3 ./bootstrap.py
       - name: Run tests
         run: |
           pytest tests

@@ -79,7 +79,7 @@ def test_ensure_conatiner_image():
     assert image_id != '', \
         f"\n {determination_string}" \
         f"\n Given the command 'docker image list -q dunes:{image_tag}', we expected a valid ID, but got an empty string." \
-         "\n It's possible 'bootstrap.sh' needs to be run to generate the correct image for these tests." \
+         "\n It's possible 'bootstrap.py' needs to be run to generate the correct image for these tests." \
          "\n If you are certain your version of the image is up to date, you can correct this by tagging:" \
         f"\n     docker tag dunes dunes:{image_tag}"
 
