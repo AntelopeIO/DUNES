@@ -37,7 +37,11 @@ contracts on Antelope blockchains.
 
 **`-c <CONFIG_DIR>, --config <CONFIG_DIR>`**
 
-    Optionally used with --start, a path containing the config.ini file to use.
+    Optionally used with --start, a directory containing the config.ini file or the full path containing the .ini file to use.
+
+**`--rmdirtydb`**
+
+    Optionally used with --start to clean a database dirty flag of nodeos which was set likely due to unclean shutdown
 
 **`--stop <NODE>`**
 
