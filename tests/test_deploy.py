@@ -19,9 +19,9 @@ NODE_NAME = "my_node"
 ACCT_NAME = "myaccount"
 
 PROJECT_NAME = "test_app"
-TEST_APP_DIR = TEST_PATH + "/" + PROJECT_NAME
-TEST_APP_BLD_DIR = TEST_APP_DIR + "/build/" + PROJECT_NAME
-TEST_APP_WASM = TEST_APP_BLD_DIR + "/" + PROJECT_NAME + ".wasm"    # TEST_APP_BLD_DIR + "/test_app.wasm"
+TEST_APP_DIR = os.path.join(TEST_PATH, PROJECT_NAME)
+TEST_APP_BLD_DIR = os.path.join(TEST_APP_DIR, *["build", PROJECT_NAME])
+TEST_APP_WASM = os.path.join(TEST_APP_BLD_DIR, PROJECT_NAME + ".wasm")    # TEST_APP_BLD_DIR/test_app.wasm
 
 
 @pytest.mark.destructive

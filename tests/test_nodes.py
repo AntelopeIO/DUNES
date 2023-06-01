@@ -16,6 +16,7 @@ This script tests that the compiled binary produce expected output for these com
 """
 
 
+import os
 import shutil                   # rmtree
 import subprocess
 import pytest
@@ -31,10 +32,10 @@ NODE_BRAVO = "BRAVO_NODE"
 NODE_CHARLIE = "CHARLIE_NODE"
 
 CONFIG_PATH = TEST_PATH
-CONFIG_FILE = TEST_PATH + "/config.ini"
-CONFIG_FILE_CUST = TEST_PATH + "/mycustconfig001.ini"
+CONFIG_FILE = os.path.join(TEST_PATH, "config.ini")
+CONFIG_FILE_CUST = os.path.join(TEST_PATH, "/mycustconfig001.ini")
 
-EXPORT_DIR = TEST_PATH + "/temp"
+EXPORT_DIR = os.path.join(TEST_PATH, "temp")
 
 ALT_HTTP_ADDR="0.0.0.0:9991"
 ALT_P2P_ADDR="0.0.0.0:9992"
@@ -318,7 +319,7 @@ def test_nodes():
 
     # Test --export-node using standard filename.
     subprocess.run([DUNES_EXE, "--export-node", NODE_ALPHA, EXPORT_DIR], check=True)
-    assert os.path.exists(EXPORT_DIR + "/" + NODE_ALPHA + ".tgz")
+    assert os.path.exists( os.path.join(EXPORT_DIR,  NODE_ALPHA+".tgz")
 
     # Below check documents current behavior: node_bravo is active, however before exporting node_charlie was active.
     # Fix this in issue https://github.com/AntelopeIO/DUNES/issues/159
@@ -327,16 +328,16 @@ def test_nodes():
                         [NODE_CHARLIE, False, True, DEFAULT_HTTP_ADDR, DEFAULT_P2P_ADDR, DEFAULT_SHIP_ADDR]])
 
     # Test --export-node using provided filename.
-    subprocess.run([DUNES_EXE, "--export-node", NODE_BRAVO, EXPORT_DIR + "/bravo_export.tgz"], check=True)
-    assert os.path.exists(EXPORT_DIR + "/bravo_export.tgz")
+    subprocess.run([DUNES_EXE, "--export-node", NODE_BRAVO, os.path.join(EXPORT_DIR, "bravo_export.tgz")], check=True)
+    assert os.path.exists( os.path.join(EXPORT_DIR,"bravo_export.tgz") )
 
     validate_node_list([[NODE_ALPHA, False, False, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
                         [NODE_BRAVO, True, True, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
                         [NODE_CHARLIE, False, True, DEFAULT_HTTP_ADDR, DEFAULT_P2P_ADDR, DEFAULT_SHIP_ADDR]])
 
     # Test --export-node using non-existing path.
-    subprocess.run([DUNES_EXE, "--export-node", NODE_CHARLIE, EXPORT_DIR + "/new_path/charlie_export.tgz"], check=True)
-    assert os.path.exists(EXPORT_DIR + "/new_path/charlie_export.tgz")
+    subprocess.run([DUNES_EXE, "--export-node", NODE_CHARLIE, os.path.join(EXPORT_DIR, *["new_path","charlie_export.tgz"])], check=True)
+    assert os.path.exists( os.path.join(EXPORT_DIR, *["new_path","charlie_export.tgz"]) )
 
     validate_node_list([[NODE_ALPHA, False, False, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
                         [NODE_BRAVO, False, True, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
@@ -347,14 +348,14 @@ def test_nodes():
 
     # Test --import-node
     #  Import each node from the export tests and
-    subprocess.run([DUNES_EXE, "--import-node", EXPORT_DIR + "/ALPHA_NODE.tgz", NODE_ALPHA], check=True)
+    subprocess.run([DUNES_EXE, "--import-node", os.path.join(EXPORT_DIR, "ALPHA_NODE.tgz"), NODE_ALPHA], check=True)
     validate_node_list([[NODE_ALPHA, True, True, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR]])
 
-    subprocess.run([DUNES_EXE, "--import-node", EXPORT_DIR + "/bravo_export.tgz", NODE_BRAVO], check=True)
+    subprocess.run([DUNES_EXE, "--import-node", os.path.join(EXPORT_DIR, "bravo_export.tgz"), NODE_BRAVO], check=True)
     validate_node_list([[NODE_ALPHA, False, False, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
                         [NODE_BRAVO, True, True, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR]])
 
-    subprocess.run([DUNES_EXE, "--import-node", EXPORT_DIR + "/new_path/charlie_export.tgz", NODE_CHARLIE], check=True)
+    subprocess.run([DUNES_EXE, "--import-node", os.path.join(EXPORT_DIR, *["new_path","charlie_export.tgz"]), NODE_CHARLIE], check=True)
     validate_node_list([[NODE_ALPHA, False, False, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
                         [NODE_BRAVO, False, True, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
                         [NODE_CHARLIE, True, True, DEFAULT_HTTP_ADDR, DEFAULT_P2P_ADDR, DEFAULT_SHIP_ADDR]])

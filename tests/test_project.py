@@ -21,9 +21,9 @@ from container import container
 
 
 PROJECT_NAME = "test_app"
-TEST_APP_DIR = TEST_PATH + "/" + PROJECT_NAME
-TEST_APP_BLD_DIR = TEST_APP_DIR + "/build/" + PROJECT_NAME
-TEST_APP_WASM = TEST_APP_BLD_DIR + "/" + PROJECT_NAME + ".wasm"    # TEST_APP_BLD_DIR + "/test_app.wasm"
+TEST_APP_DIR = os.path.join(TEST_PATH, PROJECT_NAME)
+TEST_APP_BLD_DIR = os.path.join(TEST_APP_DIR, *["build", PROJECT_NAME])
+TEST_APP_WASM = os.path.join(TEST_APP_BLD_DIR, PROJECT_NAME+".wasm")    # TEST_APP_BLD_DIR/test_app.wasm"
 
 
 def remove_existing():
@@ -45,16 +45,16 @@ def test_create_cmake_app():
 
     # Expected files.
     filelist = [TEST_APP_DIR + '/',
-                TEST_APP_DIR + '/src',
-                TEST_APP_DIR + '/src/' + PROJECT_NAME + '.cpp',
-                TEST_APP_DIR + '/src/CMakeLists.txt',
-                TEST_APP_DIR + '/include',
-                TEST_APP_DIR + '/include/' + PROJECT_NAME + '.hpp',
-                TEST_APP_DIR + '/ricardian',
-                TEST_APP_DIR + '/ricardian/' + PROJECT_NAME + '.contracts.md',
-                TEST_APP_DIR + '/build',
-                TEST_APP_DIR + '/CMakeLists.txt',
-                TEST_APP_DIR + '/README.txt']
+                os.path.join(TEST_APP_DIR, 'src'),
+                os.path.join(TEST_APP_DIR, *['src', PROJECT_NAME+'.cpp']),
+                os.path.join(TEST_APP_DIR, *['src', 'CMakeLists.txt']),
+                os.path.join(TEST_APP_DIR, 'include'),
+                os.path.join(TEST_APP_DIR, *['include', PROJECT_NAME+'.hpp']),
+                os.path.join(TEST_APP_DIR, 'ricardian'),
+                os.path.join(TEST_APP_DIR, *['ricardian', PROJECT_NAME+'.contracts.md']),
+                os.path.join(TEST_APP_DIR, 'build'),
+                os.path.join(TEST_APP_DIR, 'CMakeLists.txt'),
+                os.path.join(TEST_APP_DIR, 'README.txt')]
 
     # Create the test app.
     completed_process = subprocess.run([DUNES_EXE, "--create-cmake-app", PROJECT_NAME, TEST_PATH], check=True)
@@ -81,10 +81,10 @@ def test_create_bare_app():
 
     # Expected file list.
     filelist = [TEST_APP_DIR + '/',
-                TEST_APP_DIR + '/' + PROJECT_NAME + '.hpp',
-                TEST_APP_DIR + '/' + PROJECT_NAME + '.cpp',
-                TEST_APP_DIR + '/' + PROJECT_NAME + '.contracts.md',
-                TEST_APP_DIR + '/README.txt']
+                os.path.join(TEST_APP_DIR, PROJECT_NAME+'.hpp'),
+                os.path.join(TEST_APP_DIR, PROJECT_NAME+'.cpp']),
+                os.path.join(TEST_APP_DIR, PROJECT_NAME+'.contracts.md']),
+                os.path.join(TEST_APP_DIR, 'README.txt')]
 
     subprocess.run([DUNES_EXE, "--create-bare-app", PROJECT_NAME, TEST_PATH], check=True)
     assert os.path.isdir(TEST_APP_DIR) is True
