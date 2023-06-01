@@ -32,14 +32,13 @@ def cleanup():
 
     for name in CLEANUP_NAMES:
         # Set up some constants.
-        CONTAINER_NAME = f'{CONTAINER_NAME_PREFIX}{name}'
-        IMAGE_TAG = f'{TAG_PREFIX}{name}'
+        container_name = f'{CONTAINER_NAME_PREFIX}{name}'
+        image_tag = f'{TAG_PREFIX}{name}'
 
         # Send output to subprocess.DEVNULL since we EXPECT docker to tell us containers and images don't exist.
-        #   pylint: disable=subprocess-run-check
-        subprocess.run(['docker', 'container', 'rm', CONTAINER_NAME, '--force'], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL, check=False)
-        #   pylint: disable=subprocess-run-check
-        subprocess.run(['docker','image','rm',IMAGE_TAG], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL, check=False)
+        #   pylint: disable=subprocess-run-check, line-too-long
+        subprocess.run(['docker', 'container', 'rm', container_name, '--force'], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL, check=False)
+        subprocess.run(['docker', 'image', 'rm', image_tag], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL, check=False)
 
 
 def sub_versions(name, cdt=None, leap=None, refcon=None):
@@ -50,10 +49,10 @@ def sub_versions(name, cdt=None, leap=None, refcon=None):
     assert name in CLEANUP_NAMES, f"TEST DEFECT: name ({name}) is missing from CLEAN_NAMES array."
 
     # Set up some constants.
-    CONTAINER_NAME = f'{CONTAINER_NAME_PREFIX}{name}'
-    IMAGE_TAG = f'{TAG_PREFIX}{name}'
+    container_name = f'{CONTAINER_NAME_PREFIX}{name}'
+    image_tag = f'{TAG_PREFIX}{name}'
 
-    bootstrap_command = [sys.executable, os.path.join(DUNES_ROOT, "bootstrap.py"), f'--tag={IMAGE_TAG}']
+    bootstrap_command = [sys.executable, os.path.join(DUNES_ROOT, "bootstrap.py"), f'--tag={image_tag}']
 
     # Add versions:
     if cdt:
@@ -67,30 +66,31 @@ def sub_versions(name, cdt=None, leap=None, refcon=None):
     subprocess.run(bootstrap_command, check=True)
 
     # Start the container
-    subprocess.run(['docker', 'create', '-it', '--name', CONTAINER_NAME, IMAGE_TAG, '/bin/bash'], check=True)
-    subprocess.run(['docker', 'start', CONTAINER_NAME], check=True)
+    subprocess.run(['docker', 'create', '-it', '--name', container_name, image_tag, '/bin/bash'], check=True)
+    subprocess.run(['docker', 'start', container_name], check=True)
 
     if cdt:
         # Try to get CDT version info from inside the container and test it matches.
-        completed_process = subprocess.run(['docker', 'exec', '-i', CONTAINER_NAME, '/usr/bin/ls', '/usr/opt/cdt'], check=False, stdout=subprocess.PIPE)
+        #  pylint: disable=line-too-long
+        completed_process = subprocess.run(['docker', 'exec', '-i', container_name, '/usr/bin/ls', '/usr/opt/cdt'], check=False, stdout=subprocess.PIPE)
         assert cdt in completed_process.stdout.decode()
 
 
     if leap:
         # Try to get LEAP version info from inside the container and test it matches.
-        completed_process = subprocess.run(['docker', 'exec', '-i', CONTAINER_NAME, 'leap-util', 'version', 'client'], check=False, stdout=subprocess.PIPE)
+        #  pylint: disable=line-too-long
+        completed_process = subprocess.run(['docker', 'exec', '-i', container_name, 'leap-util', 'version', 'client'], check=False, stdout=subprocess.PIPE)
         assert leap in completed_process.stdout.decode()
 
     if refcon:
         # Try to get refcon version info from inside the container and test it matches.
-        completed_process = subprocess.run(['docker', 'exec', '-i', CONTAINER_NAME, 'leap-util', 'version', 'client'], check=False, stdout=subprocess.PIPE)
+        #  pylint: disable=line-too-long
+        completed_process = subprocess.run(['docker', 'exec', '-i', container_name, 'leap-util', 'version', 'client'], check=False, stdout=subprocess.PIPE)
         assert refcon in completed_process.stdout.decode()
 
 
-
-
 def test_simple_version():
-    """Ensure bootsrap can be created with given CDT and LEAP versions."""
+    """Ensure bootstrap can create an image with given CDT and LEAP versions."""
 
     # Start in a clean state.
     cleanup()
@@ -104,7 +104,7 @@ def test_simple_version():
 
 def test_cdt_leap_versions_non_ci():
     """
-    Ensure bootsrap can be created with given CDT and LEAP versions.
+    Ensure bootstrap can create images with given CDT and LEAP versions.
     This is intended to be run locally and not on github CI.
     To diable from ci, add `-k "not non_ci"` to your pytest command (e.g. `pytest -k "not non_ci" tests`)
     """

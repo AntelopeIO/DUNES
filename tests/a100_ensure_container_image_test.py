@@ -5,10 +5,11 @@
 This script tests that the container image being tested is correct.
 """
 
-
+import sys
+import os
 import subprocess
 
-from common import TEST_PATH, DUNES_EXE
+from common import TEST_PATH, DUNES_EXE, DUNES_ROOT
 
 
 def get_short_hash():
@@ -45,6 +46,91 @@ def get_image_id(tag):
     except:
         print( f"Could not get results from docker for image: {image_name}." )
     return ''
+
+
+def remove_images(repo_name):
+    """
+    Remove any existing repo images.
+    WARNING: This is destructive.
+    """
+
+    # Remove {repo_name}:* images.
+    images = subprocess.check_output(['docker', 'images', '-q', repo_name], stderr=None, encoding='utf-8').strip().split('\n')
+    for myimg in images:
+        #   pylint: disable=subprocess-run-check
+        subprocess.run(['docker', 'image', 'rm', myimg, '--force'], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL, check=False)
+
+
+def remove_tagged_image(tag):
+    """
+    Remove any existing tagged images.
+    WARNING: This is destructive.
+    """
+
+    #   pylint: disable=subprocess-run-check
+    subprocess.run(['docker', 'image', 'rm', tag, '--force'], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL, check=False)
+
+
+def destructive_clean():
+    """
+    Remove any existing dunes_container and/or dunes images.
+    WARNING: This is destructive.
+    """
+
+    # Remove an existing container, then images.
+    # Send output to subprocess.DEVNULL since we EXPECT docker might tell us containers and images don't exist.
+    #   pylint: disable=subprocess-run-check, line-too-long
+    subprocess.run(['docker', 'container', 'rm', 'dunes_container', '--force'], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL, check=False)
+    # Remove dunes:* images.
+    remove_images('dunes')
+    # Remove ghcr.io/antelopeio/dunes:* images.
+    remove_images('ghcr.io/antelopeio/dunes')
+
+
+def image_exists(tag):
+    """Test to see if a given image exists."""
+    # Get the list of images.
+    uid = subprocess.check_output(['docker', 'images', '-q', tag], stderr=None, encoding='utf-8')
+    if uid == '':
+        return False
+    return True
+
+
+def test_release_versions_non_ci():
+    """
+    Ensure bootsrap can be created with --release flag.
+    This test will also ensure the follow on test (test_ensure_conatiner_image) has a latests image.
+    This is intended to be run locally and not on github CI.
+    To diable from ci, add `-k "not non_ci"` to your pytest command (e.g. `pytest -k "not non_ci" tests`)
+    """
+
+    destructive_clean()
+
+    # Find the current version and short hash of DUNES.
+    dunes_version = get_dunes_version()
+    short_hash = get_short_hash()
+
+    critical_images = [ f'dunes:{dunes_version}',
+                        f'dunes:{short_hash}',
+                        'ghcr.io/antelopeio/dunes:latest',
+                        f'ghcr.io/antelopeio/dunes:{dunes_version}',
+                        ]
+
+    # Ensure the critical images are absent.
+    for myimg in critical_images:
+        assert not image_exists(myimg)
+
+    # Execute the bootstrap function.
+    bootstrap_command = [sys.executable, os.path.join(DUNES_ROOT, "bootstrap.py"), '--release']
+    subprocess.run(bootstrap_command, check=True)
+
+    # Ensure the critical images are present.
+    for myimg in critical_images:
+        assert image_exists(myimg)
+
+    # Remove the ghcr images - they are unnecessary.
+    remove_tagged_image('ghcr.io/antelopeio/dunes:latest')
+    remove_tagged_image(f'ghcr.io/antelopeio/dunes:{dunes_version}')
 
 
 def test_ensure_conatiner_image():
@@ -91,6 +177,6 @@ def test_ensure_conatiner_image():
         f"\n location tag: \t{image_tag} \t id: {latest_id}"
 
 
-
 if __name__ == "__main__":
+    test_release_versions_non_ci()
     test_ensure_conatiner_image()
