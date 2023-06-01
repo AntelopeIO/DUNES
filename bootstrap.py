@@ -121,7 +121,9 @@ if __name__ == "__main__":
     #  pylint:disable=line-too-long
     parser.add_argument('-c', '--cdt',    dest='cdt_version',    action='store',      help='Set the leap version to CDT_VERSION.')
     parser.add_argument('-l', '--leap',   dest='leap_version',   action='store',      help='Set the CDT version to LEAP_VERSION.')
-    parser.add_argument('--refcon',       dest='refcon_version', action='store',      help='Set the reference-contract version to REFCON_VERSION. Usually a commit hash.')
+    #The following line is commented out and replaced with a suppression. Issue #201 should renable it.
+    #parser.add_argument('--refcon',       dest='refcon_version', action='store',      help='Set the reference-contract version to REFCON_VERSION. Usually a commit hash.')
+    parser.add_argument('--refcon',       dest='refcon_version', action='store',      help=argparse.SUPPRESS)
     parser.add_argument('-r','--release', dest='release_build',  action='store_true', help='Tag the image with the version reported by DUNES.')
     parser.add_argument('-p','--push',    dest='push_image',     action='store_true', help='Push release and latest image to ghcr.io. Implies --release.')
     parser.add_argument('--tag',          dest='tag',            action='store',      help='ONLY tag the image with the user provided tag TAG.')
