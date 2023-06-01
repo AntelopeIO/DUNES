@@ -138,7 +138,15 @@ After installation open `cmd.exe` and verify `python --version` returns current 
 1. Install [Chocolatey](https://docs.chocolatey.org/en-us/choco/setup).
 2. Download latest `*.nupkg` from [latest release](https://github.com/AntelopeIO/DUNES/releases/latest) page.
 3. Run PowerShell as administrator and go to the directory where your *`.nupkg` was downloaded.
-4. Run following commands:
+4. If you already have Docker Desktop installed then run following commands:
+```
+choco uninstall dunes -y
+choco install docker-desktop --skip-powershell
+choco install netfx-4.8 python311 -y
+```
+This way, your existing Docker Desktop installation will not be affected.
+
+If you do not have Docker Desktop installed run:
 ```
 choco uninstall dunes -y
 choco install netfx-4.8 python311 docker-desktop -y
@@ -147,10 +155,10 @@ choco install netfx-4.8 python311 docker-desktop -y
 ```
 choco install .\dunes.1.1.2.nupkg -y
 ```
-5. Restart your computer (this is because %PATH% has to be reloaded. In cmd.exe it is enough to run command `refreshenv`).
-6. Open PowerShell / cmd.exe and try that following command works: `dunes.bat --version`.
+6. Restart your computer (this is because %PATH% has to be reloaded. In cmd.exe it is enough to run command `refreshenv`).
+7. Open PowerShell / cmd.exe and try that following command works: `dunes.bat --version`.
 
-**NOTE**: Chocolatey does not detect python / docker-dekstop installed via other means, so it is possible some dependencies will be installed twice. Usually it is not an issue, but if it is you can follow [this solution](https://stackoverflow.com/a/71605170).
+**NOTE**: Chocolatey does not detect python installed via other means, so it is possible some dependencies will be installed twice. Usually it is not an issue, but if it is you can follow [this solution](https://stackoverflow.com/a/71605170).
 
 Due to current Docker Desktop limitations DUNES supports only `C:/` disk drive, so all your DUNES projects or workspace needs to be on `C:/` drive.
 
