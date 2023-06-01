@@ -9,13 +9,13 @@ import sys
 import subprocess
 import os
 
-from common import TEST_PATH
+from common import DUNES_ROOT
 
 
 CONTAINER_NAME='dunes_version_test'
 IMAGE_TAG='dunes:dunes_version_test'
 
-BOOTSTRAP=os.path.join( os.path.split(TEST_PATH)[0] , "bootstrap.py")
+BOOTSTRAP=os.path.join(DUNES_ROOT, "bootstrap.py")
 CDT_VERSION='3.0.1'
 LEAP_VERSION='3.2.1'
 
