@@ -176,14 +176,12 @@ if __name__ == "__main__":
     tags = []
     if args.release_build:
         ver = version_full()
-        tags.extend(f'dunes:{ver}')
-        tags.extend(f'ghcr.io/antelopeio/dunes:{ver}')
-        tags.extend('ghcr.io/antelopeio/dunes:latest')
+        tags.extend( [f'dunes:{ver}', f'ghcr.io/antelopeio/dunes:{ver}', 'ghcr.io/antelopeio/dunes:latest'] )
 
     # Attempt the tagging
     tag_result = True
     for mytag in tags:
-        tag_result &= tag_image(tag, verbose=args.verbose, dry_run=args.dry_run)
+        tag_result &= tag_image(mytag, verbose=args.verbose, dry_run=args.dry_run)
 
     # Report an error
     if not tag_result and not args.push_image:
@@ -197,7 +195,7 @@ if __name__ == "__main__":
             sys.exit(1)
 
         for mytag in tags:
-            push_result &= push_image(tag, verbose=args.verbose, dry_run=args.dry_run)
+            push_result &= push_image(mytag, verbose=args.verbose, dry_run=args.dry_run)
 
     if not push_result:
         print('Failed to push some tagged images.', file=sys.stderr)
