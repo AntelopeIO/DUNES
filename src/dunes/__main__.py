@@ -133,16 +133,16 @@ if __name__ == '__main__':
                 elif len(args.config) == 1:
                     cfg_temp = args.config[0]
                     if not os.path.exists(cfg_temp):
-                        parser.exit_with_help_message("--config: config.ini unknown path\n",
+                        parser.exit_with_help_message("--config: .ini unknown path\n",
                                                        "bad value: ", cfg_temp)
                     if os.path.isdir(cfg_temp):
                         cfg_temp = os.path.join(cfg_temp, "config.ini")
-                    if os.path.split(cfg_temp)[1] != "config.ini":
-                        parser.exit_with_help_message("--config: config must either be a config.ini"
-                                                      "file or a path containg one\n"
+                    if os.path.splitext(cfg_temp)[1] !=".ini":
+                        parser.exit_with_help_message("--config: config must either be a directory that has config.ini\n"
+                                                      "or a full path including a file name with .ini extension \n"
                                                       "bad value: ", cfg_temp)
                     if not os.path.exists(cfg_temp):
-                        parser.exit_with_help_message("--config: config.ini file must exist\n"
+                        parser.exit_with_help_message("--config: .ini file must exist\n"
                                                       "bad value: ", cfg_temp)
                     n = node(args.start[0], dunes_sys.docker.abs_host_path(cfg_temp))
                 else:

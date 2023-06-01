@@ -47,7 +47,15 @@ Start a new node with a given name
 .IP
 .nf
 \f[C]
-Optionally used with --start, a path containing the config.ini file to use.
+Optionally used with --start, a directory containing the config.ini file or the full path containing the .ini file to use.
+\f[R]
+.fi
+.PP
+\f[B]\f[CB]--rmdirtydb\f[B]\f[R]
+.IP
+.nf
+\f[C]
+Optionally used with --start to clean a database dirty flag of nodeos which was set likely due to unclean shutdown
 \f[R]
 .fi
 .PP
