@@ -13,8 +13,7 @@ from common import TEST_PATH
 
 
 CONTAINER_NAME='dunes_version_test'
-IMAGE_TAG='dunes_version_test'
-IMAGE_NAME='dunes:dunes_version_test'
+IMAGE_TAG='dunes:dunes_version_test'
 
 BOOTSTRAP=os.path.join( os.path.split(TEST_PATH)[0] , "bootstrap.py")
 CDT_VERSION='3.0.1'
@@ -27,7 +26,7 @@ def cleanup():
     #   pylint: disable=subprocess-run-check
     subprocess.run(['docker', 'container', 'rm', CONTAINER_NAME, '--force'], check=False)
     #   pylint: disable=subprocess-run-check
-    subprocess.run(['docker','image','rm',IMAGE_NAME], check=False)
+    subprocess.run(['docker','image','rm',IMAGE_TAG], check=False)
 
 
 def test_version_bootstrapping():
@@ -40,7 +39,7 @@ def test_version_bootstrapping():
     subprocess.run([sys.executable, BOOTSTRAP, '--cdt='+CDT_VERSION, '--leap='+LEAP_VERSION, '--tag='+IMAGE_TAG], check=True)
 
     # Start the container
-    subprocess.run(['docker', 'create', '-it', '--name', CONTAINER_NAME, IMAGE_NAME, '/bin/bash'], check=True)
+    subprocess.run(['docker', 'create', '-it', '--name', CONTAINER_NAME, IMAGE_TAG, '/bin/bash'], check=True)
     subprocess.run(['docker', 'start', CONTAINER_NAME], check=True)
 
     # Try to get CDT version info from inside the container.
