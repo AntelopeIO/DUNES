@@ -24,4 +24,4 @@ jobs:
           python3 ./bootstrap.py
       - name: Run tests
         run: |
-          pytest tests
+          pytest -k "not non_ci" tests
