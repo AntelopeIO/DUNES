@@ -23,8 +23,8 @@ def commit_hash():
     git_command = ['git', '-C', DUNES_ROOT, 'rev-parse', '--short', 'HEAD']
     try:
         return subprocess.check_output(git_command, stderr=None, encoding='utf-8').strip()
-    except Exception as err:  # pylint: disable=broad-exception-caught
-        print( f'Failed to determine git short hash: {err=}', file=stderr)
+    except Exception as err:  # pylint: disable=bad-option-value, broad-exception-caught
+        print( f'Failed to determine git short hash: {err=}', file=sys.stderr)
     return None
 
 
@@ -42,7 +42,7 @@ def push_image(tag, verbose=False, dry_run=False):      # pylint: disable=redefi
     if not subprocess.run(push_command, stderr=None, check=False).returncode:
         return True
 
-    print(f'Failed to push image {tag}.', file=stderr)
+    print(f'Failed to push image {tag}.', file=sys.stderr)
     return False
 
 
@@ -64,7 +64,7 @@ def tag_image(tag, verbose=False, dry_run=False):        # pylint: disable=redef
     if not subprocess.run(tag_command, stderr=None, check=False).returncode:
         return True
 
-    print(f'Failed to apply tag: {tag}', file=stderr)
+    print(f'Failed to apply tag: {tag}', file=sys.stderr)
     return False
 
 
@@ -83,6 +83,7 @@ def build_image(leap_version=None, cdt_version=None, refcon_version=None, tag='d
     if platform.system() == "Darwin":
         group_id = 200
 
+    # pylint: disable=line-too-long
     build_command = ['docker', 'build', '--no-cache', '-f','Dockerfile', '-t',tag, barg,f'USER_ID={user_id}', barg,f'GROUP_ID={group_id}', DUNES_ROOT]
 
     if leap_version:
@@ -184,20 +185,20 @@ if __name__ == "__main__":
 
     # Report an error
     if not tag_result and not args.push_image:
-        print('Not all tagging succeeded.', file=stderr)
+        print('Not all tagging succeeded.', file=sys.stderr)
         sys.exit(1)
 
     push_result = True
     if args.push_image:
         if not tag_result:
-            print('Not all tagging succeeded, will not attempt to push builds.', file=stderr)
+            print('Not all tagging succeeded, will not attempt to push builds.', file=sys.stderr)
             sys.exit(1)
 
         for mytag in tags:
             push_result &= push_image(tag, verbose=args.verbose, dry_run=args.dry_run)
 
     if not push_result:
-        print('Failed to push some tagged images.', file=stderr)
+        print('Failed to push some tagged images.', file=sys.stderr)
 
     commit_hash_result=True
     commit_hash = commit_hash()
