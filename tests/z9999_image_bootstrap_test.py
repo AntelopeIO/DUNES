@@ -3,6 +3,9 @@
 """Bootstrap CDT Version Test
 
 This script tests that the bootstrap command can create an image with a given version.
+
+This test contains resource intense tests that should NOT be run on every commit.
+To disable during ci testing, add `-k "not non_ci"` to your pytest command (e.g. `pytest -k "not non_ci" tests`)
 """
 
 import sys
@@ -12,47 +15,24 @@ import os
 from common import DUNES_ROOT
 
 
-#CONTAINER_NAME='dunes_version_test'
-#IMAGE_TAG='dunes:dunes_version_test'
-
 TAG_PREFIX = 'dunes:'
 CONTAINER_NAME_PREFIX = 'dt_'
-
-# List of all possible names sent to subprocess. Used in cleanup().
-CLEANUP_NAMES = [
-    'dunes_for_ci',
-    'cdt1', 'cdt2',
-    'leap1', 'leap2',
-    'combo1', 'combo2'
-]
-
-
-def cleanup():
-    """Remove any existing test containers and images."""
-
-    for name in CLEANUP_NAMES:
-        # Set up some constants.
-        container_name = f'{CONTAINER_NAME_PREFIX}{name}'
-        image_tag = f'{TAG_PREFIX}{name}'
-
-        # Send output to subprocess.DEVNULL since we EXPECT docker to tell us containers and images don't exist.
-        #   pylint: disable=subprocess-run-check, line-too-long
-        subprocess.run(['docker', 'container', 'rm', container_name, '--force'], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL, check=False)
-        subprocess.run(['docker', 'image', 'rm', image_tag], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL, check=False)
 
 
 def sub_versions(name, cdt=None, leap=None, refcon=None):
     """Tests that versions are set."""
 
-    # Sanity check and cleanup assurance.
-    assert name is not None
-    assert name in CLEANUP_NAMES, f"TEST DEFECT: name ({name}) is missing from CLEAN_NAMES array."
-
     # Set up some constants.
     container_name = f'{CONTAINER_NAME_PREFIX}{name}'
     image_tag = f'{TAG_PREFIX}{name}'
-
     bootstrap_command = [sys.executable, os.path.join(DUNES_ROOT, "bootstrap.py"), f'--tag={image_tag}']
+
+    # Clean any existing images/containers.
+    # Send output to subprocess.DEVNULL since we EXPECT docker to tell us containers and images don't exist.
+    #   pylint: disable=subprocess-run-check, line-too-long
+    subprocess.run(['docker', 'container', 'stop', container_name, '--force'], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL, check=False)
+    subprocess.run(['docker', 'container', 'rm', container_name, '--force'], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL, check=False)
+    subprocess.run(['docker', 'image', 'rm', image_tag], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL, check=False)
 
     # Add versions:
     if cdt:
@@ -88,45 +68,40 @@ def sub_versions(name, cdt=None, leap=None, refcon=None):
         completed_process = subprocess.run(['docker', 'exec', '-i', container_name, 'leap-util', 'version', 'client'], check=False, stdout=subprocess.PIPE)
         assert refcon in completed_process.stdout.decode()
 
+    # Stop the container, remove it, and remove the image.
+    subprocess.run(['docker', 'container', 'stop', container_name], check=True)
+    subprocess.run(['docker', 'container', 'rm', container_name], check=True)
+    subprocess.run(['docker', 'image', 'rm', image_tag], check=True)
 
-def test_simple_version():
+
+def test_combo1():
     """Ensure bootstrap can create an image with given CDT and LEAP versions."""
-
-    # Start in a clean state.
-    cleanup()
-
-    # Call the test with specific cdt and leap versions.
     sub_versions('dunes_for_ci', cdt='3.0.1', leap='3.2.1')
 
-    # End in a clean state.
-    cleanup()
+def test_combo2_expensive():
+    sub_versions('dunes_for_ci', cdt='3.1.0', leap='4.0.0')
 
-
-def test_cdt_leap_versions_non_ci():
-    """
-    Ensure bootstrap can create images with given CDT and LEAP versions.
-    This is intended to be run locally and not on github CI.
-    To diable from ci, add `-k "not non_ci"` to your pytest command (e.g. `pytest -k "not non_ci" tests`)
-    """
-
-    # Start in a clean state.
-    cleanup()
-
-    # Look at the version updates one at a time.
+def test_cdt1_expensive():
     sub_versions('cdt1', cdt='3.0.1')
+
+def test_cdt2_expensive():
     sub_versions('cdt2', cdt='3.1.0')
+
+def test_leap1_expensive():
     sub_versions('leap1', leap='3.2.3')
+
+def test_leap2_expensive():
     sub_versions('leap2', leap='3.2.2')
-    #sub_versions('t3', refcon='git-commit-hash-goes-here')
 
-    sub_versions('combo1', cdt='3.0.1', leap='3.2.1')
-    sub_versions('combo2', cdt='3.1.0', leap='3.2.3')
-
-
-    # End in a clean state.
-    cleanup()
+#def test_refcon1_expensive():
+#    sub_versions('refcon1', refcon='<long git commit hash>')
 
 
 if __name__ == "__main__":
-    test_simple_version()
-    test_cdt_leap_versions_non_ci()
+    test_combo1()
+    test_combo2_expensive()
+    test_cdt1_expensive()
+    test_cdt2_expensive()
+    test_leap1_expensive()
+    test_leap2_expensive()
+    #test_refcon1_expensive()

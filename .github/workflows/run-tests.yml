@@ -19,9 +19,7 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-      - shell: bash
-        run: |
-          python3 ./bootstrap.py
       - name: Run tests
+        # Image is created in early test stages.
         run: |
-          pytest -k "not non_ci" tests
+          pytest -k "not expensive" tests

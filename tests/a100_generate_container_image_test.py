@@ -71,7 +71,7 @@ def remove_tagged_image(tag):
     subprocess.run(['docker', 'image', 'rm', tag, '--force'], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL, check=False)
 
 
-def destructive_clean():
+def clean_destructive():
     """
     Remove any existing dunes_container and/or dunes images.
     WARNING: This is destructive.
@@ -96,15 +96,14 @@ def image_exists(tag):
     return True
 
 
-def test_release_versions_non_ci():
+def test_release_versions_destructive():
     """
     Ensure bootsrap can be created with --release flag.
     This test will also ensure the follow on test (test_ensure_conatiner_image) has a latests image.
-    This is intended to be run locally and not on github CI.
-    To diable from ci, add `-k "not non_ci"` to your pytest command (e.g. `pytest -k "not non_ci" tests`)
+    This test normally needs to be run BEFORE all other tests to ensure the containers exist.
     """
 
-    destructive_clean()
+    clean_destructive()
 
     # Find the current version and short hash of DUNES.
     dunes_version = get_dunes_version()
@@ -178,5 +177,5 @@ def test_ensure_conatiner_image():
 
 
 if __name__ == "__main__":
-    test_release_versions_non_ci()
+    test_release_versions_destructive()
     test_ensure_conatiner_image()
