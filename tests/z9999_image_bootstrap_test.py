@@ -49,23 +49,21 @@ def sub_versions(name, cdt=None, leap=None, refcon=None):
     subprocess.run(['docker', 'create', '-it', '--name', container_name, image_tag, '/bin/bash'], check=True)
     subprocess.run(['docker', 'start', container_name], check=True)
 
+    # Test the versions are in the started container.
     if cdt:
         # Try to get CDT version info from inside the container and test it matches.
         #  pylint: disable=line-too-long
         completed_process = subprocess.run(['docker', 'exec', '-i', container_name, '/usr/bin/ls', '/usr/opt/cdt'], check=False, stdout=subprocess.PIPE)
         assert cdt in completed_process.stdout.decode()
-
-
     if leap:
         # Try to get LEAP version info from inside the container and test it matches.
         #  pylint: disable=line-too-long
         completed_process = subprocess.run(['docker', 'exec', '-i', container_name, 'leap-util', 'version', 'client'], check=False, stdout=subprocess.PIPE)
         assert leap in completed_process.stdout.decode()
-
     if refcon:
         # Try to get refcon version info from inside the container and test it matches.
         #  pylint: disable=line-too-long
-        completed_process = subprocess.run(['docker', 'exec', '-i', container_name, 'leap-util', 'version', 'client'], check=False, stdout=subprocess.PIPE)
+        completed_process = subprocess.run(['docker', 'exec', '-i', container_name, 'test-command-tbd'], check=False, stdout=subprocess.PIPE)
         assert refcon in completed_process.stdout.decode()
 
     # Stop the container, remove it, and remove the image.
