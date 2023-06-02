@@ -31,12 +31,16 @@ NODE_CHARLIE = "CHARLIE_NODE"
 
 CONFIG_PATH = TEST_PATH
 CONFIG_FILE = TEST_PATH + "/config.ini"
+CONFIG_FILE_CUST = TEST_PATH + "/mycustconfig001.ini"
 
 EXPORT_DIR = TEST_PATH + "/temp"
 
 ALT_HTTP_ADDR="0.0.0.0:9991"
 ALT_P2P_ADDR="0.0.0.0:9992"
 ALT_SHIP_ADDR="0.0.0.0:9993"
+ALT_HTTP_ADDR_CUST="0.0.0.0:9996"
+ALT_P2P_ADDR_CUST="0.0.0.0:9997"
+ALT_SHIP_ADDR_CUST="0.0.0.0:9998"
 
 
 def remove_all():
@@ -256,7 +260,22 @@ def test_nodes():
     subprocess.run([DUNES_EXE, "--start", NODE_ALPHA, "--config", CONFIG_PATH], check=True)
     validate_node_list([[NODE_ALPHA, True, True, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR]])
 
-    # Test `--start` where start includes a config file.
+    # Test `--start` where start includes a config file named config.ini
+    subprocess.run([DUNES_EXE, "--start", NODE_BRAVO, "--config", CONFIG_FILE], check=True)
+    validate_node_list([[NODE_ALPHA, False, False, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
+                        [NODE_BRAVO, True, True, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR]])
+
+    subprocess.run([DUNES_EXE,"--stop", NODE_BRAVO], check=True)
+    validate_node_list([[NODE_ALPHA, False, False, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
+                        [NODE_BRAVO, True,  False, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR]])
+
+    # Test `--start` where start includes a config file with customized name mycustconfig001.ini
+    subprocess.run([DUNES_EXE, "--start", NODE_BRAVO, "--config", CONFIG_FILE_CUST], check=True)
+    validate_node_list([[NODE_ALPHA, False, False, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
+                        [NODE_BRAVO, True, True, ALT_HTTP_ADDR_CUST, ALT_P2P_ADDR_CUST, ALT_SHIP_ADDR_CUST]])
+
+    # stop and then start NODE_BRAVO again using standard config.ini
+    subprocess.run([DUNES_EXE,"--stop", NODE_BRAVO], check=True)
     subprocess.run([DUNES_EXE, "--start", NODE_BRAVO, "--config", CONFIG_FILE], check=True)
     validate_node_list([[NODE_ALPHA, False, False, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
                         [NODE_BRAVO, True, True, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR]])
@@ -471,9 +490,19 @@ def test_node_start_rmdirtydb():
     subprocess.run([DUNES_EXE,"--start", NODE_ALPHA, "--config", CONFIG_PATH, "--rmdirtydb"], check=True)
     validate_node_list([[NODE_ALPHA, True, True, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR]])
 
+    # use standard config.ini
     subprocess.run([DUNES_EXE,"--start", NODE_BRAVO, "--config", CONFIG_FILE, "--rmdirtydb"], check=True)
     validate_node_list([[NODE_ALPHA, False, False, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
                         [NODE_BRAVO, True, True, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR]])
+
+    subprocess.run([DUNES_EXE,"--stop", NODE_BRAVO], check=True)
+    validate_node_list([[NODE_ALPHA, False, False, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
+                        [NODE_BRAVO, True,  False, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR]])
+
+    # use customized .ini
+    subprocess.run([DUNES_EXE, "--start", NODE_BRAVO, "--config", CONFIG_FILE_CUST, "--rmdirtydb"], check=True)
+    validate_node_list([[NODE_ALPHA, False, False, ALT_HTTP_ADDR, ALT_P2P_ADDR, ALT_SHIP_ADDR],
+                        [NODE_BRAVO, True, True, ALT_HTTP_ADDR_CUST, ALT_P2P_ADDR_CUST, ALT_SHIP_ADDR_CUST]])
 
      # Finally, clean everything up before final return.
     remove_all()

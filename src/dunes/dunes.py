@@ -149,8 +149,10 @@ class dunes:
             nod.set_config('/app/config.ini')
 
         if nod.config() is not None:
-            self._docker.execute_cmd(['cp', nod.config(), nod.config_dir()])
-            print("Using Configuration [" + nod.config() + "]")
+            # a customized .ini file such as mycustconfig001.ini will be copied to config_dir as config.ini
+            node_config_filename = nod.config_dir() + "/config.ini"
+            self._docker.execute_cmd(['cp', nod.config(), node_config_filename])
+            print("Using Configuration [" + nod.config() + "], which is copied to [" + node_config_filename + "]")
 
         self.stop_conflicting_nodes(nod)
 
