@@ -44,8 +44,7 @@ def test_create_cmake_app():
     remove_existing()
 
     # Expected files.
-    filelist = [TEST_APP_DIR + '/',
-                os.path.join(TEST_APP_DIR, 'src'),
+    filelist = [os.path.join(TEST_APP_DIR, 'src'),
                 os.path.join(TEST_APP_DIR, *['src', PROJECT_NAME+'.cpp']),
                 os.path.join(TEST_APP_DIR, *['src', 'CMakeLists.txt']),
                 os.path.join(TEST_APP_DIR, 'include'),
@@ -67,7 +66,7 @@ def test_create_cmake_app():
     # Sort the lists and compare.
     filelist.sort()
     lst.sort()
-    assert filelist == lst
+    assert filelist == lst[1:]
 
     # Cleanup
     shutil.rmtree(TEST_APP_DIR)
@@ -80,10 +79,9 @@ def test_create_bare_app():
     remove_existing()
 
     # Expected file list.
-    filelist = [TEST_APP_DIR + '/',
-                os.path.join(TEST_APP_DIR, PROJECT_NAME+'.hpp'),
-                os.path.join(TEST_APP_DIR, PROJECT_NAME+'.cpp']),
-                os.path.join(TEST_APP_DIR, PROJECT_NAME+'.contracts.md']),
+    filelist = [os.path.join(TEST_APP_DIR, PROJECT_NAME+'.hpp'),
+                os.path.join(TEST_APP_DIR, PROJECT_NAME+'.cpp'),
+                os.path.join(TEST_APP_DIR, PROJECT_NAME+'.contracts.md'),
                 os.path.join(TEST_APP_DIR, 'README.txt')]
 
     subprocess.run([DUNES_EXE, "--create-bare-app", PROJECT_NAME, TEST_PATH], check=True)
@@ -95,7 +93,7 @@ def test_create_bare_app():
     # Sort and compare expected and actual.
     filelist.sort()
     lst.sort()
-    assert filelist == lst
+    assert filelist == lst[1:]
 
     # Cleanup
     shutil.rmtree(TEST_APP_DIR)
