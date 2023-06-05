@@ -7,10 +7,12 @@ in response to `-h`, `--help`, and `<some invalid option>` options.
 """
 
 import subprocess
+import pytest
 
 from common import DUNES_EXE
 
 
+@pytest.mark.safe
 def test_invalid_option():
     """Test that the output of `dunes <some invalid option>` is as expected."""
 
@@ -31,6 +33,7 @@ def test_invalid_option():
         assert expect in completed_process.stderr
 
 
+@pytest.mark.safe
 def test_help():
     """Test that the output of `dunes -h` and `dunes --help` is as expected."""
 

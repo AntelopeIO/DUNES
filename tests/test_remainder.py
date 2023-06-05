@@ -7,11 +7,13 @@ unused arguments to DUNES
 """
 
 import subprocess
+import pytest
 
 from common import DUNES_EXE
 from container import container
 
 
+@pytest.mark.safe
 def test_unused():
     """Test the warning for unused arguments"""
 
@@ -35,6 +37,7 @@ def test_unused():
         assert expect in completed_process.stdout
 
 
+@pytest.mark.safe
 def test_no_warning():
     """Test there is no warning for arguments using remainder in i.e. gdb case"""
 

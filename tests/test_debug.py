@@ -9,10 +9,12 @@ to `--debug` option.
 
 
 import subprocess
+import pytest
 
 from common import DUNES_EXE
 
 
+@pytest.mark.safe
 def test_version_debug():
     """Test that the output of `--version --debug` is as expected."""
 

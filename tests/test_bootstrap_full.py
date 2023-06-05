@@ -10,6 +10,7 @@ These options are tested:
 """
 
 import subprocess
+import pytest
 
 from common import DUNES_EXE
 
@@ -19,6 +20,7 @@ ACCT_NAME = "myaccount"
 ACCT_NAME2 = "myaccount2"
 
 
+@pytest.mark.destructive
 def test_booststrap():
 
     # Remove any existing containers.

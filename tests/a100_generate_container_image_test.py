@@ -8,6 +8,7 @@ This script tests that the container image being tested is correct.
 import sys
 import os
 import subprocess
+import pytest
 
 from common import TEST_PATH, DUNES_EXE, DUNES_ROOT
 
@@ -96,6 +97,7 @@ def image_exists(tag):
     return True
 
 
+@pytest.mark.destructive
 def test_release_versions_destructive():
     """
     Ensure bootsrap can be created with --release flag.
@@ -132,6 +134,7 @@ def test_release_versions_destructive():
     remove_tagged_image(f'ghcr.io/antelopeio/dunes:{dunes_version}')
 
 
+@pytest.mark.destructive
 def test_ensure_conatiner_image():
     """Ensure container version is available and correct."""
 

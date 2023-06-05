@@ -20,6 +20,6 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
       - name: Run tests
-        # Image is created in early test stages.
+        # Image is created in early test stages (a100_generate_container_image_test.py)
         run: |
-          pytest -k "not expensive" tests
+          pytest --run-destructive tests/

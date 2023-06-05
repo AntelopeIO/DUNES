@@ -8,6 +8,7 @@ This script tests export and import of the wallet
 import os
 import shutil
 import subprocess
+import pytest
 
 from container import container
 from common import DUNES_EXE
@@ -21,6 +22,7 @@ def untar(file_name):
     subprocess.run(['tar', 'xvzf', file_name], check=True)
 
 
+@pytest.mark.safe
 def test_export():
     """Test `--export-wallet` key."""
 
@@ -29,6 +31,7 @@ def test_export():
     assert os.path.exists("wallet.tgz") is True
 
 
+@pytest.mark.destructive
 def test_import():
     """Test `--import-wallet` key."""
 

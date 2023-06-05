@@ -4,8 +4,10 @@
 
 
 import platform
+import pytest
 
 
+@pytest.mark.safe
 def test_python_version():
     """Ensure python version is acceptable."""
 

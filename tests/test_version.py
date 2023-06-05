@@ -8,10 +8,12 @@ in response to `--version` option.
 
 
 import subprocess
+import pytest
 
 from common import DUNES_EXE
 
 
+@pytest.mark.safe
 def test_version():
     """Test that the output of `--version` is as expected."""
 

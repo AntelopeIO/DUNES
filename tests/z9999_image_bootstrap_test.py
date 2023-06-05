@@ -5,12 +5,13 @@
 This script tests that the bootstrap command can create an image with a given version.
 
 This test contains resource intense tests that should NOT be run on every commit.
-To disable during ci testing, add `-k "not non_ci"` to your pytest command (e.g. `pytest -k "not non_ci" tests`)
+To enable during testing, add `--run-slow` to your pytest command.
 """
 
 import sys
 import subprocess
 import os
+import pytest
 
 from common import DUNES_ROOT
 
@@ -72,34 +73,50 @@ def sub_versions(name, cdt=None, leap=None, refcon=None):
     subprocess.run(['docker', 'image', 'rm', image_tag], check=True)
 
 
+# ONLY this test is NOT markes slow.
+@pytest.mark.safe
 def test_combo1():
     """Ensure bootstrap can create an image with given CDT and LEAP versions."""
     sub_versions('dunes_for_ci', cdt='3.0.1', leap='3.2.1')
 
-def test_combo2_expensive():
+
+@pytest.mark.slow
+@pytest.mark.safe
+def test_combo2():
     sub_versions('dunes_for_ci', cdt='3.1.0', leap='4.0.0')
 
-def test_cdt1_expensive():
+@pytest.mark.slow
+@pytest.mark.safe
+def test_cdt1():
     sub_versions('cdt1', cdt='3.0.1')
 
-def test_cdt2_expensive():
+@pytest.mark.slow
+@pytest.mark.safe
+def test_cdt2():
     sub_versions('cdt2', cdt='3.1.0')
 
-def test_leap1_expensive():
+@pytest.mark.slow
+@pytest.mark.safe
+def test_leap1():
     sub_versions('leap1', leap='3.2.3')
 
-def test_leap2_expensive():
+
+@pytest.mark.slow
+@pytest.mark.safe
+def test_leap2():
     sub_versions('leap2', leap='3.2.2')
 
-#def test_refcon1_expensive():
+#@pytest.mark.slow
+#@pytest.mark.safe
+#def test_refcon1():
 #    sub_versions('refcon1', refcon='<long git commit hash>')
 
 
 if __name__ == "__main__":
     test_combo1()
-    test_combo2_expensive()
-    test_cdt1_expensive()
-    test_cdt2_expensive()
-    test_leap1_expensive()
-    test_leap2_expensive()
-    #test_refcon1_expensive()
+    test_combo2()
+    test_cdt1()
+    test_cdt2()
+    test_leap1()
+    test_leap2()
+    #test_refcon1()

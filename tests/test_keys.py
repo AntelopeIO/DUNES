@@ -8,18 +8,20 @@ This script tests work with the crypto keys:
 
 """
 import subprocess
+import pytest
 
 from common import DUNES_EXE
 from container import container
 
 
+@pytest.mark.safe
 def test_create_and_import_keys():
     """Test `--create-key` and `--import-dev-key` key."""
 
     # Ensure a container exists.
     cntr = container('dunes_container', 'dunes:latest')
     if not cntr.exists():
-        cntr.create()
+        assert cntr.create(), "Failed to create a container. You probably need to create and image with `bootstrap.py`."
 
     # Create a key. Get it to a var as well.
     public_key = None

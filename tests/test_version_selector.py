@@ -6,13 +6,14 @@ import sys
 from unittest.mock import patch
 from unittest import TestCase
 from os.path import dirname, realpath
+import pytest
 
 sys.path.insert(1, sys.path.append(dirname(realpath(__file__)) + "/../src/dunes"))
 # pylint: disable=wrong-import-position
 import version_selector
 
-
 @patch('version_selector.available_versions_from_url')
+@pytest.mark.safe
 def test_version_selector_leap(mock_available_versions):
     # Arrange
     mock_available_versions.return_value = ["v1"]
@@ -27,6 +28,7 @@ def test_version_selector_leap(mock_available_versions):
 
 
 @patch('version_selector.available_versions_from_url')
+@pytest.mark.safe
 def test_version_selector_cdt(mock_available_versions):
     # Arrange
     mock_available_versions.return_value = ["v1", "v2"]
@@ -40,6 +42,7 @@ def test_version_selector_cdt(mock_available_versions):
         "https://api.github.com/repos/antelopeio/cdt/releases")
 
 
+@pytest.mark.safe
 class test_version_selector(TestCase):
     @patch('version_selector.available_versions')
     @patch('builtins.input')

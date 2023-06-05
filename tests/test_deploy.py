@@ -10,6 +10,7 @@ This script tests work with the smart contract related keys:
 import os
 import shutil
 import subprocess
+import pytest
 
 from common import DUNES_EXE, TEST_PATH
 
@@ -23,6 +24,7 @@ TEST_APP_BLD_DIR = TEST_APP_DIR + "/build/" + PROJECT_NAME
 TEST_APP_WASM = TEST_APP_BLD_DIR + "/" + PROJECT_NAME + ".wasm"    # TEST_APP_BLD_DIR + "/test_app.wasm"
 
 
+@pytest.mark.destructive
 def test_deploy():
     """Test `--deploy` key."""
 

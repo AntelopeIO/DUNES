@@ -18,6 +18,7 @@ This script tests that the compiled binary produce expected output for these com
 
 import shutil                   # rmtree
 import subprocess
+import pytest
 
 # pylint: disable=unused-wildcard-import,wildcard-import
 from common import *                   # local defines
@@ -204,6 +205,7 @@ def expect_empty_verbose_list():
 
 
 # pylint: disable=too-many-statements
+@pytest.mark.destructive
 def test_nodes():
     """Run the tests."""
 
@@ -361,6 +363,7 @@ def test_nodes():
     remove_all()
 
 
+@pytest.mark.destructive
 def test_start_active_node():
     """start_active_node"""
 
@@ -409,6 +412,8 @@ def test_start_active_node():
     # Finally, clean everything up before final return.
     remove_all()
 
+
+@pytest.mark.destructive
 def test_node_start_rmdirtydb():
     """test dune --start with --rmdirtydb"""
 

@@ -8,10 +8,12 @@ response to the `--list-features` option.
 
 
 import subprocess
+import pytest
 
 from common import DUNES_EXE
 
 
+@pytest.mark.safe
 def test_list_features():
     """Test that the output of `dunes --list-features` is as expected."""
 
