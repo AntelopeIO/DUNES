@@ -46,14 +46,8 @@ def pytest_collection_modifyitems(config, items):
 
     # If a test is marked with any of these it should be skipped by default.
     skip_markers = ['destructive', 'slow']
-
     # Remove any markers that the user wants to enable via a --run-<marker> flag.
-    temp_markers = skip_markers
-    for marker in temp_markers:
-        # Calculate the marker's run flag and test to see if it's NOT set.
-        flag = f'--run-{marker}'
-        if config.getoption(flag):
-            skip_markers.remove(marker)
+    skip_markers = [marker for marker in skip_markers if not config.getoption(f"--run-{marker}")]
 
     # If there's nothing to skip, we return.
     if not skip_markers:
