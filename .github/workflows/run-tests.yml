@@ -41,4 +41,6 @@ jobs:
         uses: docker/setup-buildx-action@v2
       - name: Run tests
         run: |
+          docker pull ghcr.io/antelopeio/dunes:08f2f58
+          docker tag ghcr.io/antelopeio/dunes:08f2f58 dunes:latest
           pytest tests
