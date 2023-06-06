@@ -5,11 +5,13 @@
 This script test works with the Docker container.
 """
 import subprocess
+import pytest
 
 from common import DUNES_EXE
 from container import container
 
 
+@pytest.mark.destructive
 def test_container_actions():
     """ Test the start, stop, and destroy action for containers. """
 

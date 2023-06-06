@@ -4,6 +4,7 @@ import platform
 # Find path for tests, root, and executable:
 TEST_PATH = os.path.dirname(os.path.abspath(__file__))
 DUNES_ROOT= os.path.split(TEST_PATH)[0]
+DUNES_SRC = os.path.join(DUNES_ROOT, *['src','dunes'])
 DUNES_EXE = os.path.join(DUNES_ROOT , "dunes")
 
 if platform.system() == 'Windows':

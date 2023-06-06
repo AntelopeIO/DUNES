@@ -8,6 +8,7 @@ This script tests that after copying plugin to src/plugin DUNES detects it and r
 import os
 import shutil
 import subprocess
+import pytest
 
 from common import DUNES_EXE, DUNES_ROOT, TEST_PATH
 
@@ -29,6 +30,7 @@ def remove_all():
     shutil.rmtree(dst_gotcha, ignore_errors=True)
 
 
+@pytest.mark.safe
 def test_hello():
     """Test the working hello plugin."""
 
@@ -48,6 +50,7 @@ def test_hello():
     remove_all()
 
 
+@pytest.mark.safe
 def test_fail():
     """Test that a duplicate working hello plugin."""
 
@@ -70,6 +73,7 @@ def test_fail():
     remove_all()
 
 
+@pytest.mark.safe
 def test_missing_main():
     """Test that a directory missing a main.py file."""
 
@@ -84,6 +88,7 @@ def test_missing_main():
     remove_all()
 
 
+@pytest.mark.safe
 def test_gotcha():
     """Test a bad plugin generates a notification."""
 

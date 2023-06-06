@@ -6,11 +6,13 @@ This script tests --monitor key
 
 """
 import subprocess
+import pytest
 
 from common import DUNES_EXE
 from container import container
 
 
+@pytest.mark.destructive
 def test_monitor():
     """Test `--monitor` key."""
 

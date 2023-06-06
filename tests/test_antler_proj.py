@@ -39,6 +39,7 @@ def remove_existing():
 
 @pytest.mark.skip(reason="Skipped until the release of antler-proj. "
                          "See details in https://github.com/AntelopeIO/DUNES/issues/134")
+@pytest.mark.safe
 def test_antler():
 
     remove_existing()

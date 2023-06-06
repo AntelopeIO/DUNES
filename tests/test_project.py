@@ -14,6 +14,7 @@ import glob
 import os
 import shutil
 import subprocess
+import pytest
 
 from common import DUNES_EXE,TEST_PATH
 from container import container
@@ -36,6 +37,7 @@ def remove_existing():
         shutil.rmtree(TEST_APP_DIR)
 
 
+@pytest.mark.safe
 def test_create_cmake_app():
     """Test `--create-cmake-app` key."""
 
@@ -71,6 +73,7 @@ def test_create_cmake_app():
     shutil.rmtree(TEST_APP_DIR)
 
 
+@pytest.mark.safe
 def test_create_bare_app():
     """Test `--create-bare-app` key."""
 
@@ -98,6 +101,7 @@ def test_create_bare_app():
     shutil.rmtree(TEST_APP_DIR)
 
 
+@pytest.mark.safe
 def test_cmake_and_ctest():
     """Test `--cmake` and `--ctest` key."""
 
@@ -124,6 +128,7 @@ def test_cmake_and_ctest():
     shutil.rmtree(TEST_APP_DIR)
 
 
+@pytest.mark.safe
 def test_gdb():
     """Test `--gdb` key."""
 

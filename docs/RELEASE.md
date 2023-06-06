@@ -13,4 +13,4 @@ Otherwise you can open Windows console as a regular user.
 2. Make sure you are logged in with docker login, example command: `docker login ghcr.io -u <your_username> --password-stdin`.
 3. Update `VERSION_SUFFIX` if necessary in `packaging/generate_package.sh`/
 4. Update `RELEASE` in `packaging/generate_deb.sh` and `packaging/generate_rpm.sh` if necessary. (This is the package version, not the executable version.)
-5. Run `./bootstrap.sh --release --push` in your DUNES directory.
+5. Run `python3 ./bootstrap.py --release --push` in your DUNES directory.
