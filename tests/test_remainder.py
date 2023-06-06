@@ -13,7 +13,7 @@ from common import DUNES_EXE
 from container import container
 
 
-@pytest.mark.safe
+@pytest.mark.destructive
 def test_unused():
     """Test the warning for unused arguments"""
 
