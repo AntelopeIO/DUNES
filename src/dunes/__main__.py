@@ -304,17 +304,31 @@ if __name__ == '__main__':
             elif args.leap:
                 if args.leap == '-1':
                     args.leap = version_selector.get_version("Leap")
-                dunes_sys.execute_cmd(['sh', 'bootstrap_leap.sh', args.leap])
+                dunes_sys.execute_cmd(['sh', '/app/bootstrap_leap.sh', args.leap])
 
             elif args.cdt:
                 if args.cdt == '-1':
                     args.cdt = version_selector.get_version("CDT")
-                dunes_sys.execute_cmd(['sh', 'bootstrap_cdt.sh', args.cdt])
+                dunes_sys.execute_cmd(['sh', '/app/bootstrap_cdt.sh', args.cdt])
+
+            elif args.contracts:
+                dunes_sys.execute_cmd(['sh', '/app/bootstrap_contracts.sh', args.contracts])
+
 
             elif args.version_all:
                 handle_version()
                 dunes_sys.execute_cmd(['apt', 'list', 'leap'], colors=True)
                 dunes_sys.execute_cmd(['apt', 'list', 'cdt'], colors=True)
+                try:
+                    # Latest version info is stored in the reference contract.
+                    dunes_sys.execute_cmd(['cat', '/app/reference-contracts/VERSION.DUNES.txt'], colors=True)
+                except:  # pylint: disable=bare-except
+                    # Older versions are a full git clone.
+                    try:
+                        dunes_sys.execute_cmd(['git', '-C', '/app/reference-contracts/', 'rev-parse', 'HEAD'], colors=True)
+                    except:  # pylint: disable=bare-except
+                        print("Can't determine contracts version.")
+
 
 # Integration with antler-proj begin ----------------------------------------------------------------------
 

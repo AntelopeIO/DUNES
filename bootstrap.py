@@ -68,7 +68,7 @@ def tag_image(tag, verbose=False, dry_run=False):        # pylint: disable=redef
     return False
 
 
-def build_image(leap_version=None, cdt_version=None, refcon_version=None, tag='dunes', verbose=False, dry_run=False):  # pylint: disable=too-many-arguments, redefined-outer-name
+def build_image(leap_version=None, cdt_version=None, contracts_version=None, tag='dunes', verbose=False, dry_run=False):  # pylint: disable=too-many-arguments, redefined-outer-name
     """Build a docker image for working with DUNES.
 
     """
@@ -92,8 +92,8 @@ def build_image(leap_version=None, cdt_version=None, refcon_version=None, tag='d
     if cdt_version:
         build_command.extend( [barg, f'CDT_VERSION={cdt_version}'] )
 
-    if refcon_version:
-        build_command.extend( [barg, f'REFCON_VERSION={refcon_version}'] )
+    if contracts_version:
+        build_command.extend( [barg, f'CONTRACTS_VERSION={contracts_version}'] )
 
     if verbose:
         print(f'Build command: {build_command}' )
@@ -121,9 +121,7 @@ if __name__ == "__main__":
     #  pylint:disable=line-too-long
     parser.add_argument('-c', '--cdt',    dest='cdt_version',    action='store',      help='Set the leap version to CDT_VERSION.')
     parser.add_argument('-l', '--leap',   dest='leap_version',   action='store',      help='Set the CDT version to LEAP_VERSION.')
-    #The following line is commented out and replaced with a suppression. Issue #201 should renable it.
-    #parser.add_argument('--refcon',       dest='refcon_version', action='store',      help='Set the reference-contract version to REFCON_VERSION. Usually a commit hash.')
-    parser.add_argument('--refcon',       dest='refcon_version', action='store',      help=argparse.SUPPRESS)
+    parser.add_argument('--contracts',       dest='contracts_version', action='store',help='Set the reference-contract version to CONTRACTS_VERSION. Nominally a commit hash.')
     parser.add_argument('-r','--release', dest='release_build',  action='store_true', help='Tag the image with the version reported by DUNES.')
     parser.add_argument('-p','--push',    dest='push_image',     action='store_true', help='Push release and latest image to ghcr.io. Implies --release.')
     parser.add_argument('--tag',          dest='tag',            action='store',      help='ONLY tag the image with the user provided tag TAG.')
@@ -162,7 +160,7 @@ if __name__ == "__main__":
         tag=tag,
         cdt_version=args.cdt_version,
         leap_version=args.leap_version,
-        refcon_version=args.refcon_version,
+        contracts_version=args.contracts_version,
         verbose=args.verbose,
         dry_run=args.dry_run,):
 

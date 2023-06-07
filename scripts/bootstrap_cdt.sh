@@ -1,19 +1,45 @@
 #! /bin/sh -e
-. ./bootstrap_common.sh
+#
+# install_cdt.sh
+#
+# This script will install the CDT .deb package with version as provided in $1.
+# If $1 is 'latest', the latest release is used.
+#
 
-CDT_VERSION=$1
+# Make sure we operate in the expected directory.
+cd $(dirname $(readlink -f "$0"))
 
-if [ -n "$CDT_VERSION" ]; then
-   FINAL_CDT_VERSION="$CDT_VERSION"
-else
-   FINAL_CDT_VERSION=$(wget -q -O- https://api.github.com/repos/"$ORG"/cdt/releases/latest | jq -r '.tag_name' | cut -c2-)
+# Sanity check
+if [ -z "$ORG" ]; then
+    ORG="AntelopeIO"
+fi
+
+# Sanity check version, set the variable.
+if [ -z "$1" ]; then
+    echo "arg 1, cdt version, is empty."
+    exit 1
+fi
+VERSION=$1
+# Allow latest as an option in case insensitive fashion.
+if [ "$(echo ${VERSION} | tr [:lower:] [:upper:])" = "LATEST" ]; then
+    VERSION=$(wget -q -O- https://api.github.com/repos/"$ORG"/cdt/releases/latest | jq -r '.tag_name' | cut -c2-)
+fi
+
+# Determine architecture and set package arch
+PARCH="amd64"
+if [ "$(uname -m)" != "x86_64" ]; then
+    PARCH="arm64"
 fi
 
 
-if [ "${ARCH}" = "x86_64" ]; then
-   wget https://github.com/"${ORG}"/cdt/releases/download/v"${FINAL_CDT_VERSION}"/cdt_"${FINAL_CDT_VERSION}"_amd64.deb
-   apt --assume-yes --allow-downgrades install ./cdt_"${FINAL_CDT_VERSION}"_amd64.deb
-else
-   wget https://github.com/"${ORG}"/cdt/releases/download/v"${FINAL_CDT_VERSION}"/cdt_"${FINAL_CDT_VERSION}"_arm64.deb
-   apt --assume-yes --allow-downgrades install ./cdt_"${FINAL_CDT_VERSION}"_arm64.deb
-fi
+# Remove any existing cdt packages.
+rm -f cdt_*.deb || true
+
+
+# get the package and install it.
+CDT_PKG=cdt_"${VERSION}"_"${PARCH}".deb
+wget https://github.com/"${ORG}"/cdt/releases/download/v"${VERSION}"/"${CDT_PKG}"
+apt --assume-yes --allow-downgrades install ./"${CDT_PKG}"
+
+# remove any downloaded files
+rm -f ./"${CDT_PKG}" || true

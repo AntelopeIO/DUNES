@@ -165,6 +165,8 @@ class arg_parser:
         self._parser.add_argument('--cdt', nargs='?', const='-1', metavar="CDT_VERSION",
                                   help='Set the version of CDT (Contract Development Toolkit).'
                                        'If no version is provided, display available CDT versions.')
+        self._parser.add_argument(
+            '--contracts', metavar="CONTRACTS_VERSION",  help='Set the git hash version of reference contracts.')
         self.add_antler_arguments()
 
         # used to store arguments to individual programs, starting with --
