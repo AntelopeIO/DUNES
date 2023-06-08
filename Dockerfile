@@ -9,7 +9,7 @@ ARG ORG="AntelopeIO"
 # The following tool versions should be updated to match the latest release. Note that contracts currently takes the full git commit hash.
 ARG LEAP_VERSION=4.0.1
 ARG CDT_VERSION=4.0.0
-ARG CONTRACTS_VERSION=bd6c0b1a5086c8826a2840e7b8b5e1adaff00314
+ARG CONTRACTS_VERSION=76197b4bc60d8dc91a5d65ecdbf0f785e982e279
 
 
 RUN apt-get update
