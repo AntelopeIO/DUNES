@@ -26,7 +26,7 @@ import pytest
 from common import DUNES_EXE, TEST_PATH
 
 
-TEST_PROJECT_DIR = TEST_PATH + "/" + "antler_test_dir"
+TEST_PROJECT_DIR = os.path.join(TEST_PATH, "antler_test_dir")
 
 
 def remove_existing():

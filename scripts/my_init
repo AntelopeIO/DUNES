@@ -338,7 +338,7 @@ try:
 	main(args)
 except KeyboardInterrupt:
 	warn("Init system aborted.")
-	exit(2)
+	sys.exit(2)
 finally:
 	if args.kill_all_on_exit:
 		kill_all_processes(KILL_ALL_PROCESSES_TIMEOUT)
