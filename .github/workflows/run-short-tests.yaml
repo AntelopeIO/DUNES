@@ -1,13 +1,15 @@
 name: Run Short Tests
 
 on:
-  push:
-    # main and release branches are tested by run-tests-long
-    branches:
-      - "!main"
   pull_request:
+    types:
+      - opened
+      - synchronize
+  push:
+    branches-ignore:
+      - main
+      - 'release*'
   workflow_dispatch:
-
 
 jobs:
   build:
