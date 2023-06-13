@@ -1,11 +1,12 @@
 name: Run All Tests
 
+#
 on:
   push:
     branches:
       - main
       - 'release*'
-      - 'sbailey/cicd_long_build'
+      - 'sbailey*'
   workflow_dispatch:
 
 jobs:
