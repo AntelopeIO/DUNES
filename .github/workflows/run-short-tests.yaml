@@ -5,7 +5,7 @@ on:
     # main and release branches are tested by run-tests-long
     branches:
       - "!main"
-      - "!release/*"
+  pull_request:
   workflow_dispatch:
 
 
