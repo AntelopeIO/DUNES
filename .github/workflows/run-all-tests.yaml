@@ -5,8 +5,8 @@ on:
   push:
     branches:
       - main
-      - 'release*'
-      - sbailey*
+      - "release*"
+      - "sbailey/cicd_long_builds"
   workflow_dispatch:
 
 jobs:
