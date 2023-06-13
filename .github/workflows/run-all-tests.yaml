@@ -1,6 +1,5 @@
 name: Run All Tests
 
-#
 on:
   push:
     branches:
