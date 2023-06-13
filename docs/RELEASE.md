@@ -1,5 +1,8 @@
 # How to prepare new DUNES release?
 
+## Update Dockerfile
+Ensure Dockerfile has the latest versions of cdt, leap, and reference-contracts set.
+
 ## How to generate a package on Windows?
 1. Edit `packaging\dunes\dunes.nuspec` and edit the current version in XML tag `version`
 2. If you do not have yet [Chocolatey](https://chocolatey.org/) installed open Windows console as administrator.
