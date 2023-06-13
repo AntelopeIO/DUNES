@@ -1,9 +1,9 @@
-name: Run ALL Tests
+name: Run All Tests
 
 on:
   push:
     branches:
-      - main
+      - "main"
       - "release/*"
   workflow_dispatch:
 

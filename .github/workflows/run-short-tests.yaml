@@ -1,6 +1,13 @@
-name: Run tests
+name: Run Short Tests
 
-on: [push]
+on:
+  push:
+    # main and release branches are tested by run-tests-long
+    branches:
+      - "!main"
+      - "!release/*"
+  workflow_dispatch:
+
 
 jobs:
   build:
