@@ -3,8 +3,13 @@ FROM ubuntu:20.04
 
 ARG USER_ID
 ARG GROUP_ID
-ARG LEAP_VERSION
-ARG CDT_VERSION
+
+ARG ORG="AntelopeIO"
+
+# The following tool versions should be updated to match the latest release. Note that contracts currently takes the full git commit hash.
+ARG LEAP_VERSION=4.0.1
+ARG CDT_VERSION=4.0.0
+ARG CONTRACTS_VERSION=76197b4bc60d8dc91a5d65ecdbf0f785e982e279
 
 
 RUN apt-get update
@@ -17,11 +22,15 @@ RUN npm install -D webpack-dev-server
 
 WORKDIR /app
 
+# Copy the scripts
 COPY ./scripts/ .
 RUN chmod +x *.sh
 RUN mv my_init /sbin
 
-RUN ./bootstrap_env.sh
+# Install our software.
+RUN ./bootstrap_leap.sh $LEAP_VERSION
+RUN ./bootstrap_cdt.sh $CDT_VERSION
+RUN ./bootstrap_contracts.sh $CONTRACTS_VERSION
 RUN ./setup_system.sh
 
 RUN mkdir -p /app/nodes
