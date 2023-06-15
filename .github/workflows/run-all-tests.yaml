@@ -1,16 +1,21 @@
-name: Run tests
+name: Run All Tests
 
-on: [push]
+on:
+  push:
+    branches:
+      - main
+      - "release*"
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Use Docker in rootless mode (To solve "Permission denied" error when removing test_app directory)
-        uses: ScribeMD/rootless-docker@0.2.2
-      - uses: actions/checkout@v2
+      # Use Docker in rootless mode (To solve "Permission denied" error when removing test_app directory)
+      - uses: ScribeMD/rootless-docker@0.2.2
+      - uses: actions/checkout@v3
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: 3.9
       - name: Install dependencies
@@ -22,4 +27,4 @@ jobs:
       - name: Run tests
         # Image is created in early test stages (a100_generate_container_image_test.py)
         run: |
-          pytest --run-destructive tests/
+          pytest --run-all tests/
