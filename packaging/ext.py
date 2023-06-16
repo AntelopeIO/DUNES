@@ -9,7 +9,8 @@ import tempfile
 import shutil
 import tarfile
 import glob
-import hashlib
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__)+'/..')))
 from src.dunes.version import version_full
 
 def create_executable(specpath, src, work_path):
@@ -28,11 +29,14 @@ def create_tarball_or_install(directory, tar_file, layout):
    """Create a tarball of the 'dunes' executable."""
 
    subprefix = ''
-   install = False;
+   install = False
 
    if layout == 'macos':
       install = True
       prefix = '/opt/homebrew/Cellar/dunes/'+version_full()
+      subprefix = prefix+'/opt/dunes'
+   elif layout == 'linux':
+      prefix = '/usr'
       subprefix = prefix+'/opt/dunes'
 
    with tempfile.TemporaryDirectory() as temp_dir:
@@ -54,7 +58,7 @@ def create_tarball_or_install(directory, tar_file, layout):
 
       if not install:
          with tarfile.open(tar_file, 'w:gz') as tf:
-            for file in glob.glob(temp_dir+'/**/*', recursive=True):
+            for file in glob.glob(temp_d+'/**/*', recursive=True):
                print(file)
                tf.add(file, arcname=file[len(temp_dir)+1:]) 
    
@@ -67,25 +71,23 @@ if __name__ == '__main__':
    parser.add_argument('--layout', default='', help='Name of the layout used, macos, linux, win., defaults to which plaform is used to run the script.')
    args = parser.parse_args()
 
-   temp_dir = tempfile.TemporaryDirectory()
+   temp_d = tempfile.TemporaryDirectory()
 
-   # Create the executable.
-   if not create_executable(args.specpath, args.src, temp_dir.name):
-      sys.exit(1)
-   
-   if args.layout == '':
-      if platform.system() == 'Darwin':
-         args.layout = 'macos'
-      elif platform.system() == 'Linux':
-         args.layout = 'linux'
-      elif platform.system() == 'Windows':
-         args.layout = 'win'
-      else:
-         print('Unsupported platform.', file=sys.stderr)
+   with tempfile.TemporaryDirectory() as temp_d:
+      # Create the executable.
+      if not create_executable(args.specpath, args.src, temp_d):
          sys.exit(1)
+      
+      if args.layout == '':
+         if platform.system() == 'Darwin':
+            args.layout = 'macos'
+         elif platform.system() == 'Linux':
+            args.layout = 'linux'
+         elif platform.system() == 'Windows':
+            args.layout = 'win'
+         else:
+            print('Unsupported platform.', file=sys.stderr)
+            sys.exit(1)
 
-   # Create the tarball.
-   create_tarball_or_install(args.src, args.tarball, args.layout)
-
-   #if args.layout == 'macos':
-      #create_homebrew_formula(args.tarball)
+      # Create the tarball.
+      create_tarball_or_install(args.src, args.tarball, args.layout)

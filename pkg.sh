@@ -11,6 +11,7 @@ if [ "$1" == "macos" ]; then
    python3 $2/packaging/ext.py --specpath $2 --src $2 --layout macos
 elif [ "$1" == "linux" ]; then
    echo "Creating Linux package"
+   python3 $2/packaging/ext.py --specpath $2 --src $2 --layout linux
 else
    echo "Usage: $0 system_type (macos, linux) src_path"
    exit
