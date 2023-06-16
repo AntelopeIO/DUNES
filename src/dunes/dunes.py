@@ -8,30 +8,6 @@ from docker import docker
 from node_state import node_state
 from configs import get_config_ini
 
-# VERSION INFORMATION
-def version_major():
-    return 1
-
-
-def version_minor():
-    return 1
-
-
-def version_patch():
-    return 2
-
-
-def version_suffix():
-    return ""
-
-
-def version_full():
-    main_version = "v" + str(version_major()) + "." + str(
-        version_minor()) + "." + str(version_patch())
-    if version_suffix() == "":
-        return main_version
-    return main_version + "." + version_suffix()
-
 
 class dunes_error(Exception):
     pass
