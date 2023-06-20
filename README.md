@@ -9,11 +9,12 @@ running tests, and several other common tasks required to develop smart contract
 
 ## Table of Contents
 
-- [Docker](#installing-docker)
-- [Installing on Linux](#dunes-linux)
-- [Installing on Windows](#dunes-windows)
-- [Installing on MacOS](#dunes-macos)
-- [Post installation](#post-installation)
+- Installation
+  - [Docker](#installing-docker)
+  - [Installing on Linux](#dunes-linux)
+  - [Installing on Windows](#dunes-windows)
+  - [Installing on MacOS](#dunes-macos)
+  - [Post installation](#post-installation)
 - [DUNES commands](#dunes-commands)
 - [Learn general concepts](#concepts)
 - [Node management](#node-management)
