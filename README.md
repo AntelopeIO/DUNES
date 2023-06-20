@@ -164,20 +164,24 @@ Due to current Docker Desktop limitations DUNES supports only `C:/` disk drive, 
 
 ### Mac OS
 
-When finished installing. Check the installation with the command.
-```console
-$ docker --help
-```
+Download a version of DUNES by heading over to the [releases](https://github.com/AntelopeIO/DUNES/releases) and grabbing a `tar.gz` file. 
+
+Extract the archive and copy the path of the directory to your clipboard.
+
 #### Python 3
 
-Python 3 should already be installed.
+If you don't already have Python installed, you can install it using homebrew:
+
+```shell
+brew install python
+```
 
 #### Add DUNES to PATH
 
-To keep from having to install files to the user's system, the preferred method of usage is to add this directory to your `PATH`.
+Replace the `<extracted_dunes_path>` below with the directory you copied to your clipboard.
 
 ```console
-$ echo "PATH=<LocationOfDUNES>:$PATH" >> .bashrc
+$ echo "PATH=<extracted_dunes_path>:$PATH" >> .bashrc
 ```
 
 ## DUNES commands
