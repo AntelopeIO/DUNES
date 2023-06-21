@@ -10,7 +10,7 @@
 import subprocess
 import pytest
 
-from common import DUNES_EXE, TEST_CONTAINER_NAME, stop_dunes_containers
+from common import DUNES_EXE, TEST_CONTAINER_NAME, stop_dunes_containers, destroy_test_container
 
 
 @pytest.mark.safe
@@ -79,11 +79,9 @@ def test_contracts1():
     switch_versions(contracts='2ae64b0b9a9096a3d25339c3df364e08fde66258')
 
 
-#@pytest.mark.safe
-#def test_end():
-#    # Just call with the latest.
-#    switch_versions_call("latest", "latest", "latest")
-
+@pytest.mark.safe
+def test_end():
+    destroy_test_container()
 
 
 if __name__ == "__main__":
