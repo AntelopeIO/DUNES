@@ -8,11 +8,15 @@ running tests, and several other common tasks required to develop smart contract
 
 ## Getting started
 
-First we must install [Docker](https://docs.docker.com/get-docker/).
+### Windows
+
+First we must install [Docker](https://docs.docker.com/desktop/install/windows-install/).
 
 ![Get Docker](docs/images/get-docker.png)
 
-Once you select the Docker Desktop for your operating system the installation process is very straight forward.
+Once that is finished installing we can move on to the next step.
+
+Let's download the binary [DUNES](https://github.com/AntelopeIO/DUNES/releases/download/v1.1.2/dunes.exe)
 
 ### Linux - docker setup
 

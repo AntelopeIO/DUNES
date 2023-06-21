@@ -78,7 +78,10 @@ def load_all_modules_from_dir(plugin_dir):
 
 
 if __name__ == '__main__':
-
+    # add docker path to sys.path when it is installed along with it
+    print("SYS PATH: " + str(sys.path))
+    sys.path.insert(0, os.path.dirname(sys.argv[0])+'/../docker')
+    print("SYS PATH: " + str(sys.path))
     parser = arg_parser()
 
     current_script_path = os.path.abspath(__file__)
