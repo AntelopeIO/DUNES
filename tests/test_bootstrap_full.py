@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# pylint: disable=duplicate-code
 
 """Test DUNES bootstrap
 
@@ -12,7 +13,7 @@ These options are tested:
 import subprocess
 import pytest
 
-from common import DUNES_EXE
+from common import DUNES_EXE, TEST_CONTAINER_NAME, stop_dunes_containers
 
 # Globals
 NODE_NAME = "my_node"
@@ -20,26 +21,31 @@ ACCT_NAME = "myaccount"
 ACCT_NAME2 = "myaccount2"
 
 
-@pytest.mark.destructive
+@pytest.mark.safe
+def test_init():
+    stop_dunes_containers()
+
+
+@pytest.mark.safe
 def test_booststrap():
 
     # Remove any existing containers.
-    subprocess.run([DUNES_EXE, "--destroy-container"], check=True)
+    subprocess.run([DUNES_EXE, '-C', TEST_CONTAINER_NAME, "--destroy-container"], check=True)
 
     # Start the new node.
-    subprocess.run([DUNES_EXE, "--start", NODE_NAME], check=True)
+    subprocess.run([DUNES_EXE, '-C', TEST_CONTAINER_NAME, "--start", NODE_NAME], check=True)
 
     # Create an account.
-    subprocess.run([DUNES_EXE, "--create-account", ACCT_NAME], check=True)
+    subprocess.run([DUNES_EXE, '-C', TEST_CONTAINER_NAME, "--create-account", ACCT_NAME], check=True)
 
-    account_results = subprocess.run([DUNES_EXE, "--", "cleos", "get", "account", ACCT_NAME],
+    account_results = subprocess.run([DUNES_EXE, '-C', TEST_CONTAINER_NAME, "--", "cleos", "get", "account", ACCT_NAME],
                                      check=True, stdout=subprocess.PIPE)
     assert b'created:' in account_results.stdout
 
     # Create a key. Get it to a var as well.
     public_key = None
     private_key = None
-    stdout_result = subprocess.run([DUNES_EXE, "--create-key"], check=True, stdout=subprocess.PIPE)
+    stdout_result = subprocess.run([DUNES_EXE, '-C', TEST_CONTAINER_NAME, "--create-key"], check=True, stdout=subprocess.PIPE)
     result_list = stdout_result.stdout.decode().split("\n")
     for entry in result_list:
         # ignore empty entries.
@@ -54,30 +60,30 @@ def test_booststrap():
     assert private_key is not None
 
     # Import the key.
-    subprocess.run([DUNES_EXE, "--import-dev-key", private_key], check=True)
+    subprocess.run([DUNES_EXE, '-C', TEST_CONTAINER_NAME, "--import-dev-key", private_key], check=True)
 
     # Bootstrap the system.
-    subprocess.run([DUNES_EXE, "--bootstrap-system-full"], check=True)
+    subprocess.run([DUNES_EXE, '-C', TEST_CONTAINER_NAME, "--bootstrap-system-full"], check=True)
 
     # Create a second account should fail because of not enough RAM
-    subprocess.run([DUNES_EXE, "--create-account", ACCT_NAME2], check=False)
+    subprocess.run([DUNES_EXE, '-C', TEST_CONTAINER_NAME, "--create-account", ACCT_NAME2], check=False)
 
-    second_account_results = subprocess.run([DUNES_EXE, "--", "cleos", "get", "account", ACCT_NAME2],
+    second_account_results = subprocess.run([DUNES_EXE, '-C', TEST_CONTAINER_NAME, "--", "cleos", "get", "account", ACCT_NAME2],
                                             check=False, stdout=subprocess.PIPE)
     assert b'created:' not in second_account_results.stdout
 
     # Create an example account with RAM
-    subprocess.run([DUNES_EXE, "--system-newaccount", ACCT_NAME2, "eosio",
+    subprocess.run([DUNES_EXE, '-C', TEST_CONTAINER_NAME, "--system-newaccount", ACCT_NAME2, "eosio",
                     "EOS8C5BLCX2LrmcRLHMC8bN5mML4aFSHrZvyijzfLy48tiije6nTt",
                     "5KNitA34Usr2EVLQKtFrwAJVhyB2F3U7fDHEuP2ee2zZ16w7PeB",
                     "--", "--stake-net", "1.0000 SYS", "--stake-cpu", "1.0000 SYS",
                     "--buy-ram-bytes", "3000"], check=True)
 
     # Creation of second account should now be successful
-    second_account_results = subprocess.run([DUNES_EXE, "--", "cleos", "get", "account", ACCT_NAME2],
+    second_account_results = subprocess.run([DUNES_EXE, '-C', TEST_CONTAINER_NAME, "--", "cleos", "get", "account", ACCT_NAME2],
                                             check=True, stdout=subprocess.PIPE)
     assert b'created:' in second_account_results.stdout
 
-    results = subprocess.run([DUNES_EXE, "--get-table", "eosio.token", "eosio", "accounts"],
+    results = subprocess.run([DUNES_EXE, '-C', TEST_CONTAINER_NAME, "--get-table", "eosio.token", "eosio", "accounts"],
                              check=True, stdout=subprocess.PIPE)
     assert b'"rows"' in results.stdout

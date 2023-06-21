@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# pylint: disable=duplicate-code
 
 """Test image bootstrap with various versions of CDT, leap, and reference-contracts.
 

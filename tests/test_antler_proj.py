@@ -23,7 +23,7 @@ import shutil
 import subprocess
 import pytest
 
-from common import DUNES_EXE, TEST_PATH
+from common import DUNES_EXE, TEST_PATH, stop_dunes_containers
 
 
 TEST_PROJECT_DIR = os.path.join(TEST_PATH, "antler_test_dir")
@@ -35,6 +35,11 @@ def remove_existing():
     if os.path.exists(TEST_PROJECT_DIR):
         print("Removing a test directory if exists: ", TEST_PROJECT_DIR)
         shutil.rmtree(TEST_PROJECT_DIR)
+
+
+@pytest.mark.safe
+def test_init():
+    stop_dunes_containers()
 
 
 @pytest.mark.skip(reason="Skipped until the release of antler-proj. "

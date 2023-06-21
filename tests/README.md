@@ -2,7 +2,7 @@
 
 # WARNING
 
-These tests are destructive. Do NOT run them when there is important data in your container!
+Some of these tests are destructive. Avoid running them when there is important data in your container!
 
 ## Getting Started
 

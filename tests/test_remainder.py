@@ -9,18 +9,23 @@ unused arguments to DUNES
 import subprocess
 import pytest
 
-from common import DUNES_EXE
+from common import DUNES_EXE, TEST_CONTAINER_NAME, TEST_IMAGE_NAME, stop_dunes_containers
 from container import container
 
 
-@pytest.mark.destructive
+@pytest.mark.safe
+def test_init():
+    stop_dunes_containers()
+
+
+@pytest.mark.safe
 def test_unused():
     """Test the warning for unused arguments"""
 
     # Remove any container that already exists.
-    cntr = container('dunes_container', 'dunes:latest')
+    cntr = container(TEST_CONTAINER_NAME, TEST_IMAGE_NAME)
     if cntr.exists():
-        subprocess.run([DUNES_EXE, "--destroy-container"], check=True)
+        subprocess.run([DUNES_EXE, '-C', TEST_CONTAINER_NAME, "--destroy-container"], check=True)
 
     # List of expected values.
     expect_list = \
@@ -29,7 +34,7 @@ def test_unused():
         ]
 
     # Call DUNES with improper arguments
-    completed_process = subprocess.run([DUNES_EXE, "--start", "my_node", "config.ini"],
+    completed_process = subprocess.run([DUNES_EXE, '-C', TEST_CONTAINER_NAME, "--start", "my_node", "config.ini"],
                                        check=True, stdout=subprocess.PIPE)
 
     # Test for expected values in the captured output.
@@ -48,7 +53,7 @@ def test_no_warning():
         ]
 
     # Call DUNES.
-    completed_process = subprocess.run([DUNES_EXE, "--gdb", "/usr/bin/echo", "Hello"],
+    completed_process = subprocess.run([DUNES_EXE, '-C', TEST_CONTAINER_NAME, "--gdb", "/usr/bin/echo", "Hello"],
                                        check=True, stdout=subprocess.PIPE)
 
     # Test values are NOT in the captured output.

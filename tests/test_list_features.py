@@ -10,7 +10,12 @@ response to the `--list-features` option.
 import subprocess
 import pytest
 
-from common import DUNES_EXE
+from common import DUNES_EXE, stop_dunes_containers
+
+
+@pytest.mark.safe
+def test_init():
+    stop_dunes_containers()
 
 
 @pytest.mark.safe
@@ -43,7 +48,7 @@ def test_list_features():
     for temp in expect_list:
         expect = expect + temp + '\n'
 
+    subprocess.run([DUNES_EXE, "--start-container"], check=True, stdout=subprocess.PIPE)
     # Call the tool, check return code, check expected value.
-    completed_process = subprocess.run([DUNES_EXE, "--list-features"],
-                                       check=True, stdout=subprocess.PIPE)
+    completed_process = subprocess.run([DUNES_EXE, "--list-features"], check=True, stdout=subprocess.PIPE)
     assert completed_process.stdout.decode().replace('\r', '') == expect

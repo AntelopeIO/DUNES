@@ -10,18 +10,23 @@
 import subprocess
 import pytest
 
-from common import DUNES_EXE
+from common import DUNES_EXE, TEST_CONTAINER_NAME, stop_dunes_containers, destroy_test_container
+
+
+@pytest.mark.safe
+def test_init():
+    stop_dunes_containers()
 
 
 def switch_versions_call(cdt, leap, contracts):
     """Build the version update command."""
 
     if cdt:
-        subprocess.run( [DUNES_EXE,'--cdt',cdt], check=True)
+        subprocess.run( [DUNES_EXE, '-C', TEST_CONTAINER_NAME, '--cdt', cdt], check=True)
     if leap:
-        subprocess.run( [DUNES_EXE,'--leap',leap], check=True)
+        subprocess.run( [DUNES_EXE, '-C', TEST_CONTAINER_NAME, '--leap', leap], check=True)
     if contracts:
-        subprocess.run( [DUNES_EXE,'--contracts',contracts], check=True)
+        subprocess.run( [DUNES_EXE, '-C', TEST_CONTAINER_NAME, '--contracts', contracts], check=True)
 
 
 def switch_versions(cdt=None, leap=None, contracts=None):
@@ -29,58 +34,54 @@ def switch_versions(cdt=None, leap=None, contracts=None):
 
     switch_versions_call(cdt, leap, contracts)
 
-    container_name = 'dunes_container'
-
     # Test the versions are in the container.
     if cdt:
         # Try to get CDT version info from inside the container and test it matches.
         #  pylint: disable=line-too-long
-        completed_process = subprocess.run(['docker', 'exec', '-i', container_name, '/usr/bin/ls', '/usr/opt/cdt'], check=False, stdout=subprocess.PIPE)
+        completed_process = subprocess.run(['docker', 'exec', '-i', TEST_CONTAINER_NAME, '/usr/bin/ls', '/usr/opt/cdt'], check=False, stdout=subprocess.PIPE)
         assert cdt in completed_process.stdout.decode()
     if leap:
         # Try to get LEAP version info from inside the container and test it matches.
         #  pylint: disable=line-too-long
-        completed_process = subprocess.run(['docker', 'exec', '-i', container_name, 'leap-util', 'version', 'client'], check=False, stdout=subprocess.PIPE)
+        completed_process = subprocess.run(['docker', 'exec', '-i', TEST_CONTAINER_NAME, 'leap-util', 'version', 'client'], check=False, stdout=subprocess.PIPE)
         assert leap in completed_process.stdout.decode()
     if contracts:
         # Try to get contracts version info from inside the container and test it matches.
         #  pylint: disable=line-too-long
-        completed_process = subprocess.run(['docker', 'exec', '-i', container_name, 'cat', '/app/reference-contracts/VERSION.DUNES.txt'], check=False, stdout=subprocess.PIPE)
+        completed_process = subprocess.run(['docker', 'exec', '-i', TEST_CONTAINER_NAME, 'cat', '/app/reference-contracts/VERSION.DUNES.txt'], check=False, stdout=subprocess.PIPE)
         assert contracts in completed_process.stdout.decode()
 
 
-@pytest.mark.destructive
+@pytest.mark.safe
 def test_begin():
-    # Start a container.
-    subprocess.run([DUNES_EXE, "--start-container"], check=True)
+    # Start a test container.
+    subprocess.run([DUNES_EXE, '-C', TEST_CONTAINER_NAME, "--start-container"], check=True)
 
 
-@pytest.mark.destructive
+@pytest.mark.safe
 def test_combo1():
     switch_versions(cdt='3.0.1', leap='3.2.1', contracts='2ae64b0b9a9096a3d25339c3df364e08fde66258')
 
-@pytest.mark.destructive
+@pytest.mark.safe
 def test_combo2():
     switch_versions(cdt='3.1.0', leap='4.0.0', contracts='bd6c0b1a5086c8826a2840e7b8b5e1adaff00314')
 
-@pytest.mark.destructive
+@pytest.mark.safe
 def test_leap1():
     switch_versions(leap='3.2.1')
 
-@pytest.mark.destructive
+@pytest.mark.safe
 def test_cdt1():
     switch_versions(cdt='3.0.1')
 
-@pytest.mark.destructive
+@pytest.mark.safe
 def test_contracts1():
     switch_versions(contracts='2ae64b0b9a9096a3d25339c3df364e08fde66258')
 
 
-@pytest.mark.destructive
+@pytest.mark.safe
 def test_end():
-    # Just call with the latest.
-    switch_versions_call("latest", "latest", "latest")
-
+    destroy_test_container()
 
 
 if __name__ == "__main__":
@@ -90,4 +91,3 @@ if __name__ == "__main__":
     test_leap1()
     test_cdt1()
     test_contracts1()
-    test_end()

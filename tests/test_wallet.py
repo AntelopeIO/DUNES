@@ -11,7 +11,12 @@ import subprocess
 import pytest
 
 from container import container
-from common import DUNES_EXE
+from common import DUNES_EXE, TEST_CONTAINER_NAME, TEST_IMAGE_NAME, stop_dunes_containers
+
+
+@pytest.mark.safe
+def test_init():
+    stop_dunes_containers()
 
 
 def tar_dir(file_name, directory):
@@ -26,16 +31,16 @@ def untar(file_name):
 def test_export():
     """Test `--export-wallet` key."""
 
-    subprocess.run([DUNES_EXE, "--export-wallet"], check=True)
+    subprocess.run([DUNES_EXE, '-C', TEST_CONTAINER_NAME, "--export-wallet"], check=True)
 
     assert os.path.exists("wallet.tgz") is True
 
 
-@pytest.mark.destructive
+@pytest.mark.safe
 def test_import():
     """Test `--import-wallet` key."""
 
-    cntr = container('dunes_container', 'dunes:latest')
+    cntr = container(TEST_CONTAINER_NAME, TEST_IMAGE_NAME)
 
     cntr.rm_file("/app/wallet.tgz")
 
@@ -51,7 +56,7 @@ def test_import():
     tar_dir("wallet", "_wallet")
 
     # Use wallet.tgz created by successfully finished test of export
-    subprocess.run([DUNES_EXE, "--debug", "--import-wallet", "./wallet.tgz"], check=True)
+    subprocess.run([DUNES_EXE, '-C', TEST_CONTAINER_NAME, "--debug", "--import-wallet", "./wallet.tgz"], check=True)
 
     os.remove("wallet.tgz")
     shutil.rmtree("_wallet")

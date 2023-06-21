@@ -46,6 +46,8 @@ class arg_parser:
             description='''DUNES: Docker Utilities for Node Execution and Subsystems.
                     dunes [ARGUMENTS] -- <COMMANDS> runs any number of commandline commands in the container.
                     Example: dunes -- cleos --help''')
+        self._parser.add_argument('-C', '--container-name', nargs=1, metavar="<CONTAINER_NAME>",
+                                  help="Use only the container named CONTAINER_NAME for operations.")
         self._parser.add_argument('-s', '--start', nargs=1, metavar="<NODE>",
                                   help='start a new node with a given name.')
         self._parser.add_argument('-c', '--config', nargs=1, metavar="<CONFIG_DIR>",
@@ -119,6 +121,8 @@ class arg_parser:
                                   help='Stop the current Docker container.')
         self._parser.add_argument('--start-container', action='store_true',
                                   help='Start the current Docker container.')
+        self._parser.add_argument('--image-name', nargs=1, metavar="<IMAGE_NAME>",
+                                  help="Use IMAGE_NAME when starting the container. Only valid for --start-container.")
         self._parser.add_argument('--set-core-contract', metavar="<ACCOUNT>",
                                   help='Set the core contract to the specified account '
                                        '(use `eosio` as account for normal system setup).')
@@ -225,11 +229,21 @@ class arg_parser:
 
     @staticmethod
     def is_forwarding():
-        return len(sys.argv) > 1 and sys.argv[1] == '--'
+        try:
+            index = sys.argv.index('--')
+            return index == 1 or (index in [2,3] and (sys.argv[1][:2] == '-C' or sys.argv[1][:16] == '--container-name'))
+        except ValueError:
+            return False
+
 
     @staticmethod
     def get_forwarded_args():
-        return sys.argv[2:]
+        try:
+            index = sys.argv.index('--')
+            return sys.argv[index+1:]
+        except ValueError:
+            return None
+
 
     def parse(self):
         try:

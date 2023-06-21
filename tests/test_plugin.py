@@ -10,7 +10,7 @@ import shutil
 import subprocess
 import pytest
 
-from common import DUNES_EXE, DUNES_ROOT, TEST_PATH
+from common import DUNES_EXE, DUNES_ROOT, TEST_PATH, stop_dunes_containers
 
 
 src_hello  = os.path.join(DUNES_ROOT, *['plugin_example', 'dunes_hello'])
@@ -21,6 +21,11 @@ dst_hello  = os.path.join(PLUGIN_DIR, 'dunes_hello')
 dst_fail   = os.path.join(PLUGIN_DIR, 'dunes_fail')
 dst_gotcha = os.path.join(PLUGIN_DIR, 'gotcha')
 
+
+
+@pytest.mark.safe
+def test_init():
+    stop_dunes_containers()
 
 
 def remove_all():
