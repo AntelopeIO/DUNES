@@ -6,19 +6,29 @@ Docker Utilities for Node Execution and Subsystems (DUNES) is a tool to abstract
 [CDT](https://github.com/AntelopeIO/cdt), and other services/tools to perform the functions of node management, compiling smart contracts,
 running tests, and several other common tasks required to develop smart contracts on [Antelope](https://github.com/AntelopeIO) blockchains.
 
-## Getting started
 
-First we must install [Docker](https://docs.docker.com/get-docker/).
+## Table of Contents
+
+- Installation
+  - [Docker](#installing-docker)
+  - [Installing on Linux](#dunes-linux)
+  - [Installing on Windows](#dunes-windows)
+  - [Installing on MacOS](#dunes-macos)
+  - [Post installation](#post-installation)
+- [DUNES commands](#dunes-commands)
+- [Learn general concepts](#concepts)
+- [Node management](#node-management)
+- [Account management](#account-management)
+- [Bootstrapping nodes](#bootstrapping-nodes)
+- [System-level commands](#system-level-commands)
+
+## Docker <a name="installing-docker"></a>
+
+DUNES relies on Docker, so you must first install [Docker](https://docs.docker.com/get-docker/) for your operating system.
 
 ![Get Docker](docs/images/get-docker.png)
 
 Once you select the Docker Desktop for your operating system the installation process is very straight forward.
-
-### Linux - docker setup
-
-Start your Docker Desktop, visit its settings and add the root directory of the host system to shared directories.
-
-![Docker Desktop settings](docs/images/linux_docker_settings_shares.png)
 
 Check the installation with the command
 
@@ -26,30 +36,20 @@ Check the installation with the command
 $ docker --help
 ```
 
-This should display the list of commands and features.  If it fails with unknown command the installation did not work correctly.
+This should display the list of commands and features.  
+If it fails with unknown command the installation did not work correctly.
 
-### Several useful facts for working with Docker in Linux
+### Adding a shared directory
 
-The Docker installation package consists of two independent products which install together: Docker Engine and Docker Desktop.
+In order to have a good experience with Docker and DUNES, you should add a root directory of the host
+system to the list of shared directories in Docker Desktop settings.
 
-It is easy to confuse which system you are currently working with.
+This will allow you to share files between the host system and your Docker containers.
 
-Docker Desktop has a built-in daemon which works in parallel with the `dockerd` daemon.
+![Docker Desktop settings](docs/images/linux_docker_settings_shares.png)
 
-Docker Desktop keeps its settings and storage of images and containers in the user's home directory.
 
-Docker Engine keeps its settings and storage in the system directories.
-
-Docker Desktop works with userns-remap turned on only. It is hardcoded and can't be changed.
-
-Docker Desktop has a built-in daemon which works in parallel with the `dockerd` daemon.
-
-Therefore, to successfully work with DUNES you should:
-
->+ Download the latest DUNES release on [Windows](#dunes-windows) or on [Linux](#dunes-linux "Linux")
->+ Add a root directory of the host system to the list of shared directories in Docker Desktop settings.
->+ Keep Docker Desktop running all the time when you work with DUNES.
-
+## Installing on Linux <a name="dunes-linux"></a>
 
 #### Python 3
 
@@ -62,7 +62,8 @@ Depending on the distro you are using will determine which `python3` package to 
 | Centos | python3                                                   |
 | Arch   | python                                                    |
 
-### DUNES installation on Linux <a name="dunes-linux"></a>
+
+#### Installation using DEB package
 
 This is the fastest way to get started. From the [latest release](https://github.com/AntelopeIO/DUNES/releases/latest) page, download DUNES `*.deb` file or visit the [release tags](https://github.com/AntelopeIO/DUNES/releases) page to download specific version of DUNES deb package.
 
@@ -73,7 +74,7 @@ sudo apt-get install -y ~/Downloads/dunes*.deb
 ```
 Your download path may vary.
 
-#### Alternative: DUNES installation using RPM package
+#### Installation using RPM package
 
 From the [latest release](https://github.com/AntelopeIO/DUNES/releases/latest) page, download DUNES `*.rpm` file.
 
@@ -83,17 +84,6 @@ sudo rpm -i ~/Downloads/dunes*.rpm
 ```
 Your download path may vary.
 
-#### DUNES installation - verification
-
-Finally, verify DUNES was installed correctly in `/usr/opt/DUNES/`. First [add DUNES to Path](#add-dunes-to-path) and check:
-```bash
-dunes --version
-```
-You should see a DUNES version number. For example:
-```
-v1.0.0
-```
-
 Latest DUNES docker image will be downloaded automatically when starting the DUNES as described in [Node management](#node-management).
 #### Add DUNES to PATH
 
@@ -102,15 +92,8 @@ To keep from having to install files to the user's system, the preferred method 
 ```console
 $ echo "PATH=<LocationOfDUNES>:$PATH" >> .bashrc
 ```
-### Rebuild the DUNES image
 
-If you want to rebuild the DUNES image pick your preferred terminal application and input the following command:
-
-```console
-<PathToDUNES>/DUNES$ python3 ./bootstrap.py
-```
-
-### Windows 10 & 11
+## Installing on Windows <a name="dunes-windows"></a>
 
 In some cases (i.e. running Docker from VirtualBox) you might need to turn on hardware virtualization in the BIOS of your computer.  Docker should give an error stating this failure.
 Because of the variance of motherboards and BIOS implementations we can't give a clear description as to how to turn this on,
@@ -133,7 +116,7 @@ Visit the download page for [Python 3](https://python.org/downloads). You should
 Make sure you mark "Add Python to PATH" during installation.
 After installation open `cmd.exe` and verify `python --version` returns current Python version.
 
-#### DUNES installation on Windows <a name="dunes-windows"></a>
+#### Installation using Chocolatey
 
 1. Install [Chocolatey](https://docs.chocolatey.org/en-us/choco/setup).
 2. Download latest `*.nupkg` from [latest release](https://github.com/AntelopeIO/DUNES/releases/latest) page.
@@ -162,25 +145,50 @@ choco install .\dunes.1.1.2.nupkg -y
 
 Due to current Docker Desktop limitations DUNES supports only `C:/` disk drive, so all your DUNES projects or workspace needs to be on `C:/` drive.
 
-### Mac OS
+## Installing on MacOS <a name="dunes-macos"></a>
 
-When finished installing. Check the installation with the command.
-```console
-$ docker --help
-```
+Download a version of DUNES by heading over to the [releases](https://github.com/AntelopeIO/DUNES/releases) and grabbing a `tar.gz` file.
+
+Extract the archive and copy the path of the directory to your clipboard.
+
 #### Python 3
 
-Python 3 should already be installed.
+If you don't already have Python installed, you can install it using homebrew:
+
+```shell
+brew install python
+```
 
 #### Add DUNES to PATH
 
-To keep from having to install files to the user's system, the preferred method of usage is to add this directory to your `PATH`.
+Replace the `<LocationOfDUNES>` below with the directory you copied to your clipboard.
 
 ```console
 $ echo "PATH=<LocationOfDUNES>:$PATH" >> .bashrc
 ```
 
-## DUNES commands
+## Post installation <a name="post-installation"></a>
+
+### Verification of your installation
+
+Finally, verify DUNES was installed correctly in `/usr/opt/DUNES/`. First [add DUNES to Path](#add-dunes-to-path) and check:
+```bash
+dunes --version
+```
+You should see a DUNES version number. For example:
+```
+v1.0.0
+```
+
+### Rebuild the DUNES image
+
+If you want to rebuild the DUNES image pick your preferred terminal application and input the following command:
+
+```console
+<PathToDUNES>/DUNES$ python3 ./bootstrap.py
+```
+
+## DUNES commands <a name="dunes-commands"></a>
 
 ---
 
@@ -383,7 +391,7 @@ Upgrades DUNES docker image to the latest version
 
 <br/><br/>
 
-## Concepts and operations
+## Concepts and operations <a name="concepts"></a>
 
 The core concept of this utility is to abstract over Leap programs such as `nodeos` and `cleos`, CDT, etc.
 As such some of the commands might seem restrictive.  Please take note that if you find any of the commands to be too
@@ -403,7 +411,7 @@ The drive/directory that your workspace is in is mapped into the container and p
 So on Windows this would be `/host/Users/<name>/<some path>` (NOTE: on Windows only `C:/` disk drive is supported).
 On Linux and Mac this would be something like `/host/home/<name>/<some path>`.
 
-## Node management
+## Node management <a name="node-management"></a>
 
 For all of the deployment commands and most of the commands in general you have to have at least one node up and running.
 
@@ -457,7 +465,7 @@ and try to replicate things like an EOS mainnet or the like.
 
 These types of topologies are out of the scope of this README but please look at documentation for Leap node configurations.
 
-## Contract development
+## Contract development <a name="contract-development"></a>
 
 ### CMake contract development
 
@@ -545,7 +553,7 @@ As we move forward we hope to greatly expand upon these utilities.
 The services through the docker container are exposed at 8888 for http, 9876 for p2p and 8080 for SHiP.
 You will need to ensure the running node is using those ports.
 
-## Account management
+## Account management <a name="account-management"></a>
 
 Earlier we saw a simple way above to create accounts using `--create-account <ACCOUNT NAME>`.
 
@@ -566,7 +574,7 @@ $ dunes --create-account bucky foo EOS7qPSKJhqygQTSNjMy8aH6TL6NtsYJnBJ7fxh7Y4SFL
 
 Clearly you don't want to do this with real private keys or sensitive accounts.
 
-## Bootstrapping nodes
+## Bootstrapping nodes <a name="bootstrapping-nodes"></a>
 
 At some point you will want to activate protocol features for your chain.
 
@@ -599,7 +607,7 @@ This will do the same as `--bootstrap-system` but additionally set the contracts
 from [reference-contracts](https://github.com/AntelopeIO/reference-contracts)
 and create the correct accounts needed for those.
 
-## System-level commands
+## System-level commands <a name="system-level-commands"></a>
 
 ### Wallet
 
