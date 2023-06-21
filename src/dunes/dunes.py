@@ -99,18 +99,6 @@ class dunes:
             print("Node [" + nod.name() + "] is already running.")
             return
 
-        cmd = ['bash', 'start_node.sh', nod.data_dir(), nod.config_dir()]
-
-        if snapshot is not None:
-            cmd = cmd + ['--snapshot /app/nodes/' + nod.name() + '/snapshots/' + snapshot + ' -e']
-        else:
-            cmd = cmd + [' ']
-
-        if replay_blockchain is True:
-            cmd = cmd + ['--replay-blockchain']
-        else:
-            cmd = cmd + [' ']
-
         # if node name is not found we need to create it
         is_restart = True
         if not nod.name() in stdout:
@@ -132,7 +120,22 @@ class dunes:
 
         self.stop_conflicting_nodes(nod)
 
-        stdout, stderr, exit_code = self._docker.execute_cmd(cmd + [nod.name()])
+        cmd = ['bash', 'start_node.sh']
+        cmd = cmd + [nod.data_dir()]     # $1
+        cmd = cmd + [nod.config_dir()]   # $2
+        # $3
+        if snapshot is not None:
+            cmd = cmd + ['--snapshot /app/nodes/' + nod.name() + '/snapshots/' + snapshot + ' -e']
+        else:
+            cmd = cmd + [' ']
+        # $4
+        cmd = cmd + [nod.name()]
+        # $5
+        if replay_blockchain is True:
+            cmd = cmd + ['--replay-blockchain']
+        else:
+            cmd = cmd + [' ']
+        stdout, stderr, exit_code = self._docker.execute_cmd(cmd)
         print(stdout)
         print(stderr)
 
