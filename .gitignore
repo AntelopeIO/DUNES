@@ -132,3 +132,6 @@ dmypy.json
 .pyre/
 
 example/test/build
+
+# Jetbrains products
+.idea
