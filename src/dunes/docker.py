@@ -7,51 +7,93 @@ import tempfile
 class docker_error(Exception):
     pass
 
+IMAGES_BASE_URL = 'ghcr.io/antelopeio/'
+CONTAINER_NAME = 'dunes_container'
+IMAGE_NAME = 'dunes:latest'
+
 class docker:
 
-    _container = ""
-    _image = ""
+    _container = CONTAINER_NAME
+    _image = None
     _cl_args = None
-    _dunes_url = 'ghcr.io/antelopeio/dunes:latest'
+    _dunes_url = ""
 
     def __init__(self, container, image, cl_args):
-        self._container = container
-        self._image = image
+        # pylint: disable=too-many-branches
         self._cl_args = cl_args
+        if container is not None:
+            self._container = container
 
-        # check if container is running
-        stdout, stderr, exit_code = self.execute_docker_cmd(['container', 'ls'])
 
-        # if container is not in the list then create one
-        if self._container not in stdout:
-            # check if container is stopped
-            stdout, stderr, exit_code = self.execute_docker_cmd(
-                ['container', 'ls', '-a'])
+        # Get list of all containers, search for this container in the list and set some values.
+        container_found = False
+        stdout,_,_ = self.execute_docker_cmd(['container', 'ls', '-a'])
+        for line in stdout.split('\n'):
+            if self._container in line:
+                container_found = True
+                entries = line.split()
+                if len(entries) > 1:
+                    self._image = entries[1]
+
+        # Test to see if the container is running.
+        container_running = False
+        if container_found:
+            # Get the list of running containers.
+            stdout,_,_ = self.execute_docker_cmd(['container', 'ls'])
+            container_running = self._container in stdout
+
+        # Sanity check users image input.
+        if image is not None:
+            if self._image is None:
+                self._image = image
+            elif self._image != image:
+                raise docker_error
+            self._image = image
+
+        # Set image name in the case user didn't set it and there's no container.
+        if self._image is None:
+            self._image = IMAGE_NAME
+
+        # Set url.
+        self._dunes_url = IMAGES_BASE_URL+self._image
+
+        # No need to continue if the container is already running!
+        if container_running:
+            return
+
+        # If we found the container, try to start it.
+        if container_found:
+            self.execute_docker_cmd(['container', 'start', self._container])
+            # Get the list of running containers and see what our status is:
+            stdout,stderr,_ = self.execute_docker_cmd(['container', 'ls'])
             if self._container in stdout:
-                self.execute_docker_cmd(
-                    ['container', 'start', self._container])
-            else:
-                # download DUNES image
-                dunes_image = subprocess.check_output(['docker', 'images', '-q', self._image],
-                                                      stderr=None, encoding='utf-8')
+                return
+            raise docker_error(f"Failed to start {self._container}.\n{stderr}")
 
-                if dunes_image == '':
-                    print('Downloading DUNES image')
-                    self.upgrade()
-                    with subprocess.Popen(['docker', 'tag', self._dunes_url, 'dunes:latest']) as proc:
-                        proc.communicate()
+        # No container was found, so we need to start one.
+        # Test to see if desired image is available locally.
+        dunes_image = subprocess.check_output(['docker', 'images', '-q', self._image], stderr=None, encoding='utf-8')
+        # Nope, try to download it.
+        if dunes_image == '':
+            print('Downloading DUNES image')
+            self.upgrade()
 
-                # start a new container
-                print("Creating docker container [" + self._container + "]")
-                host_dir = '/'
-                if platform.system() == 'Windows':
-                    host_dir = 'C:/'
+        # Create the new container.
+        print("Creating docker container [" + self._container + "]")
+        host_dir = '/'
+        if platform.system() == 'Windows':
+            host_dir = 'C:/'
+        self.execute_docker_cmd(['run',
+            '-p', '127.0.0.1:8888:8888/tcp',
+            '-p', '127.0.0.1:9876:9876/tcp',
+            '-p', '127.0.0.1:8080:8080/tcp',
+            '-p', '127.0.0.1:3000:3000/tcp',
+            '-p', '127.0.0.1:8000:8000/tcp',
+            '-v', host_dir + ':/host',
+            '-d', '--name=' + self._container,
+            self._image,
+            'tail', '-f', '/dev/null'])
 
-                self.execute_docker_cmd(
-                    ['run', '-p', '127.0.0.1:8888:8888/tcp', '-p', '127.0.0.1:9876:9876/tcp', '-p',
-                     '127.0.0.1:8080:8080/tcp', '-p', '127.0.0.1:3000:3000/tcp', '-p',
-                     '127.0.0.1:8000:8000/tcp', '-v', host_dir + ':/host', '-d', '--name=' + self._container,
-                     self._image, 'tail', '-f', '/dev/null'])
 
     @staticmethod
     def abs_host_path(directory):
@@ -220,5 +262,10 @@ class docker:
         return self.execute_cmd(cmd + ['&'])
 
     def upgrade(self):
+        # Pull the new image and give it a local tag.
+        print(f"['docker', 'pull', {self._dunes_url}]")
         with subprocess.Popen(['docker', 'pull', self._dunes_url]) as proc:
             proc.communicate()
+        if self._dunes_url != self._image:
+            with subprocess.Popen(['docker', 'tag', self._dunes_url, self._image]) as proc:
+                proc.communicate()

@@ -100,7 +100,19 @@ if __name__ == '__main__':
 
     handle_simple_args()
 
-    dunes_sys = dunes(args)
+    # Set container name.  pylint: disable=invalid-name
+    container_name = None
+    if args.container_name is not None:
+        container_name = args.container_name[0]
+
+    # Set image name.   pylint: disable=invalid-name
+    image_name = None
+    if args.image_name is not None:
+        image_name = args.image_name[0]
+        if args.start_container is None:
+            parser.exit_with_help_message("--image-name is only valid with --start-container")
+
+    dunes_sys = dunes(container_name, image_name, args)
 
     for module in modules:
         if hasattr(module, 'set_dunes'):

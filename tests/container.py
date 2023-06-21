@@ -7,7 +7,7 @@ class container:
     _container_name = ""
     _image_name = ""
 
-    def __init__(self, container_name='dunes_container', image_name='dunes:latest'):
+    def __init__(self, container_name, image_name):
         self._container_name = container_name
         self._image_name = image_name
         self._debug = True

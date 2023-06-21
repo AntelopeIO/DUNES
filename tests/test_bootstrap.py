@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# pylint: disable=duplicate-code
 
 """Test DUNES bootstrap
 
@@ -12,7 +13,7 @@ These options are tested:
 import subprocess
 import pytest
 
-from common import DUNES_EXE
+from common import DUNES_EXE, TEST_CONTAINER_NAME, stop_dunes_containers
 
 # Globals
 NODE_NAME = "my_node"
@@ -20,25 +21,31 @@ ACCT_NAME = "myaccount"
 ACCT_NAME2 = "myaccount2"
 
 
-@pytest.mark.destructive
+@pytest.mark.safe
+def test_init():
+    stop_dunes_containers()
+
+
+@pytest.mark.safe
 def test_booststrap():
 
     # Remove any existing containers.
-    subprocess.run([DUNES_EXE, "--destroy-container"], check=True)
+    subprocess.run([DUNES_EXE, "-C", TEST_CONTAINER_NAME, "--destroy-container"], check=True)
 
     # Start the new node.
-    subprocess.run([DUNES_EXE, "--start", NODE_NAME], check=True)
+    subprocess.run([DUNES_EXE, "-C", TEST_CONTAINER_NAME, "--start", NODE_NAME], check=True)
 
     # Create an account.
-    subprocess.run([DUNES_EXE, "--create-account", ACCT_NAME], check=True)
+    subprocess.run([DUNES_EXE, "-C", TEST_CONTAINER_NAME, "--create-account", ACCT_NAME], check=True)
 
-    account_results = subprocess.run([DUNES_EXE, "--", "cleos", "get", "account", ACCT_NAME], check=True, stdout=subprocess.PIPE)
+    account_results = subprocess.run([DUNES_EXE, "-C", TEST_CONTAINER_NAME, "--", "cleos", "get", "account", ACCT_NAME], \
+                                     check=True, stdout=subprocess.PIPE)
     assert b'created:' in account_results.stdout
 
     # Create a key. Get it to a var as well.
     public_key = None
     private_key = None
-    stdout_result = subprocess.run([DUNES_EXE, "--create-key"], check=True, stdout=subprocess.PIPE)
+    stdout_result = subprocess.run([DUNES_EXE, "-C", TEST_CONTAINER_NAME, "--create-key"], check=True, stdout=subprocess.PIPE)
     result_list = stdout_result.stdout.decode().split("\n")
     for entry in result_list:
         # ignore empty entries.
@@ -53,20 +60,24 @@ def test_booststrap():
     assert private_key is not None
 
     # Import the key.
-    subprocess.run([DUNES_EXE, "--import-dev-key", private_key], check=True)
+    subprocess.run([DUNES_EXE, "-C", TEST_CONTAINER_NAME, "--import-dev-key", private_key], check=True)
 
     # Bootstrap the system.
-    subprocess.run([DUNES_EXE, "--bootstrap-system"], check=True)
+    subprocess.run([DUNES_EXE, "-C", TEST_CONTAINER_NAME, "--bootstrap-system"], check=True)
 
     # Create a second account
-    subprocess.run([DUNES_EXE, "--create-account", ACCT_NAME2], check=True)
+    subprocess.run([DUNES_EXE, "-C", TEST_CONTAINER_NAME, "--create-account", ACCT_NAME2], check=True)
 
     # Creation of second account should now be successful
-    second_account_results = subprocess.run([DUNES_EXE, "--", "cleos", "get", "account", ACCT_NAME2],
+    second_account_results = subprocess.run([DUNES_EXE, "-C", TEST_CONTAINER_NAME, "--", "cleos", "get", "account", ACCT_NAME2],
                                             check=True, stdout=subprocess.PIPE)
     assert b'created:' in second_account_results.stdout
 
     # Verify that "Create New Account" has been deployed
-    results = subprocess.run([DUNES_EXE, "--", "cleos", "get", "abi", "eosio"],
+    results = subprocess.run([DUNES_EXE, "-C", TEST_CONTAINER_NAME, "--", "cleos", "get", "abi", "eosio"],
                              check=True, stdout=subprocess.PIPE)
     assert b'Create New Account' in results.stdout
+
+
+if __name__ == "__main__":
+    test_booststrap()

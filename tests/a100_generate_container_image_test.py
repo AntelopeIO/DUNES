@@ -10,7 +10,13 @@ import os
 import subprocess
 import pytest
 
-from common import TEST_PATH, DUNES_EXE, DUNES_ROOT
+from common import TEST_PATH, DUNES_EXE, DUNES_ROOT, stop_dunes_containers
+
+
+@pytest.mark.safe
+def test_init():
+    stop_dunes_containers()
+
 
 
 def get_short_hash():
@@ -57,9 +63,9 @@ def remove_images(repo_name):
 
     # Remove {repo_name}:* images.
     images = subprocess.check_output(['docker', 'images', '-q', repo_name], stderr=None, encoding='utf-8').strip().split('\n')
+    images = list(set(images)) # Remove duplicates.
     for myimg in images:
-        #   pylint: disable=subprocess-run-check
-        subprocess.run(['docker', 'image', 'rm', myimg, '--force'], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL, check=False)
+        subprocess.run(['docker', 'image', 'rm', myimg, '--force'], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL, check=True)
 
 
 def remove_tagged_image(tag):
@@ -81,6 +87,7 @@ def clean_destructive():
     # Remove an existing container, then images.
     # Send output to subprocess.DEVNULL since we EXPECT docker might tell us containers and images don't exist.
     #   pylint: disable=subprocess-run-check, line-too-long
+    subprocess.run(['docker', 'container', 'stop', 'dunes_container'], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL, check=False)
     subprocess.run(['docker', 'container', 'rm', 'dunes_container', '--force'], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL, check=False)
     # Remove dunes:* images.
     remove_images('dunes')

@@ -11,7 +11,12 @@ to `--debug` option.
 import subprocess
 import pytest
 
-from common import DUNES_EXE
+from common import DUNES_EXE, stop_dunes_containers
+
+
+@pytest.mark.safe
+def test_init():
+    stop_dunes_containers()
 
 
 @pytest.mark.safe

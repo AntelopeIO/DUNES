@@ -9,7 +9,7 @@ from os.path import dirname, realpath
 import pytest
 
 sys.path.insert(1, sys.path.append(dirname(realpath(__file__)) + "/../src/dunes"))
-# pylint: disable=wrong-import-position
+# pylint: disable=wrong-import-position, import-error
 import version_selector
 
 @patch('version_selector.available_versions_from_url')

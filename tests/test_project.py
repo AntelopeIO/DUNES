@@ -16,7 +16,7 @@ import shutil
 import subprocess
 import pytest
 
-from common import DUNES_EXE,TEST_PATH
+from common import DUNES_EXE, TEST_PATH, TEST_CONTAINER_NAME, TEST_IMAGE_NAME, stop_dunes_containers
 from container import container
 
 
@@ -26,10 +26,15 @@ TEST_APP_BLD_DIR = os.path.join(TEST_APP_DIR, *["build", PROJECT_NAME])
 TEST_APP_WASM = os.path.join(TEST_APP_BLD_DIR, PROJECT_NAME+".wasm")    # TEST_APP_BLD_DIR/test_app.wasm"
 
 
+@pytest.mark.safe
+def test_init():
+    stop_dunes_containers()
+
+
 def remove_existing():
     """ Remove an existing `./test_app` dir. """
 
-    cntr = container('dunes_container', 'dunes:latest')
+    cntr = container(TEST_CONTAINER_NAME, TEST_IMAGE_NAME)
     cntr.stop()
 
     if os.path.exists(TEST_APP_DIR):
@@ -56,7 +61,7 @@ def test_create_cmake_app():
                 os.path.join(TEST_APP_DIR, 'README.txt')]
 
     # Create the test app.
-    completed_process = subprocess.run([DUNES_EXE, "--create-cmake-app", PROJECT_NAME, TEST_PATH], check=True)
+    completed_process = subprocess.run([DUNES_EXE, '-C', TEST_CONTAINER_NAME, "--create-cmake-app", PROJECT_NAME, TEST_PATH], check=True)
     assert completed_process.returncode == 0
     assert os.path.isdir(TEST_APP_DIR) is True
 
@@ -84,7 +89,7 @@ def test_create_bare_app():
                 os.path.join(TEST_APP_DIR, PROJECT_NAME+'.contracts.md'),
                 os.path.join(TEST_APP_DIR, 'README.txt')]
 
-    subprocess.run([DUNES_EXE, "--create-bare-app", PROJECT_NAME, TEST_PATH], check=True)
+    subprocess.run([DUNES_EXE, '-C', TEST_CONTAINER_NAME, "--create-bare-app", PROJECT_NAME, TEST_PATH], check=True)
     assert os.path.isdir(TEST_APP_DIR) is True
 
     # Actual file list.
@@ -106,18 +111,18 @@ def test_cmake_and_ctest():
     remove_existing()
 
     # Create the cmake app, test it exists.
-    subprocess.run([DUNES_EXE, "--create-cmake-app", PROJECT_NAME, TEST_PATH], check=True)
+    subprocess.run([DUNES_EXE, '-C', TEST_CONTAINER_NAME, "--create-cmake-app", PROJECT_NAME, TEST_PATH], check=True)
     assert os.path.isdir(TEST_APP_DIR) is True
 
     # Build the app, test that the expected output file is created.
-    subprocess.run([DUNES_EXE, "--cmake-build", TEST_APP_DIR], check=True)
+    subprocess.run([DUNES_EXE, '-C', TEST_CONTAINER_NAME, "--cmake-build", TEST_APP_DIR], check=True)
     assert os.path.isfile(TEST_APP_WASM) is True
 
     # Test that CTest files are run.
     #    @TODO - This should be updated to create and test some PASSING tests.
     #    @TODO - This should be updated to create and test some FAILING tests.
     with subprocess.Popen(
-            [DUNES_EXE, "--debug", "--ctest", TEST_APP_DIR, "--", "--no-tests=ignore"],
+            [DUNES_EXE, '-C', TEST_CONTAINER_NAME, "--debug", "--ctest", TEST_APP_DIR, "--", "--no-tests=ignore"],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding="utf-8") as proc:
         stdout, _ = proc.communicate()
 
@@ -131,5 +136,5 @@ def test_gdb():
     """Test `--gdb` key."""
 
     # Simply ensure gdb is run.
-    proc = subprocess.run([DUNES_EXE, "--gdb", "/bin/sh"], capture_output=True, encoding="utf-8", check=True)
+    proc = subprocess.run([DUNES_EXE, '-C', TEST_CONTAINER_NAME, "--gdb", "/bin/sh"], capture_output=True, encoding="utf-8", check=True)
     assert "GNU gdb" in proc.stdout
