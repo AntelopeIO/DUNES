@@ -1,3 +1,6 @@
+| :memo:        | As part of our ongoing commitment to efficiently deliver value to the EOS Network, DUNES has been deprecated as of January 2024. This repository will not receive future updates or support. Your questions and concerns are important to us; please direct feedback to our [DUNES Deprecation Feedback Tracker](https://github.com/eosnetworkfoundation/product/issues/281). |
+|---------------|:------------------------|
+
 # Docker Utilities for Node Execution and Subsystems (DUNES)
 
 ![Logo](docs/images/logo.png)
